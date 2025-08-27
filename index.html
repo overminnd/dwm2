@@ -1,7 +1,126 @@
-<html>
+<!DOCTYPE html>
+<html lang="es">
     <head>
-        <title>Mi Página</title>
-    </head>
-    <body>Hola Mundo</body>
+        <!--meta charset="UTF-8"
 
+        - charset = conjunto de caracteres.
+
+        - UTF-8 = es el estándar más usado para representar caracteres (letras, números, símbolos, emojis…).
+
+        - Se usa para que la página muestre correctamente los acentos (á, é, í, ó, ú), la ñ y 
+        caracteres especiales.-->
+        <meta charset="UTF-8">
+
+        <!-- meta name="viewport" content="width=device-width, initial-scale=1.0"
+
+        - Este es fundamental para Bootstrap y diseño responsivo.
+
+        - name="viewport": indica que estás configurando cómo la página se ajusta a la "ventana" 
+        (pantalla) del dispositivo.
+
+        - width=device-width: hace que la página use el ancho real del dispositivo (teléfono, tablet, PC).
+
+        - initial-scale=1.0: define el nivel de zoom inicial (1.0 = 100%).-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Gato negro</title>
+
+        <!-- <link>
+
+        - Sirve para enlazar recursos externos a tu página, como hojas de estilo (CSS), fuentes, íconos.
+
+        - En el caso de Bootstrap, el <link> carga la hoja de estilos de Bootstrap para que puedas usar
+         su Grid System, botones, carrusel, etc.-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <style>
+            body {
+                background-color: lightgrey;
+            }
+            .caja{
+                border: 2px solid black;
+            }
+        </style>
+    </head>
+    <body>    
+
+<!-- 
+##Grid System: Es un sistema de columnas que se divide en 12, estas son ordenadas y responsivas
+ adaptandose a dispositivos moviles. 
+ 
+ Estas se almacenan dentro de un contenedor que se define como una clase en el elemento div
+
+ Ejemplo: <div class="container">...</div>
+ 
+ Dentro del contenedor se define las filas y posteriormente las columnas
+
+ Ejemplo: <div class="row">...
+            <div class="col-3">...</div>
+        </div> 
+        
+------------------------------------------------------------------------------------------        -->
+
+<!-- 
+##¿Qué es el Box Model?
+
+Imagina que cada elemento HTML (div, p, img, etc.) es una caja.
+Esa caja tiene 4 capas principales:
+
+Content → El contenido (texto, imagen).
+
+Padding → Espacio interno entre el contenido y el borde.
+
+Border → El borde que rodea la caja.
+
+Margin → Espacio externo entre la caja y las demás cajas.
+
+##¿Cómo se aplica en Bootstrap y CSS?
+
+Padding: espacio interno.
+
+En Bootstrap: p-1, p-2, p-3… (p = padding en todos los lados).
+
+También se puede usar específico: pt-3 (padding-top), pb-2 (padding-bottom).
+
+Margin: espacio externo.
+
+En Bootstrap: m-1, m-2, m-3… (m = margin en todos los lados).
+
+Específicos: mt-3 (margin-top), mb-4 (margin-bottom).
+
+Border:
+
+CSS: border: 2px solid black;
+
+Bootstrap: border, border-primary, border-2 (grosor).-->
+
+
+
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-12 bg-dark text-white text-center p-3">
+                    <h1>Gato negro</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            
+            <div class="row mt-3">
+                <div class="col-6 bg-light p-3">
+                    <p>Columna izquierda</p>
+                </div>
+                <div class="col-6 bg-secondary text-white p-3">
+                    <p>Columna derecha</p>
+                </div>
+            </div> 
+             <div class="row mt-3 d-flex justify-content-center" >
+                 <div class="col-3 bg-warning p-3 caja text-center m-1">Columna 1 (33%)</div>
+                 <div class="col-3 bg-success p-3 caja text-white text-center m-1">Columna 2 (33%)</div>
+                 <div class="col-3 bg-danger p-3 caja text-white text-center m-1">Columna 3 (33%)</div>
+             </div>
+        </div>    
+        
+    </body>
 </html>
