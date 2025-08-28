@@ -1,49 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <!--meta charset="UTF-8"
-
-        - charset = conjunto de caracteres.
-
-        - UTF-8 = es el estándar más usado para representar caracteres (letras, números, símbolos, emojis…).
-
-        - Se usa para que la página muestre correctamente los acentos (á, é, í, ó, ú), la ñ y 
-        caracteres especiales.-->
-        <meta charset="UTF-8">
-
-        <!-- meta name="viewport" content="width=device-width, initial-scale=1.0"
-
-        - Este es fundamental para Bootstrap y diseño responsivo.
-
-        - name="viewport": indica que estás configurando cómo la página se ajusta a la "ventana" 
-        (pantalla) del dispositivo.
-
-        - width=device-width: hace que la página use el ancho real del dispositivo (teléfono, tablet, PC).
-
-        - initial-scale=1.0: define el nivel de zoom inicial (1.0 = 100%).-->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <title>Gato negro</title>
-
-        <!-- <link>
-
-        - Sirve para enlazar recursos externos a tu página, como hojas de estilo (CSS), fuentes, íconos.
-
-        - En el caso de Bootstrap, el <link> carga la hoja de estilos de Bootstrap para que puedas usar
-         su Grid System, botones, carrusel, etc.-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <style>
-            body {
-                background-color: lightgrey;
-            }
-            .caja{
-                border: 2px solid black;
-            }
-        </style>
-    </head>
-    <body>    
-
 <!-- 
 ##Grid System: Es un sistema de columnas que se divide en 12, estas son ordenadas y responsivas
  adaptandose a dispositivos moviles. 
@@ -95,32 +51,115 @@ CSS: border: 2px solid black;
 Bootstrap: border, border-primary, border-2 (grosor).-->
 
 
+<head>
+    <!--meta charset="UTF-8"
 
-        <div class="container-fluid">
+        - charset = conjunto de caracteres.
 
-            <div class="row">
-                <div class="col-12 bg-dark text-white text-center p-3">
-                    <h1>Gato negro</h1>
+        - UTF-8 = es el estándar más usado para representar caracteres (letras, números, símbolos, emojis…).
+
+        - Se usa para que la página muestre correctamente los acentos (á, é, í, ó, ú), la ñ y 
+        caracteres especiales.-->
+    <meta charset="UTF-8">
+
+    <!-- meta name="viewport" content="width=device-width, initial-scale=1.0"
+
+        - Este es fundamental para Bootstrap y diseño responsivo.
+
+        - name="viewport": indica que estás configurando cómo la página se ajusta a la "ventana" 
+        (pantalla) del dispositivo.
+
+        - width=device-width: hace que la página use el ancho real del dispositivo (teléfono, tablet, PC).
+
+        - initial-scale=1.0: define el nivel de zoom inicial (1.0 = 100%).-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gato negro</title>
+
+    <!-- <link>
+
+        - Sirve para enlazar recursos externos a tu página, como hojas de estilo (CSS), fuentes, íconos.
+
+        - En el caso de Bootstrap, el <link> carga la hoja de estilos de Bootstrap para que puedas usar
+         su Grid System, botones, carrusel, etc.-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!--rgb(48, 48, 48)-->
+    <style>
+        
+        body {
+            
+            background-color: rgb(128, 128, 128);
+           
+        }
+
+        .caja {
+            border: 2px solid black;
+        }
+        
+        .color{
+            background-color: rgb(37, 37, 37);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 color text-white caja text-center p-3">
+                <h1 id="titulo-principal">
+                    <i class="fa-solid fa-cat fa-spin"></i> Gato negro <i class="fa-solid fa-cat fa-spin fa-flip-horizontal"></i>
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="row mt-3">
+            <div class="col-6 bg-light p-3">
+                <p>Columna izquierda</p>
+            </div>
+            <div class="col-6 bg-secondary text-white p-3">
+                <p>Columna derecha</p>
+            </div>
+        </div>
+        <!--<div class="row mt-3 d-flex justify-content-center">
+            <div class="col-3 bg-warning p-3 caja text-center m-1">Columna 1 (33%)</div>
+            <div class="col-3 bg-success p-3 caja text-white text-center m-1">Columna 2 (33%)</div>
+            <div class="col-3 bg-danger p-3 caja text-white text-center m-1">Columna 3 (33%)</div>
+        </div>-->
+        <div class="row">
+            <div class="col-6">
+                <div class="card bg-light mt-3 caja p-3 ">
+                    <h2 class="text-center">Historia del mito del gato negro</h2>
+                    <p class="mt-2">El sentimiento de aversión contra los gatos negros tiene una larga historia. Desde la tradición
+                        celta se creía que los gatos de cualquier tipo, eran los mejores compañeros de las catalogadas
+                        como brujas.
+
+                    <p>Sin embargo, esta negativa imagen no estaba en otras culturas, por ejemplo, el gato negro egipcio
+                        era una figura divina, ya que lo consideraban como un enviado de los dioses. Antiguamente, en
+                        Escocia e Inglaterra, cuando las parejas celebraban nupcias, encontrarse con un gato negro en la
+                        puerta de casa simbolizaba un matrimonio feliz y próspero.</p>
+
+                    <p>Pero la presencia de los gatos negros vuelve a convertirse en una superstición negativa con el
+                    devenir de la Edad Media. En esta época, reaparece la creencia celta de que los gatos negros son muy
+                    cercanos a las brujas.</p>
+
+                    <p>La iglesia fomentó esta idea, por lo que las personas temían hasta la mirada de estos felinos, ya
+                    que podría hechizarles. La tenencia de un gato negro era motivo suficiente para quemar a alguien en
+                    la hoguera.</p>
+
+                    <p>Por otra parte, la quema de los gatos de color negro era una de las principales actividades en las
+                    noches de San Juan. Creencia que se continua con la conocida cacería de las brujas de Salem, donde
+                    se creía que estas se transformaban en gatos negros.</p>
                 </div>
             </div>
         </div>
 
-        <div class="container">
-            
-            <div class="row mt-3">
-                <div class="col-6 bg-light p-3">
-                    <p>Columna izquierda</p>
-                </div>
-                <div class="col-6 bg-secondary text-white p-3">
-                    <p>Columna derecha</p>
-                </div>
-            </div> 
-             <div class="row mt-3 d-flex justify-content-center" >
-                 <div class="col-3 bg-warning p-3 caja text-center m-1">Columna 1 (33%)</div>
-                 <div class="col-3 bg-success p-3 caja text-white text-center m-1">Columna 2 (33%)</div>
-                 <div class="col-3 bg-danger p-3 caja text-white text-center m-1">Columna 3 (33%)</div>
-             </div>
-        </div>    
-        
-    </body>
+    </div>
+
+</body>
+
 </html>
