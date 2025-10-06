@@ -27,9 +27,7 @@
       </div>
 
       <!-- 2) Columna central -->
-      <div class="col text-center d-none d-md-block">
-        <!-- (puedes dejar vacío o añadir la lupa central más tarde) -->
-      </div>
+      <div class="col text-center d-none d-md-block"></div>
 
       <!-- 3) Grupo derecho -->
       <div class="col-auto d-flex align-items-center gap-2">
@@ -37,9 +35,9 @@
           <i class="bi bi-search fs-4"></i>
         </button>
 
-        <!-- 🔹 Aquí vive el botón de usuario -->
-        <div id="user-area"></div>
-
+        <!-- <-- AQUÍ inyectaremos el botón de usuario -->
+        <div id="user-area" class="d-flex align-items-center"></div>
+        
         <button class="btn btn-outline-dark btn-sm position-relative"
           type="button"
           aria-label="Carrito"
@@ -70,55 +68,9 @@
   </div>
 </header>
 
-<script>
-function initHeader() {
-  const LOGIN_URL = '/MARAZUL/MARAZUL/components/login.html';
-  const REGISTER_URL = '/MARAZUL/MARAZUL/components/register.html';
 
-  const user = JSON.parse(localStorage.getItem('marazul_current_user') || 'null');
-  const userArea = document.getElementById('user-area');
-  if (!userArea) return;
 
-  // limpiar solo el área del usuario
-  userArea.innerHTML = '';
 
-  if (user) {
-    // Dropdown con usuario
-    const wrapper = document.createElement('div');
-    wrapper.className = 'dropdown';
-
-    wrapper.innerHTML = `
-      <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-        ${user.name || user.email}
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-        <li><h6 class="dropdown-header">${user.email}</h6></li>
-        <li><a class="dropdown-item" href="#">Historial de compras</a></li>
-        <li><a class="dropdown-item" href="#">Ajustes de usuario</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a id="logoutBtn" class="dropdown-item text-danger" href="#">Cerrar sesión</a></li>
-      </ul>
-    `;
-
-    userArea.appendChild(wrapper);
-
-    // Logout
-    wrapper.querySelector('#logoutBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      localStorage.removeItem('marazul_current_user');
-      window.location.reload();
-    });
-
-  } else {
-    // Botón que manda al login
-    const loginBtn = document.createElement('a');
-    loginBtn.href = LOGIN_URL;
-    loginBtn.className = 'btn btn-outline-dark btn-sm';
-    loginBtn.textContent = 'Iniciar Sesión';
-    userArea.appendChild(loginBtn);
-  }
-}
-</script>
 
 
 

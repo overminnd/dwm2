@@ -19,12 +19,10 @@
 <div id="carrusel-container"></div>
 <!-- Productos Destacados -->
 <div id="productos-container"></div>
-
-<!-- <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">pico pal que lee</span> -->
-
-<!-- Reemplaza tu sección actual por esto -->
+<!-- Categorias -->
 <div id="categorias-container"></div>
-<!-- Catalogo -->
+
+<!-- Buscador -->
 <div id="catalogo-container"></div>
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-6col">
@@ -48,8 +46,6 @@
     </div>
   </div>
 </div>
-
-
 
 <!-- Modal integrado (DESTACADO) -->
 <div class="modal fade" id="productoModal" tabindex="-1" aria-hidden="true">
@@ -102,8 +98,6 @@
   </div>
 </div>
 
-
-
 <!-- Modal integrado (CATALOGO) -->
 <div class="modal fade" id="catalogoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -155,8 +149,6 @@
   </div>
 </div>
 
-
-
 <!-- Contenedor vacío para inyectar el carrito -->
 <div id="carrito-container"></div>
 
@@ -172,6 +164,56 @@
   });
 });
 
+</script>
+
+<script>
+  /* ===========================
+   initHeader
+   Asociado al registro de usuarios
+   Escucha sólo las cards dentro de #productos-container
+   =========================== */
+function initHeader() {
+  const BASE = "/MARAZUL/MARAZUL";
+  const LOGIN_URL = BASE + "/components/login.html";
+  const HISTORIAL_URL = BASE + "/components/historial.html";
+  const AJUSTES_URL = BASE + "/components/ajustes.html";
+
+  const userArea = document.getElementById("user-area");
+  if (!userArea) return;
+
+  userArea.innerHTML = ""; // limpiar
+
+  const user = JSON.parse(localStorage.getItem("marazul_current_user") || "null");
+
+  if (user) {
+    userArea.innerHTML = `
+      <div class="dropdown">
+        <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button"
+                id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+          ${user.name || user.email}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+          <li><h6 class="dropdown-header">${user.email}</h6></li>
+          <li><a class="dropdown-item" href="${HISTORIAL_URL}">Historial de compras</a></li>
+          <li><a class="dropdown-item" href="${AJUSTES_URL}">Ajustes de usuario</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a id="logoutBtn" class="dropdown-item text-danger" href="#">Cerrar sesión</a></li>
+        </ul>
+      </div>
+    `;
+
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("marazul_current_user");
+      location.reload();
+    });
+
+  } else {
+    userArea.innerHTML = `
+      <a class="btn btn-outline-dark btn-sm" href="${LOGIN_URL}">Iniciar Sesión</a>
+    `;
+  }
+}
 </script>
 
 <script>
@@ -284,7 +326,6 @@ function initProductosDestacados() {
   updateCartBadge();
   modalEl.dataset.inited = '1';
 }
-
 
 /* ===========================
    initProductosCatalogo
@@ -476,8 +517,6 @@ function initCategoryButtons() {
 
 </script>
 
-<script src="/MARAZUL/MARAZUL/js/header.js"></script>
-
 <script>
 // loadComponent con callback
 function loadComponent(containerId, filePath, callback) {
@@ -520,9 +559,6 @@ loadComponent("catalogo-container", "components/catalogo.html", () => {
 loadComponent("categorias-container", "components/categorias.html", () => {
   initCategoryButtons();
 });
-
-
-
 
 </script>
 
