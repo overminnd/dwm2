@@ -1,8 +1,23 @@
+// ===================================
+// src/app.js - ACTUALIZADO CON TODAS LAS RUTAS
+// ===================================
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { config } from './config/config.js';
+
+// Importar rutas
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import productRoutes from './routes/productRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
+import bannerRoutes from './routes/bannerRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import addressRoutes from './routes/addressRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 
 const app = express();
 
@@ -16,22 +31,54 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rutas de prueba
+// Ruta de prueba
 app.get('/', (req, res) => {
-  res.json({ message: 'E-commerce API funcionando ✅' });
+  res.json({ 
+    message: 'E-commerce MarAzul API ✅',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      users: '/api/users',
+      products: '/api/products',
+      cart: '/api/cart',
+      categories: '/api/categories',
+      banners: '/api/banners',
+      orders: '/api/orders',
+      addresses: '/api/addresses',
+      reviews: '/api/reviews',
+      contact: '/api/contact'
+    }
+  });
 });
 
-// Aquí irán tus rutas
-// app.use('/api/auth', authRoutes);
-// app.use('/api/users', userRoutes);
-// ... etc
+// Configurar todas las rutas
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/banners', bannerRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/addresses', addressRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/contact', contactRoutes);
 
-// Manejo de errores
+// Ruta 404 - No encontrada
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Ruta ${req.originalUrl} no encontrada`
+  });
+});
+
+// Manejo de errores global
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Error:', err.stack);
+  
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || 'Error del servidor'
+    message: err.message || 'Error del servidor',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
 
