@@ -1,6 +1,7 @@
 // ===================================
-// src/app.js - ACTUALIZADO CON TODAS LAS RUTAS
+// src/app.js
 // ===================================
+import { errorHandler, notFound } from './middlewares/errorHandler.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -64,22 +65,9 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/contact', contactRoutes);
 
 // Ruta 404 - No encontrada
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Ruta ${req.originalUrl} no encontrada`
-  });
-});
+app.use(notFound);
 
 // Manejo de errores global
-app.use((err, req, res, next) => {
-  console.error('Error:', err.stack);
-  
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Error del servidor',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
-});
+app.use(errorHandler);
 
 export default app;

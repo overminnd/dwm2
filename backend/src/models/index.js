@@ -15,7 +15,7 @@ import OrderItem from './orderitem.js';
 import Payment from './payment.js';
 import Shipping from './shipping.js';
 import Review from './review.js';
-import Banner from './baanner.js';
+import Banner from './banner.js';
 import Promotion from './promotion.js';
 import StockMovement from './stockmovement.js';
 import Notification from './notification.js';
