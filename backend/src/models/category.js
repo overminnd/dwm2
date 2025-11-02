@@ -34,8 +34,8 @@ const categorySchema = new mongoose.Schema({
 });
 
 // Auto-generar slug si no existe
-categorySchema.pre('save', function(next) {
-  if (!this.slug) {
+categorySchema.pre('validate', function(next) {
+  if (!this.slug && this.name) {
     this.slug = this.name.toLowerCase()
       .replace(/[áàäâ]/g, 'a')
       .replace(/[éèëê]/g, 'e')

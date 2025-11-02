@@ -66,9 +66,9 @@ const productSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Auto-generar slug
-productSchema.pre('save', function(next) {
-  if (!this.slug) {
+// Auto-generar slug ANTES de validar
+productSchema.pre('validate', function(next) {
+  if (!this.slug && this.name) {
     this.slug = this.name.toLowerCase()
       .replace(/[áàäâ]/g, 'a')
       .replace(/[éèëê]/g, 'e')

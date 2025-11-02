@@ -1,9 +1,9 @@
 // ===================================
-// scripts/seed.js - Poblar BD con datos de prueba
+// scripts/seed.js - CORREGIDO
+// Poblar BD con datos de prueba
 // ===================================
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -40,10 +40,10 @@ const seedData = async () => {
     console.log('\n👥 Creando usuarios...');
     
     // Usuario Admin
-    const adminPassword = await bcrypt.hash('admin123', 10);
+    // ⚠️ IMPORTANTE: NO hasheamos aquí, el modelo lo hace automáticamente
     const admin = await User.create({
       email: 'admin@marazul.com',
-      password: adminPassword,
+      password: 'admin123', // ← Texto plano, el modelo lo hashea
       firstName: 'Admin',
       lastName: 'MarAzul',
       phone: '912345678',
@@ -53,10 +53,10 @@ const seedData = async () => {
     console.log('✅ Admin creado:', admin.email);
 
     // Usuario Cliente
-    const customerPassword = await bcrypt.hash('cliente123', 10);
+    // ⚠️ IMPORTANTE: NO hasheamos aquí, el modelo lo hace automáticamente
     const customer = await User.create({
       email: 'cliente@example.com',
-      password: customerPassword,
+      password: 'cliente123', // ← Texto plano, el modelo lo hashea
       firstName: 'Juan',
       lastName: 'Pérez',
       phone: '987654321',

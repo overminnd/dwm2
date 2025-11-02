@@ -18,7 +18,13 @@ const cartSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Un usuario solo puede tener un carrito activo
-cartSchema.index({ userId: 1, status: 1 }, { unique: true, sparse: true });
+// Solo aplica unicidad a carritos activos
+cartSchema.index(
+  { userId: 1 }, 
+  { 
+    unique: true, 
+    partialFilterExpression: { status: 'active' } 
+  }
+);
 
 export default mongoose.model('Cart', cartSchema);
