@@ -1,0 +1,109 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ================= HEADER ================= */
+.header {
+  background-color: #003366;  /* Azul corporativo */
+  color: #fff;
+  padding: 15px 0;
+  border-bottom: 1px solid #000; /* línea negra inferior */
+}
+
+/* Logo como ícono */
+.logo-icon i {
+  font-size: 2rem;   /* tamaño del ícono */
+  color: #fff;       /* color blanco dentro del header */
+}
+
+
+/* Íconos del header */
+.header .header-icon i {
+  color: #fff; /* forzamos íconos blancos */
+}
+
+/* Links dentro del header */
+.header .nav-link {
+  color: #fff !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.header .nav-link:hover {
+  color: #1d82b1 !important; /* hover amarillo */
+}
+
+/* Botones outline dentro del header */
+.header .btn-outline-dark {
+  color: #fff;
+  border-color: #fff;
+}
+
+.header .btn-outline-dark:hover {
+  background-color: #fff;
+  color: #003366;
+}
+
+/* Badge carrito en header */
+.position-relative .badge {
+  font-size: 0.6rem;
+}
+
+/* ================= CARRUSEL ================= */
+#carouselOfertas .carousel-item {
+  height: 320px; /* altura base */
+}
+
+#carouselOfertas img {
+  height: 100%;
+  object-fit: cover; /* recorta sin deformar */
+  border-radius: 12px;
+}
+
+/* Responsividad carrusel */
+@media (max-width: 768px) {
+  #carouselOfertas .carousel-item {
+    height: 220px; /* más bajo en móviles */
+  }
+}
+
+@media (min-width: 1200px) {
+  #carouselOfertas .carousel-item {
+    height: 400px; /* más alto en pantallas grandes */
+  }
+}
+
+/* ================= MODAL ================= */
+/* ancho de modal: en md+ ocupa ~6 columnas */
+.modal-6col {
+  max-width: 100%;
+}
+@media (min-width: 768px) {
+  .modal-6col {
+    max-width: 50%;
+  }
+}
+
+/* ================= PRODUCTOS ================= */
+.producto-title {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+
+.producto-desc {
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+}
+
+.producto-precio {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}

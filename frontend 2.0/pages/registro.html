@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Crea tu cuenta en MarAzul y disfruta de pescados y mariscos frescos con envío a domicilio">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Crear Cuenta - MarAzul | Regístrate</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/main.css">
+  
+  <style>
+    .register-container {
+      min-height: calc(100vh - 200px);
+      padding: 2rem 0;
+    }
+    
+    .register-card {
+      transition: transform 0.3s ease;
+    }
+    
+    .password-strength-bar {
+      height: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .strength-weak { background-color: #dc3545; }
+    .strength-fair { background-color: #ffc107; }
+    .strength-good { background-color: #20c997; }
+    .strength-strong { background-color: #198754; }
+    
+    .password-requirements {
+      font-size: 0.875rem;
+    }
+    
+    .requirement-met {
+      color: #198754;
+    }
+    
+    .requirement-unmet {
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  
+  <!-- Header Container -->
+  <div id="header-container"></div>
+  
+  <!-- Main Content -->
+  <main class="register-container">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+          
+          <!-- Register Card -->
+          <div class="card register-card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+              
+              <!-- Logo/Title -->
+              <div class="text-center mb-4">
+                <i class="bi bi-person-plus text-primary" style="font-size: 3rem;" aria-hidden="true"></i>
+                <h1 class="h2 mt-3 mb-1 fw-bold">Crear Cuenta</h1>
+                <p class="text-muted">Únete a la familia MarAzul</p>
+              </div>
+              
+              <!-- Alert Messages -->
+              <div id="alert-container"></div>
+              
+              <!-- Register Form -->
+              <form id="register-form" novalidate>
+                
+                <div class="row g-3">
+                  
+                  <!-- First Name -->
+                  <div class="col-md-6">
+                    <label for="firstName" class="form-label fw-semibold">
+                      Nombre <span class="text-danger">*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="firstName" 
+                      name="firstName"
+                      placeholder="Juan"
+                      required
+                      autocomplete="given-name">
+                    <div class="invalid-feedback">
+                      El nombre es requerido.
+                    </div>
+                  </div>
+                  
+                  <!-- Last Name -->
+                  <div class="col-md-6">
+                    <label for="lastName" class="form-label fw-semibold">
+                      Apellido <span class="text-danger">*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="lastName" 
+                      name="lastName"
+                      placeholder="Pérez"
+                      required
+                      autocomplete="family-name">
+                    <div class="invalid-feedback">
+                      El apellido es requerido.
+                    </div>
+                  </div>
+                  
+                  <!-- Email -->
+                  <div class="col-12">
+                    <label for="email" class="form-label fw-semibold">
+                      Correo Electrónico <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-white">
+                        <i class="bi bi-envelope"></i>
+                      </span>
+                      <input 
+                        type="email" 
+                        class="form-control" 
+                        id="email" 
+                        name="email"
+                        placeholder="tucorreo@ejemplo.com"
+                        required
+                        autocomplete="email">
+                    </div>
+                    <div class="invalid-feedback">
+                      Por favor ingresa un correo válido.
+                    </div>
+                  </div>
+                  
+                  <!-- Phone -->
+                  <div class="col-12">
+                    <label for="phone" class="form-label fw-semibold">
+                      Teléfono <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-white">+56</span>
+                      <input 
+                        type="tel" 
+                        class="form-control" 
+                        id="phone" 
+                        name="phone"
+                        placeholder="912345678"
+                        pattern="[0-9]{8,9}"
+                        required
+                        autocomplete="tel">
+                    </div>
+                    <div class="form-text">Formato: 912345678 (8-9 dígitos)</div>
+                    <div class="invalid-feedback">
+                      Por favor ingresa un teléfono válido (8-9 dígitos).
+                    </div>
+                  </div>
+                  
+                  <!-- Password -->
+                  <div class="col-md-6">
+                    <label for="password" class="form-label fw-semibold">
+                      Contraseña <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-white">
+                        <i class="bi bi-lock"></i>
+                      </span>
+                      <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password" 
+                        name="password"
+                        placeholder="••••••••"
+                        minlength="6"
+                        required
+                        autocomplete="new-password"
+                        aria-describedby="password-requirements">
+                      <button 
+                        class="btn btn-outline-secondary" 
+                        type="button" 
+                        id="toggle-password"
+                        aria-label="Mostrar/ocultar contraseña">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
+                    
+                    <!-- Password Strength Indicator -->
+                    <div class="mt-2">
+                      <div class="progress password-strength-bar">
+                        <div id="password-strength-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                      <small id="password-strength-text" class="text-muted"></small>
+                    </div>
+                    
+                    <!-- Password Requirements -->
+                    <div id="password-requirements" class="password-requirements mt-2">
+                      <small class="d-block requirement-unmet" id="req-length">
+                        <i class="bi bi-circle"></i> Mínimo 6 caracteres
+                      </small>
+                      <small class="d-block requirement-unmet" id="req-letter">
+                        <i class="bi bi-circle"></i> Al menos una letra
+                      </small>
+                      <small class="d-block requirement-unmet" id="req-number">
+                        <i class="bi bi-circle"></i> Al menos un número
+                      </small>
+                    </div>
+                    
+                    <div class="invalid-feedback">
+                      La contraseña debe tener al menos 6 caracteres.
+                    </div>
+                  </div>
+                  
+                  <!-- Confirm Password -->
+                  <div class="col-md-6">
+                    <label for="confirmPassword" class="form-label fw-semibold">
+                      Confirmar Contraseña <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-white">
+                        <i class="bi bi-lock-fill"></i>
+                      </span>
+                      <input 
+                        type="password" 
+                        class="form-control" 
+                        id="confirmPassword" 
+                        name="confirmPassword"
+                        placeholder="••••••••"
+                        minlength="6"
+                        required
+                        autocomplete="new-password">
+                      <button 
+                        class="btn btn-outline-secondary" 
+                        type="button" 
+                        id="toggle-confirm-password"
+                        aria-label="Mostrar/ocultar contraseña">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
+                    <div class="invalid-feedback" id="confirm-password-feedback">
+                      Las contraseñas no coinciden.
+                    </div>
+                  </div>
+                  
+                  <!-- Terms & Conditions -->
+                  <div class="col-12">
+                    <div class="form-check">
+                      <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="terms" 
+                        name="terms"
+                        required>
+                      <label class="form-check-label" for="terms">
+                        Acepto los <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#termsModal">términos y condiciones</a> 
+                        y la <a href="#" class="text-decoration-none">política de privacidad</a>
+                      </label>
+                      <div class="invalid-feedback">
+                        Debes aceptar los términos y condiciones.
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Newsletter -->
+                  <div class="col-12">
+                    <div class="form-check">
+                      <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="newsletter" 
+                        name="newsletter"
+                        checked>
+                      <label class="form-check-label" for="newsletter">
+                        Quiero recibir ofertas y novedades por correo electrónico
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <!-- Submit Button -->
+                  <div class="col-12 mt-4">
+                    <button 
+                      type="submit" 
+                      class="btn btn-primary w-100 py-2 mb-3"
+                      id="register-btn">
+                      <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                      <span class="btn-text">Crear Cuenta</span>
+                    </button>
+                  </div>
+                  
+                </div>
+                
+                <!-- Login Link -->
+                <div class="text-center mt-3">
+                  <p class="mb-0 text-muted">
+                    ¿Ya tienes cuenta? 
+                    <a href="login.html" class="text-decoration-none fw-semibold">
+                      Iniciar sesión
+                    </a>
+                  </p>
+                </div>
+                
+              </form>
+              
+            </div>
+          </div>
+          
+          <!-- Back to Home -->
+          <div class="text-center mt-4">
+            <a href="../index.html" class="text-decoration-none text-muted">
+              <i class="bi bi-arrow-left me-1"></i>
+              Volver al inicio
+            </a>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Terms Modal -->
+  <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="termsModalLabel">Términos y Condiciones</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <h6 class="fw-bold">1. Aceptación de los Términos</h6>
+          <p>Al crear una cuenta en MarAzul, aceptas estos términos y condiciones en su totalidad.</p>
+          
+          <h6 class="fw-bold">2. Uso de la Cuenta</h6>
+          <p>Eres responsable de mantener la confidencialidad de tu cuenta y contraseña.</p>
+          
+          <h6 class="fw-bold">3. Privacidad</h6>
+          <p>Protegemos tu información personal según nuestra política de privacidad.</p>
+          
+          <h6 class="fw-bold">4. Compras y Pagos</h6>
+          <p>Todos los precios están en CLP e incluyen IVA. Los métodos de pago aceptados se indican en el proceso de compra.</p>
+          
+          <h6 class="fw-bold">5. Política de Devoluciones</h6>
+          <p>Aceptamos devoluciones dentro de las 24 horas siguientes a la entrega del producto.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="document.getElementById('terms').checked = true">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer Container -->
+  <div id="footer-container"></div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JS -->
+  <script type="module">
+    import { AuthService } from '../js/services/AuthService.js';
+    import { showAlert, validateForm, setButtonLoading } from '../js/utils.js';
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('register-form');
+      const registerBtn = document.getElementById('register-btn');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const togglePassword = document.getElementById('toggle-password');
+      const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
+      
+      // Password strength checker
+      function checkPasswordStrength(password) {
+        let strength = 0;
+        const requirements = {
+          length: password.length >= 6,
+          letter: /[a-zA-Z]/.test(password),
+          number: /\d/.test(password),
+          special: /[^a-zA-Z\d]/.test(password)
+        };
+        
+        // Update requirement indicators
+        updateRequirement('req-length', requirements.length);
+        updateRequirement('req-letter', requirements.letter);
+        updateRequirement('req-number', requirements.number);
+        
+        // Calculate strength
+        if (requirements.length) strength++;
+        if (requirements.letter) strength++;
+        if (requirements.number) strength++;
+        if (requirements.special) strength++;
+        if (password.length >= 10) strength++;
+        
+        return { strength, requirements };
+      }
+      
+      function updateRequirement(id, met) {
+        const element = document.getElementById(id);
+        const icon = element.querySelector('i');
+        
+        if (met) {
+          element.classList.remove('requirement-unmet');
+          element.classList.add('requirement-met');
+          icon.classList.remove('bi-circle');
+          icon.classList.add('bi-check-circle-fill');
+        } else {
+          element.classList.remove('requirement-met');
+          element.classList.add('requirement-unmet');
+          icon.classList.remove('bi-check-circle-fill');
+          icon.classList.add('bi-circle');
+        }
+      }
+      
+      function updatePasswordStrengthUI(strength) {
+        const strengthBar = document.getElementById('password-strength-bar');
+        const strengthText = document.getElementById('password-strength-text');
+        
+        // Remove all strength classes
+        strengthBar.classList.remove('strength-weak', 'strength-fair', 'strength-good', 'strength-strong');
+        
+        let percentage, text, className;
+        
+        if (strength <= 1) {
+          percentage = 25;
+          text = 'Muy débil';
+          className = 'strength-weak';
+        } else if (strength === 2) {
+          percentage = 50;
+          text = 'Débil';
+          className = 'strength-fair';
+        } else if (strength === 3) {
+          percentage = 75;
+          text = 'Buena';
+          className = 'strength-good';
+        } else {
+          percentage = 100;
+          text = 'Fuerte';
+          className = 'strength-strong';
+        }
+        
+        strengthBar.style.width = percentage + '%';
+        strengthBar.classList.add(className);
+        strengthBar.setAttribute('aria-valuenow', percentage);
+        strengthText.textContent = text;
+      }
+      
+      // Password strength indicator
+      passwordInput?.addEventListener('input', () => {
+        const password = passwordInput.value;
+        
+        if (password.length === 0) {
+          document.getElementById('password-strength-bar').style.width = '0%';
+          document.getElementById('password-strength-text').textContent = '';
+          updateRequirement('req-length', false);
+          updateRequirement('req-letter', false);
+          updateRequirement('req-number', false);
+          return;
+        }
+        
+        const { strength } = checkPasswordStrength(password);
+        updatePasswordStrengthUI(strength);
+      });
+      
+      // Toggle password visibility
+      const togglePasswordVisibility = (button, input) => {
+        button?.addEventListener('click', () => {
+          const type = input.type === 'password' ? 'text' : 'password';
+          input.type = type;
+          const icon = button.querySelector('i');
+          icon.classList.toggle('bi-eye');
+          icon.classList.toggle('bi-eye-slash');
+        });
+      };
+      
+      togglePasswordVisibility(togglePassword, passwordInput);
+      togglePasswordVisibility(toggleConfirmPassword, confirmPasswordInput);
+      
+      // Validate password match
+      const validatePasswordMatch = () => {
+        if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+          confirmPasswordInput.setCustomValidity('Las contraseñas no coinciden');
+          return false;
+        } else {
+          confirmPasswordInput.setCustomValidity('');
+          return true;
+        }
+      };
+      
+      confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+      passwordInput.addEventListener('input', () => {
+        if (confirmPasswordInput.value) {
+          validatePasswordMatch();
+        }
+      });
+      
+      // Handle form submit
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm(form) || !validatePasswordMatch()) {
+          return;
+        }
+        
+        // Check password strength requirements
+        const { requirements } = checkPasswordStrength(passwordInput.value);
+        if (!requirements.length || !requirements.letter || !requirements.number) {
+          showAlert('warning', 'La contraseña no cumple con los requisitos mínimos de seguridad.');
+          return;
+        }
+        
+        const formData = new FormData(form);
+        const userData = {
+          firstName: formData.get('firstName'),
+          lastName: formData.get('lastName'),
+          email: formData.get('email'),
+          phone: formData.get('phone'),
+          password: formData.get('password'),
+          newsletter: formData.get('newsletter') === 'on'
+        };
+        
+        setButtonLoading(registerBtn, true, 'Creando cuenta...');
+        
+        try {
+          const response = await AuthService.register(userData);
+          
+          if (response.success) {
+            showAlert('success', '¡Cuenta creada exitosamente! Redirigiendo al inicio de sesión...');
+            
+            // Redirect to login after success
+            setTimeout(() => {
+              window.location.href = 'login.html?registered=true';
+            }, 1500);
+          } else {
+            showAlert('danger', response.message || 'Error al crear la cuenta. Por favor intenta nuevamente.');
+            setButtonLoading(registerBtn, false);
+          }
+        } catch (error) {
+          console.error('Register error:', error);
+          
+          // Handle specific errors
+          if (error.message && error.message.includes('email')) {
+            showAlert('danger', 'Este correo electrónico ya está registrado. <a href="login.html" class="alert-link">Iniciar sesión</a>');
+          } else {
+            showAlert('danger', 'Error al crear la cuenta. Por favor intenta nuevamente.');
+          }
+          
+          setButtonLoading(registerBtn, false);
+        }
+      });
+    });
+  </script>
+  
+</body>
+</html>

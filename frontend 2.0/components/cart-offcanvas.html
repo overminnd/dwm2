@@ -1,0 +1,364 @@
+<!-- frontend/components/cart-offcanvas.html -->
+<div 
+  class="offcanvas offcanvas-end" 
+  tabindex="-1" 
+  id="carritoOffcanvas" 
+  aria-labelledby="carritoLabel">
+  
+  <!-- Header -->
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title fw-bold" id="carritoLabel">
+      <i class="bi bi-cart3 me-2"></i>
+      Tu Carrito
+    </h5>
+    <button 
+      type="button" 
+      class="btn-close" 
+      data-bs-dismiss="offcanvas" 
+      aria-label="Cerrar carrito"></button>
+  </div>
+
+  <!-- Body -->
+  <div class="offcanvas-body d-flex flex-column p-0">
+    
+    <!-- Delivery Info (Optional) -->
+    <div class="delivery-info p-3 border-bottom bg-light">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-truck text-success me-2"></i>
+          <span class="small fw-semibold">Envío:</span>
+        </div>
+        <span class="small text-muted" id="delivery-time">Calculando...</span>
+      </div>
+    </div>
+
+    <!-- Cart Items Container -->
+    <div class="cart-items flex-grow-1 overflow-auto" id="cart-items-container">
+      
+      <!-- Empty Cart State -->
+      <div id="cart-empty" class="text-center py-5 px-3">
+        <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
+        <h6 class="fw-bold mt-3 mb-2">Tu carrito está vacío</h6>
+        <p class="text-muted small mb-3">
+          Los productos que agregues aparecerán aquí
+        </p>
+        <button 
+          class="btn btn-primary" 
+          data-bs-dismiss="offcanvas"
+          onclick="window.location.href='../index.html'">
+          <i class="bi bi-shop me-2"></i>
+          Ver Productos
+        </button>
+      </div>
+
+      <!-- Cart Items List (will be populated dynamically) -->
+      <div id="cart-items-list" class="d-none p-3">
+        <!-- Items will be rendered here -->
+      </div>
+      
+    </div>
+
+    <!-- Cart Summary -->
+    <div id="cart-summary" class="cart-summary border-top p-3 bg-light d-none">
+      
+      <!-- Subtotal -->
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted">Subtotal:</span>
+        <span class="fw-semibold" id="cart-subtotal">$0</span>
+      </div>
+
+      <!-- Shipping -->
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted">Envío:</span>
+        <span class="fw-semibold" id="cart-shipping">$0</span>
+      </div>
+
+      <!-- Discount (if applicable) -->
+      <div id="cart-discount-row" class="d-flex justify-content-between mb-2 text-success d-none">
+        <span>Descuento:</span>
+        <span class="fw-semibold" id="cart-discount">-$0</span>
+      </div>
+
+      <!-- Total -->
+      <div class="d-flex justify-content-between pt-2 border-top">
+        <span class="fw-bold fs-5">Total:</span>
+        <span class="fw-bold fs-5 text-primary" id="cart-total">$0</span>
+      </div>
+
+      <!-- Checkout Button -->
+      <button 
+        class="btn btn-primary w-100 mt-3" 
+        id="checkout-btn"
+        onclick="goToCheckout()">
+        <i class="bi bi-credit-card me-2"></i>
+        Proceder al Pago
+      </button>
+
+      <!-- Continue Shopping -->
+      <button 
+        class="btn btn-outline-secondary w-100 mt-2" 
+        data-bs-dismiss="offcanvas">
+        <i class="bi bi-arrow-left me-2"></i>
+        Seguir Comprando
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .cart-items {
+    max-height: calc(100vh - 300px);
+  }
+
+  .cart-item {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.2s;
+  }
+
+  .cart-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  .cart-item:last-child {
+    border-bottom: none;
+  }
+
+  .cart-item-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .quantity-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .quantity-btn:hover {
+    transform: scale(1.1);
+  }
+
+  .quantity-value {
+    min-width: 30px;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .remove-item-btn {
+    opacity: 0.6;
+    transition: all 0.2s;
+  }
+
+  .remove-item-btn:hover {
+    opacity: 1;
+    color: #dc3545;
+    transform: scale(1.1);
+  }
+
+  .delivery-info {
+    font-size: 0.875rem;
+  }
+</style>
+
+<script>
+  // Cart management functions
+  
+  // Format currency
+  function formatCartCurrency(amount) {
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      minimumFractionDigits: 0
+    }).format(amount);
+  }
+
+  // Render cart item
+  function renderCartItem(item) {
+    return `
+      <div class="cart-item" data-item-id="${item.id || item._id}">
+        <div class="d-flex gap-3">
+          <img 
+            src="${item.image || item.mainImage || '../assets/images/placeholder.jpg'}" 
+            alt="${item.name}"
+            class="cart-item-image">
+          
+          <div class="flex-grow-1">
+            <h6 class="mb-1 fw-semibold">${item.name}</h6>
+            <p class="mb-2 small text-muted">${item.unit || 'unidad'}</p>
+            
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="quantity-controls">
+                <button 
+                  class="btn btn-sm btn-outline-secondary quantity-btn" 
+                  onclick="decreaseCartQuantity('${item.id || item._id}')"
+                  aria-label="Disminuir cantidad">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <span class="quantity-value">${item.quantity}</span>
+                <button 
+                  class="btn btn-sm btn-outline-secondary quantity-btn" 
+                  onclick="increaseCartQuantity('${item.id || item._id}')"
+                  aria-label="Aumentar cantidad">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+              
+              <div class="text-end">
+                <div class="fw-bold text-primary">${formatCartCurrency(item.price * item.quantity)}</div>
+                <small class="text-muted">${formatCartCurrency(item.price)} c/u</small>
+              </div>
+            </div>
+          </div>
+
+          <button 
+            class="btn btn-link text-danger remove-item-btn p-0 align-self-start" 
+            onclick="removeCartItem('${item.id || item._id}')"
+            aria-label="Eliminar producto">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Update cart display
+  function updateCartDisplay(cart) {
+    const emptyState = document.getElementById('cart-empty');
+    const itemsList = document.getElementById('cart-items-list');
+    const summary = document.getElementById('cart-summary');
+    
+    if (!cart || !cart.items || cart.items.length === 0) {
+      emptyState.classList.remove('d-none');
+      itemsList.classList.add('d-none');
+      summary.classList.add('d-none');
+      return;
+    }
+
+    emptyState.classList.add('d-none');
+    itemsList.classList.remove('d-none');
+    summary.classList.remove('d-none');
+
+    // Render items
+    itemsList.innerHTML = cart.items.map(item => renderCartItem(item)).join('');
+
+    // Update summary
+    document.getElementById('cart-subtotal').textContent = formatCartCurrency(cart.subtotal || 0);
+    document.getElementById('cart-shipping').textContent = formatCartCurrency(cart.shipping || 0);
+    document.getElementById('cart-total').textContent = formatCartCurrency(cart.total || 0);
+
+    // Update discount if applicable
+    if (cart.discount && cart.discount > 0) {
+      document.getElementById('cart-discount-row').classList.remove('d-none');
+      document.getElementById('cart-discount').textContent = formatCartCurrency(cart.discount);
+    } else {
+      document.getElementById('cart-discount-row').classList.add('d-none');
+    }
+
+    // Update badge in header
+    if (window.updateCartCount) {
+      window.updateCartCount(cart.items.length);
+    }
+  }
+
+  // Increase quantity
+  window.increaseCartQuantity = async function(itemId) {
+    try {
+      // TODO: Call CartService
+      // await CartService.updateQuantity(itemId, quantity + 1);
+      console.log('Increasing quantity for item:', itemId);
+      
+      // Refresh cart display
+      // const cart = await CartService.getCart();
+      // updateCartDisplay(cart);
+      
+    } catch (error) {
+      console.error('Error increasing quantity:', error);
+      alert('Error al actualizar la cantidad');
+    }
+  };
+
+  // Decrease quantity
+  window.decreaseCartQuantity = async function(itemId) {
+    try {
+      // TODO: Call CartService
+      // await CartService.updateQuantity(itemId, Math.max(1, quantity - 1));
+      console.log('Decreasing quantity for item:', itemId);
+      
+      // Refresh cart display
+      // const cart = await CartService.getCart();
+      // updateCartDisplay(cart);
+      
+    } catch (error) {
+      console.error('Error decreasing quantity:', error);
+      alert('Error al actualizar la cantidad');
+    }
+  };
+
+  // Remove item
+  window.removeCartItem = async function(itemId) {
+    if (!confirm('¿Estás seguro de eliminar este producto del carrito?')) {
+      return;
+    }
+
+    try {
+      // TODO: Call CartService
+      // await CartService.removeItem(itemId);
+      console.log('Removing item:', itemId);
+      
+      // Refresh cart display
+      // const cart = await CartService.getCart();
+      // updateCartDisplay(cart);
+      
+    } catch (error) {
+      console.error('Error removing item:', error);
+      alert('Error al eliminar el producto');
+    }
+  };
+
+  // Go to checkout
+  window.goToCheckout = function() {
+    // TODO: Check if user is logged in
+    // If not, redirect to login with return URL
+    
+    // For now, just redirect to a checkout page (to be created)
+    window.location.href = '../pages/checkout.html';
+  };
+
+  // Load cart when offcanvas is shown
+  document.addEventListener('DOMContentLoaded', () => {
+    const cartOffcanvas = document.getElementById('carritoOffcanvas');
+    
+    cartOffcanvas?.addEventListener('show.bs.offcanvas', async () => {
+      try {
+        // TODO: Load cart from CartService
+        // const cart = await CartService.getCart();
+        // updateCartDisplay(cart);
+        
+        // For now, show empty state
+        updateCartDisplay(null);
+        
+      } catch (error) {
+        console.error('Error loading cart:', error);
+      }
+    });
+  });
+
+  // Make function available globally
+  window.updateCartDisplay = updateCartDisplay;
+</script>

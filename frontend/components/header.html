@@ -1,0 +1,76 @@
+<header class="py-2 header">
+  <div class="container">
+    <div class="row align-items-center">
+
+      <!-- 1) Grupo izquierdo: logo + enlaces -->
+      <div class="col-auto d-flex align-items-center">
+        <a href="/MARAZUL/MARAZUL/index.html" class="me-3 d-inline-block logo-icon">
+            <i class="fa-solid fa-anchor"></i>
+        </a>
+
+        <!-- Enlaces (md+) -->
+        <nav class="d-none d-md-block">
+          <ul class="nav">
+            <li class="nav-item"><a class="nav-link px-2" href="/MARAZUL/MARAZUL/index.html">Inicio</a></li>
+            <li class="nav-item"><a class="nav-link px-2" href="/MARAZUL/MARAZUL/components/contacto.html">Contacto</a></li>
+            <li class="nav-item">
+              <a class="nav-link px-2" href="/MARAZUL/MARAZUL/components/quienes-somos.html">Quiénes Somos</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Botón menú móvil -->
+        <button class="btn btn-link header-icon d-md-none ms-2 p-1" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-label="Abrir menú">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+      </div>
+
+      <!-- 2) Columna central -->
+      <div class="col text-center d-none d-md-block"></div>
+
+      <!-- 3) Grupo derecho -->
+      <div class="col-auto d-flex align-items-center gap-2">
+        <button class="btn btn-link header-icon p-2" data-bs-toggle="modal" data-bs-target="#searchModal" aria-label="Buscar">
+          <i class="bi bi-search fs-4"></i>
+        </button>
+
+        <!-- <-- AQUÍ inyectaremos el botón de usuario -->
+        <div id="user-area" class="d-flex align-items-center"></div>
+        
+        <button class="btn btn-outline-dark btn-sm position-relative"
+          type="button"
+          aria-label="Carrito"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#carritoOffcanvas"
+          aria-controls="carritoOffcanvas">
+          <i class="bi bi-cart3"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">0</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Offcanvas móvil -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileNav" aria-labelledby="mobileNavLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="mobileNavLabel">Menú</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="list-unstyled mb-0">
+        <li><a class="d-block py-2" href="components/quienes-somos.html">Categorías</a></li>
+        <li><a class="d-block py-2" href="#">Contacto</a></li>
+        <li><a class="d-block py-2" href="#">Quiénes Somos</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+
+
+
+
+
+

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Historial de compras - MarAzul">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Mis Compras - MarAzul</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/main.css">
+  
+  <style>
+    .order-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .order-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .status-badge {
+      font-size: 0.875rem;
+      padding: 0.375rem 0.75rem;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  
+  <!-- Header Container -->
+  <div id="header-container"></div>
+  
+  <!-- Page Header -->
+  <section class="bg-white border-bottom py-3 py-md-4">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col">
+          <h1 class="h3 mb-0 fw-bold">Mis Compras</h1>
+        </div>
+        <div class="col-auto">
+          <a href="../index.html" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i> Nueva Compra
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Main Content -->
+  <main class="container py-4">
+    <div class="row">
+      
+      <!-- Sidebar -->
+      <aside class="col-lg-3 mb-4 mb-lg-0">
+        <div class="card border-0 shadow-sm sticky-lg-top" style="top: 1rem;">
+          <div class="card-body">
+            <h5 class="card-title fw-bold mb-3">Mi Cuenta</h5>
+            <nav class="nav flex-column gap-1">
+              <a href="historial.html" class="nav-link active bg-primary bg-opacity-10 text-primary rounded">
+                <i class="bi bi-bag-check me-2"></i> Mis Compras
+              </a>
+              <a href="ajustes.html" class="nav-link text-dark">
+                <i class="bi bi-person me-2"></i> Perfil
+              </a>
+              <a href="ajustes.html#direcciones" class="nav-link text-dark">
+                <i class="bi bi-geo-alt me-2"></i> Direcciones
+              </a>
+              <a href="ajustes.html#seguridad" class="nav-link text-dark">
+                <i class="bi bi-shield-lock me-2"></i> Seguridad
+              </a>
+            </nav>
+          </div>
+        </div>
+      </aside>
+      
+      <!-- Orders Content -->
+      <div class="col-lg-9">
+        
+        <!-- Filters -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <div class="row g-3 align-items-end">
+              
+              <!-- Search -->
+              <div class="col-md-4">
+                <label for="search-order" class="form-label small fw-semibold">
+                  Buscar pedido
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white">
+                    <i class="bi bi-search"></i>
+                  </span>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="search-order"
+                    placeholder="Número de orden..."
+                    aria-label="Buscar por número de orden">
+                </div>
+              </div>
+              
+              <!-- Status Filter -->
+              <div class="col-md-4">
+                <label for="filter-status" class="form-label small fw-semibold">
+                  Estado
+                </label>
+                <select class="form-select" id="filter-status" aria-label="Filtrar por estado">
+                  <option value="">Todos los estados</option>
+                  <option value="pending_payment">Pendiente de Pago</option>
+                  <option value="paid">Pagado</option>
+                  <option value="shipped">Enviado</option>
+                  <option value="delivered">Entregado</option>
+                  <option value="cancelled">Cancelado</option>
+                </select>
+              </div>
+              
+              <!-- Date Range -->
+              <div class="col-md-4">
+                <label for="filter-date" class="form-label small fw-semibold">
+                  Período
+                </label>
+                <select class="form-select" id="filter-date" aria-label="Filtrar por fecha">
+                  <option value="all">Todo el tiempo</option>
+                  <option value="30">Últimos 30 días</option>
+                  <option value="90">Últimos 3 meses</option>
+                  <option value="180">Últimos 6 meses</option>
+                  <option value="365">Último año</option>
+                </select>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        
+        <!-- Alert Container -->
+        <div id="alert-container"></div>
+        
+        <!-- Orders List -->
+        <div id="orders-container">
+          
+          <!-- Loading State -->
+          <div id="loading-state" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando pedidos...</span>
+            </div>
+            <p class="text-muted mt-3">Cargando tus pedidos...</p>
+          </div>
+          
+          <!-- Empty State (hidden by default) -->
+          <div id="empty-state" class="card border-0 shadow-sm text-center py-5 d-none">
+            <div class="card-body">
+              <i class="bi bi-bag-x text-muted" style="font-size: 4rem;"></i>
+              <h3 class="h5 fw-bold mt-4 mb-2">Aún no has realizado compras</h3>
+              <p class="text-muted mb-4">
+                Explora nuestros productos frescos y realiza tu primera compra
+              </p>
+              <a href="../index.html" class="btn btn-primary">
+                <i class="bi bi-shop me-2"></i>Ver Productos
+              </a>
+            </div>
+          </div>
+          
+          <!-- Orders will be rendered here -->
+          <div id="orders-list"></div>
+          
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Paginación de pedidos" id="pagination-container" class="mt-4 d-none">
+          <ul class="pagination justify-content-center mb-0" id="pagination-list">
+            <!-- Pagination will be rendered here -->
+          </ul>
+        </nav>
+        
+      </div>
+      
+    </div>
+  </main>
+  
+  <!-- Order Detail Modal -->
+  <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="orderDetailModalLabel">Detalle del Pedido</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="order-detail-content">
+          <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando detalle...</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary d-none" id="reorder-btn">
+            <i class="bi bi-arrow-repeat me-1"></i>Volver a Comprar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer Container -->
+  <div id="footer-container"></div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JS -->
+  <script type="module">
+    import { OrderService } from '../js/services/OrderService.js';
+    import { formatCurrency, formatDate, showAlert } from '../js/utils.js';
+    
+    // State
+    let allOrders = [];
+    let filteredOrders = [];
+    let currentPage = 1;
+    const ordersPerPage = 5;
+    
+    // DOM Elements
+    const loadingState = document.getElementById('loading-state');
+    const emptyState = document.getElementById('empty-state');
+    const ordersList = document.getElementById('orders-list');
+    const paginationContainer = document.getElementById('pagination-container');
+    const paginationList = document.getElementById('pagination-list');
+    
+    // Status configuration
+    const statusConfig = {
+      pending_payment: { label: 'Pendiente de Pago', class: 'warning', icon: 'clock' },
+      paid: { label: 'Pagado', class: 'success', icon: 'check-circle' },
+      shipped: { label: 'Enviado', class: 'info', icon: 'truck' },
+      delivered: { label: 'Entregado', class: 'success', icon: 'check-circle-fill' },
+      cancelled: { label: 'Cancelado', class: 'danger', icon: 'x-circle' }
+    };
+    
+    // Load orders
+    async function loadOrders() {
+      try {
+        loadingState.classList.remove('d-none');
+        emptyState.classList.add('d-none');
+        ordersList.innerHTML = '';
+        paginationContainer.classList.add('d-none');
+        
+        const response = await OrderService.getUserOrders();
+        
+        if (response.success && response.data) {
+          allOrders = response.data;
+          filteredOrders = [...allOrders];
+          renderOrders();
+        }
+        
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        showAlert('danger', 'Error al cargar los pedidos. Por favor intenta nuevamente.');
+      } finally {
+        loadingState.classList.add('d-none');
+      }
+    }
+    
+    // Apply filters
+    function applyFilters() {
+      const searchTerm = document.getElementById('search-order')?.value.toLowerCase() || '';
+      const statusFilter = document.getElementById('filter-status')?.value || '';
+      const dateFilter = parseInt(document.getElementById('filter-date')?.value) || 0;
+      
+      filteredOrders = allOrders.filter(order => {
+        // Search filter
+        const matchesSearch = !searchTerm || 
+          order.orderNumber?.toLowerCase().includes(searchTerm);
+        
+        // Status filter
+        const matchesStatus = !statusFilter || order.status === statusFilter;
+        
+        // Date filter
+        let matchesDate = true;
+        if (dateFilter > 0) {
+          const orderDate = new Date(order.createdAt);
+          const cutoffDate = new Date();
+          cutoffDate.setDate(cutoffDate.getDate() - dateFilter);
+          matchesDate = orderDate >= cutoffDate;
+        }
+        
+        return matchesSearch && matchesStatus && matchesDate;
+      });
+      
+      currentPage = 1;
+      renderOrders();
+    }
+    
+    // Render orders
+    function renderOrders() {
+      if (filteredOrders.length === 0) {
+        emptyState.classList.remove('d-none');
+        paginationContainer.classList.add('d-none');
+        ordersList.innerHTML = '';
+        return;
+      }
+      
+      emptyState.classList.add('d-none');
+      
+      const startIndex = (currentPage - 1) * ordersPerPage;
+      const endIndex = startIndex + ordersPerPage;
+      const pageOrders = filteredOrders.slice(startIndex, endIndex);
+      
+      ordersList.innerHTML = pageOrders.map(order => createOrderCard(order)).join('');
+      
+      // Show pagination if needed
+      if (filteredOrders.length > ordersPerPage) {
+        renderPagination();
+        paginationContainer.classList.remove('d-none');
+      } else {
+        paginationContainer.classList.add('d-none');
+      }
+      
+      // Attach event listeners
+      attachOrderEventListeners();
+    }
+    
+    // Create order card HTML
+    function createOrderCard(order) {
+      const status = statusConfig[order.status] || statusConfig.pending_payment;
+      const orderDate = formatDate(order.createdAt);
+      
+      return `
+        <div class="card order-card border-0 shadow-sm mb-3" data-order-id="${order._id}" onclick="showOrderDetail('${order._id}')">
+          <div class="card-body">
+            <div class="row g-3 align-items-center">
+              
+              <div class="col-md-8">
+                <div class="d-flex align-items-center mb-2 flex-wrap gap-2">
+                  <span class="badge status-badge bg-${status.class}">
+                    <i class="bi bi-${status.icon} me-1"></i>${status.label}
+                  </span>
+                  <span class="text-muted small">
+                    <i class="bi bi-calendar3 me-1"></i>${orderDate}
+                  </span>
+                </div>
+                
+                <h6 class="fw-bold mb-1">Pedido #${order.orderNumber}</h6>
+                <p class="text-muted small mb-0">
+                  <i class="bi bi-box-seam me-1"></i>${order.items?.length || 0} producto(s) • 
+                  <span class="fw-semibold">${formatCurrency(order.total)}</span>
+                </p>
+              </div>
+              
+              <div class="col-md-4 text-md-end">
+                <button 
+                  class="btn btn-outline-primary btn-sm view-order-btn"
+                  data-order-id="${order._id}"
+                  onclick="event.stopPropagation(); showOrderDetail('${order._id}');"
+                  aria-label="Ver detalle del pedido ${order.orderNumber}">
+                  <i class="bi bi-eye me-1"></i>Ver Detalle
+                </button>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Render pagination
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+      let html = '';
+      
+      // Previous button
+      html += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+          <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Anterior">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </li>
+      `;
+      
+      // Page numbers with ellipsis
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      // First page
+      if (startPage > 1) {
+        html += `
+          <li class="page-item">
+            <a class="page-link" href="#" data-page="1">1</a>
+          </li>
+        `;
+        if (startPage > 2) {
+          html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+      }
+      
+      // Page numbers
+      for (let i = startPage; i <= endPage; i++) {
+        html += `
+          <li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" href="#" data-page="${i}">${i}</a>
+          </li>
+        `;
+      }
+      
+      // Last page
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+        html += `
+          <li class="page-item">
+            <a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a>
+          </li>
+        `;
+      }
+      
+      // Next button
+      html += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+          <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Siguiente">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+      `;
+      
+      paginationList.innerHTML = html;
+      
+      // Add event listeners
+      paginationList.querySelectorAll('.page-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const page = parseInt(e.currentTarget.dataset.page);
+          if (page >= 1 && page <= totalPages && page !== currentPage) {
+            currentPage = page;
+            renderOrders();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      });
+    }
+    
+    // Attach event listeners to order cards
+    function attachOrderEventListeners() {
+      // Event listeners are now handled by onclick attributes
+    }
+    
+    // Show order detail modal
+    window.showOrderDetail = async function(orderId) {
+      const modal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+      const content = document.getElementById('order-detail-content');
+      const reorderBtn = document.getElementById('reorder-btn');
+      
+      // Show loading
+      content.innerHTML = `
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando detalle...</span>
+          </div>
+        </div>
+      `;
+      
+      modal.show();
+      
+      try {
+        const response = await OrderService.getOrderById(orderId);
+        
+        if (response.success && response.data) {
+          const order = response.data.order;
+          const items = response.data.items;
+          const status = statusConfig[order.status] || statusConfig.pending_payment;
+          
+          content.innerHTML = `
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                  <h6 class="fw-bold mb-2">Pedido #${order.orderNumber}</h6>
+                  <p class="text-muted small mb-0">
+                    <i class="bi bi-calendar3 me-1"></i>${formatDate(order.createdAt)}
+                  </p>
+                </div>
+                <span class="badge bg-${status.class}">
+                  <i class="bi bi-${status.icon} me-1"></i>${status.label}
+                </span>
+              </div>
+              
+              ${order.shippingAddress ? `
+                <div class="alert alert-light mb-3">
+                  <h6 class="alert-heading fw-semibold mb-2">
+                    <i class="bi bi-geo-alt me-1"></i>Dirección de Envío
+                  </h6>
+                  <p class="mb-0 small">
+                    ${order.shippingAddress.street} ${order.shippingAddress.number}
+                    ${order.shippingAddress.apartment ? ', ' + order.shippingAddress.apartment : ''}<br>
+                    ${order.shippingAddress.commune}, ${order.shippingAddress.city}
+                  </p>
+                </div>
+              ` : ''}
+            </div>
+            
+            <div class="mb-4">
+              <h6 class="fw-bold mb-3">Productos</h6>
+              ${items.map(item => `
+                <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                  <img 
+                    src="${item.productId?.mainImage || '../assets/images/placeholder.jpg'}" 
+                    alt="${item.productName}"
+                    class="rounded"
+                    style="width: 60px; height: 60px; object-fit: cover;">
+                  <div class="flex-grow-1 ms-3">
+                    <h6 class="mb-1">${item.productName}</h6>
+                    <small class="text-muted">
+                      ${item.quantity} ${item.unit || 'ud'} × ${formatCurrency(item.unitPrice)}
+                    </small>
+                  </div>
+                  <div class="text-end fw-semibold">
+                    ${formatCurrency(item.subtotal)}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div class="border-top pt-3">
+              <div class="row g-2 text-muted">
+                <div class="col-6">Subtotal:</div>
+                <div class="col-6 text-end">${formatCurrency(order.subtotal)}</div>
+                <div class="col-6">Envío:</div>
+                <div class="col-6 text-end">${formatCurrency(order.shippingCost || 0)}</div>
+                ${order.discount ? `
+                  <div class="col-6 text-success">Descuento:</div>
+                  <div class="col-6 text-end text-success">-${formatCurrency(order.discount)}</div>
+                ` : ''}
+                <div class="col-6 fw-bold fs-5 text-dark">Total:</div>
+                <div class="col-6 text-end fw-bold fs-5 text-dark">${formatCurrency(order.total)}</div>
+              </div>
+            </div>
+          `;
+          
+          // Show reorder button if order is delivered
+          if (order.status === 'delivered') {
+            reorderBtn.classList.remove('d-none');
+            reorderBtn.onclick = () => reorderItems(items);
+          } else {
+            reorderBtn.classList.add('d-none');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading order detail:', error);
+        content.innerHTML = `
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Error al cargar el detalle del pedido.
+          </div>
+        `;
+      }
+    };
+    
+    // Reorder items
+    function reorderItems(items) {
+      // TODO: Implement reorder functionality
+      console.log('Reordering items:', items);
+      showAlert('info', 'Funcionalidad de recompra próximamente disponible');
+    }
+    
+    // Filters
+    document.getElementById('search-order')?.addEventListener('input', applyFilters);
+    document.getElementById('filter-status')?.addEventListener('change', applyFilters);
+    document.getElementById('filter-date')?.addEventListener('change', applyFilters);
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadOrders();
+    });
+  </script>
+  
+</body>
+</html>
