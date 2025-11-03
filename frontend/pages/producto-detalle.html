@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Producto - Tienda</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/variables.css">
+    
+    <style>
+        .product-image-main {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .product-thumbnail {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .product-thumbnail:hover,
+        .product-thumbnail.active {
+            border-color: var(--bs-primary);
+            transform: scale(1.05);
+        }
+        
+        .price-original {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+        
+        .price-current {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--bs-primary);
+        }
+        
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .quantity-selector {
+            max-width: 150px;
+        }
+        
+        .product-specs-table th {
+            width: 40%;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Component -->
+    <div id="header-container"></div>
+
+    <!-- Breadcrumb -->
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../index.html">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="#" id="categoryBreadcrumb">Categoría</a></li>
+                <li class="breadcrumb-item active" aria-current="page" id="productBreadcrumb">Producto</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Product Detail -->
+    <div class="container my-5">
+        <div class="row">
+            <!-- Product Images -->
+            <div class="col-lg-6 mb-4">
+                <div class="position-relative mb-3">
+                    <img 
+                        id="mainProductImage" 
+                        src="../assets/images/placeholder.jpg" 
+                        alt="Producto" 
+                        class="product-image-main"
+                    >
+                    <div id="discountBadge" class="discount-badge d-none">
+                        -<span id="discountPercentage">0</span>%
+                    </div>
+                </div>
+                
+                <!-- Thumbnails -->
+                <div class="row g-2" id="thumbnailsContainer">
+                    <!-- Los thumbnails se cargarán dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="col-lg-6">
+                <div class="mb-3">
+                    <span class="badge bg-secondary text-uppercase" id="productCategory">Categoría</span>
+                </div>
+                
+                <h1 class="mb-3" id="productName">Nombre del Producto</h1>
+                
+                <!-- Rating -->
+                <div class="d-flex align-items-center mb-3">
+                    <div class="text-warning me-2" id="productRating">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                    </div>
+                    <span class="text-muted">
+                        <span id="ratingValue">4.5</span> (<span id="reviewCount">120</span> reseñas)
+                    </span>
+                </div>
+
+                <!-- Price -->
+                <div class="mb-4">
+                    <div id="priceOriginalContainer" class="d-none">
+                        <span class="price-original h4" id="priceOriginal">$0</span>
+                    </div>
+                    <div class="price-current" id="priceCurrent">$0</div>
+                    <p class="text-muted" id="pricePerUnit"></p>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                    <h5>Descripción</h5>
+                    <p id="productDescription" class="text-muted">
+                        Descripción del producto...
+                    </p>
+                </div>
+
+                <!-- Stock Status -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center" id="stockStatus">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <span class="text-success">En stock</span>
+                    </div>
+                </div>
+
+                <!-- Quantity and Add to Cart -->
+                <div class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <label for="quantity" class="form-label">Cantidad</label>
+                            <div class="input-group quantity-selector">
+                                <button 
+                                    class="btn btn-outline-secondary" 
+                                    type="button"
+                                    onclick="decreaseQuantity()"
+                                >
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input 
+                                    type="number" 
+                                    class="form-control text-center" 
+                                    id="quantity" 
+                                    value="1" 
+                                    min="1"
+                                    max="99"
+                                >
+                                <button 
+                                    class="btn btn-outline-secondary" 
+                                    type="button"
+                                    onclick="increaseQuantity()"
+                                >
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col">
+                            <label class="form-label d-block">&nbsp;</label>
+                            <button 
+                                class="btn btn-primary btn-lg w-100" 
+                                id="addToCartBtn"
+                                onclick="addToCart()"
+                            >
+                                <i class="bi bi-cart-plus me-2"></i>
+                                Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Actions -->
+                <div class="d-flex gap-2 mb-4">
+                    <button 
+                        class="btn btn-outline-secondary flex-fill"
+                        onclick="toggleWishlist()"
+                        id="wishlistBtn"
+                    >
+                        <i class="bi bi-heart me-2"></i>
+                        Agregar a Favoritos
+                    </button>
+                    <button 
+                        class="btn btn-outline-secondary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#shareModal"
+                    >
+                        <i class="bi bi-share"></i>
+                    </button>
+                </div>
+
+                <!-- Product Features -->
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">Características destacadas</h6>
+                        <ul class="mb-0" id="productFeatures">
+                            <li>Característica 1</li>
+                            <li>Característica 2</li>
+                            <li>Característica 3</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button 
+                            class="nav-link active" 
+                            id="details-tab" 
+                            data-bs-toggle="tab" 
+                            data-bs-target="#details" 
+                            type="button" 
+                            role="tab"
+                        >
+                            Detalles
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button 
+                            class="nav-link" 
+                            id="specs-tab" 
+                            data-bs-toggle="tab" 
+                            data-bs-target="#specs" 
+                            type="button" 
+                            role="tab"
+                        >
+                            Especificaciones
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button 
+                            class="nav-link" 
+                            id="reviews-tab" 
+                            data-bs-toggle="tab" 
+                            data-bs-target="#reviews" 
+                            type="button" 
+                            role="tab"
+                        >
+                            Reseñas (<span id="reviewCountTab">0</span>)
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content p-4 border border-top-0" id="productTabsContent">
+                    <!-- Details Tab -->
+                    <div class="tab-pane fade show active" id="details" role="tabpanel">
+                        <h5>Información Detallada</h5>
+                        <div id="detailedDescription">
+                            <p>Aquí va la descripción detallada del producto...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Specifications Tab -->
+                    <div class="tab-pane fade" id="specs" role="tabpanel">
+                        <h5>Especificaciones Técnicas</h5>
+                        <table class="table table-striped product-specs-table" id="specsTable">
+                            <tbody>
+                                <!-- Las especificaciones se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Reviews Tab -->
+                    <div class="tab-pane fade" id="reviews" role="tabpanel">
+                        <div class="row">
+                            <div class="col-lg-4 mb-4">
+                                <div class="text-center">
+                                    <h2 class="display-4 mb-0" id="avgRating">4.5</h2>
+                                    <div class="text-warning mb-2">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-half"></i>
+                                    </div>
+                                    <p class="text-muted">Basado en <span id="totalReviews">120</span> reseñas</p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-8">
+                                <div id="reviewsContainer">
+                                    <!-- Las reseñas se cargarán dinámicamente -->
+                                </div>
+                                <button class="btn btn-outline-primary w-100 mt-3" id="loadMoreReviews">
+                                    Cargar más reseñas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="mb-4">Productos Relacionados</h3>
+                <div class="row g-3" id="relatedProductsContainer">
+                    <!-- Los productos relacionados se cargarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel">Compartir Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn btn-outline-primary flex-fill" onclick="shareOn('facebook')">
+                            <i class="bi bi-facebook me-2"></i>Facebook
+                        </button>
+                        <button class="btn btn-outline-info flex-fill" onclick="shareOn('twitter')">
+                            <i class="bi bi-twitter me-2"></i>Twitter
+                        </button>
+                        <button class="btn btn-outline-success flex-fill" onclick="shareOn('whatsapp')">
+                            <i class="bi bi-whatsapp me-2"></i>WhatsApp
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="shareUrl" 
+                            readonly
+                        >
+                        <button class="btn btn-outline-secondary" onclick="copyUrl()">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Component -->
+    <div id="footer-container"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script type="module" src="../js/app.js"></script>
+    <script type="module">
+        // Importar servicios necesarios
+        // import ProductService from '../js/services/ProductService.js';
+        // import CartService from '../js/services/CartService.js';
+
+        let currentProduct = null;
+        let currentImageIndex = 0;
+
+        // Obtener ID del producto desde URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        // Función para cargar el producto
+        async function loadProduct() {
+            if (!productId) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            try {
+                // Llamar al servicio (descomentar cuando esté disponible)
+                // const response = await ProductService.getProductById(productId);
+                // currentProduct = response.data;
+
+                // Mock data para pruebas
+                currentProduct = {
+                    id: productId,
+                    name: 'Salmón del Atlántico Premium',
+                    category: 'Pescados',
+                    categoryId: 1,
+                    description: 'Salmón fresco del Atlántico, rico en Omega-3 y proteínas. Ideal para preparaciones al horno, a la parrilla o al vapor.',
+                    detailedDescription: 'Nuestro salmón del Atlántico proviene de criaderos sostenibles en las frías aguas del norte. Este pescado es conocido por su carne rosada y su textura firme. Rico en ácidos grasos Omega-3, vitaminas D y B12, es una excelente opción para una dieta saludable. Perfecto para todo tipo de preparaciones culinarias.',
+                    price: 12990,
+                    originalPrice: 15990,
+                    discount: 19,
+                    unit: 'kg',
+                    stock: 45,
+                    rating: 4.5,
+                    reviewCount: 120,
+                    images: [
+                        '../assets/images/placeholder.jpg',
+                        '../assets/images/placeholder.jpg',
+                        '../assets/images/placeholder.jpg'
+                    ],
+                    features: [
+                        'Producto fresco del día',
+                        'Rico en Omega-3',
+                        'Captura sostenible',
+                        'Sin conservantes artificiales'
+                    ],
+                    specifications: {
+                        'Origen': 'Atlántico Norte',
+                        'Tipo': 'Salmón del Atlántico',
+                        'Estado': 'Fresco',
+                        'Unidad de Venta': 'Kilogramo',
+                        'Conservación': 'Refrigerado 0-4°C',
+                        'Vida Útil': '3-5 días refrigerado'
+                    }
+                };
+
+                renderProduct();
+                loadRelatedProducts();
+                loadReviews();
+            } catch (error) {
+                console.error('Error al cargar el producto:', error);
+                alert('Error al cargar el producto');
+            }
+        }
+
+        // Función para renderizar el producto
+        function renderProduct() {
+            if (!currentProduct) return;
+
+            // Actualizar breadcrumb
+            document.getElementById('categoryBreadcrumb').textContent = currentProduct.category;
+            document.getElementById('productBreadcrumb').textContent = currentProduct.name;
+
+            // Actualizar imágenes
+            document.getElementById('mainProductImage').src = currentProduct.images[0];
+            document.getElementById('mainProductImage').alt = currentProduct.name;
+
+            const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+            thumbnailsContainer.innerHTML = '';
+            currentProduct.images.forEach((img, index) => {
+                const col = document.createElement('div');
+                col.className = 'col-4';
+                col.innerHTML = `
+                    <img 
+                        src="${img}" 
+                        alt="${currentProduct.name}" 
+                        class="product-thumbnail ${index === 0 ? 'active' : ''}"
+                        onclick="changeMainImage(${index})"
+                    >
+                `;
+                thumbnailsContainer.appendChild(col);
+            });
+
+            // Badge de descuento
+            if (currentProduct.discount > 0) {
+                document.getElementById('discountBadge').classList.remove('d-none');
+                document.getElementById('discountPercentage').textContent = currentProduct.discount;
+                document.getElementById('priceOriginalContainer').classList.remove('d-none');
+                document.getElementById('priceOriginal').textContent = `$${currentProduct.originalPrice.toLocaleString('es-CL')}`;
+            }
+
+            // Información básica
+            document.getElementById('productCategory').textContent = currentProduct.category;
+            document.getElementById('productName').textContent = currentProduct.name;
+            document.getElementById('ratingValue').textContent = currentProduct.rating;
+            document.getElementById('reviewCount').textContent = currentProduct.reviewCount;
+            document.getElementById('priceCurrent').textContent = `$${currentProduct.price.toLocaleString('es-CL')}`;
+            document.getElementById('pricePerUnit').textContent = `Precio por ${currentProduct.unit}`;
+            document.getElementById('productDescription').textContent = currentProduct.description;
+
+            // Estado de stock
+            const stockStatus = document.getElementById('stockStatus');
+            if (currentProduct.stock > 0) {
+                stockStatus.innerHTML = `
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span class="text-success">En stock (${currentProduct.stock} disponibles)</span>
+                `;
+            } else {
+                stockStatus.innerHTML = `
+                    <i class="bi bi-x-circle-fill text-danger me-2"></i>
+                    <span class="text-danger">Sin stock</span>
+                `;
+                document.getElementById('addToCartBtn').disabled = true;
+            }
+
+            // Características
+            const featuresList = document.getElementById('productFeatures');
+            featuresList.innerHTML = '';
+            currentProduct.features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                featuresList.appendChild(li);
+            });
+
+            // Descripción detallada
+            document.getElementById('detailedDescription').innerHTML = `<p>${currentProduct.detailedDescription}</p>`;
+
+            // Especificaciones
+            const specsTable = document.getElementById('specsTable');
+            specsTable.innerHTML = '';
+            Object.entries(currentProduct.specifications).forEach(([key, value]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <th>${key}</th>
+                    <td>${value}</td>
+                `;
+                specsTable.appendChild(row);
+            });
+
+            // Reviews count en tab
+            document.getElementById('reviewCountTab').textContent = currentProduct.reviewCount;
+            document.getElementById('avgRating').textContent = currentProduct.rating;
+            document.getElementById('totalReviews').textContent = currentProduct.reviewCount;
+
+            // Share URL
+            document.getElementById('shareUrl').value = window.location.href;
+        }
+
+        // Cambiar imagen principal
+        window.changeMainImage = function(index) {
+            currentImageIndex = index;
+            document.getElementById('mainProductImage').src = currentProduct.images[index];
+            
+            // Actualizar thumbnails activos
+            document.querySelectorAll('.product-thumbnail').forEach((thumb, i) => {
+                if (i === index) {
+                    thumb.classList.add('active');
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
+        };
+
+        // Cantidad
+        window.increaseQuantity = function() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value);
+            const maxValue = parseInt(input.max);
+            if (currentValue < maxValue && currentValue < currentProduct.stock) {
+                input.value = currentValue + 1;
+            }
+        };
+
+        window.decreaseQuantity = function() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value);
+            const minValue = parseInt(input.min);
+            if (currentValue > minValue) {
+                input.value = currentValue - 1;
+            }
+        };
+
+        // Agregar al carrito
+        window.addToCart = async function() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            
+            try {
+                // Llamar al servicio (descomentar cuando esté disponible)
+                // await CartService.addItem(currentProduct.id, quantity);
+
+                console.log('Agregando al carrito:', {
+                    productId: currentProduct.id,
+                    quantity: quantity
+                });
+
+                alert('Producto agregado al carrito');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al agregar el producto al carrito');
+            }
+        };
+
+        // Wishlist
+        window.toggleWishlist = function() {
+            const btn = document.getElementById('wishlistBtn');
+            const icon = btn.querySelector('i');
+            
+            if (icon.classList.contains('bi-heart')) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                btn.classList.add('text-danger');
+                alert('Producto agregado a favoritos');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                btn.classList.remove('text-danger');
+                alert('Producto eliminado de favoritos');
+            }
+        };
+
+        // Share functions
+        window.shareOn = function(platform) {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(currentProduct.name);
+            
+            let shareUrl = '';
+            switch(platform) {
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+                    break;
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${text}%20${url}`;
+                    break;
+            }
+            
+            if (shareUrl) {
+                window.open(shareUrl, '_blank', 'width=600,height=400');
+            }
+        };
+
+        window.copyUrl = function() {
+            const input = document.getElementById('shareUrl');
+            input.select();
+            document.execCommand('copy');
+            alert('URL copiada al portapapeles');
+        };
+
+        // Cargar productos relacionados
+        async function loadRelatedProducts() {
+            // Mock data
+            const relatedProducts = [
+                {
+                    id: 2,
+                    name: 'Atún Aleta Amarilla',
+                    price: 18990,
+                    image: '../assets/images/placeholder.jpg',
+                    rating: 4.7
+                },
+                {
+                    id: 3,
+                    name: 'Merluza Austral',
+                    price: 8990,
+                    image: '../assets/images/placeholder.jpg',
+                    rating: 4.3
+                },
+                {
+                    id: 4,
+                    name: 'Reineta Fresca',
+                    price: 9990,
+                    image: '../assets/images/placeholder.jpg',
+                    rating: 4.5
+                }
+            ];
+
+            const container = document.getElementById('relatedProductsContainer');
+            container.innerHTML = '';
+
+            relatedProducts.forEach(product => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4';
+                col.innerHTML = `
+                    <div class="card h-100">
+                        <img src="${product.image}" class="card-img-top" alt="${product.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${product.name}</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0">$${product.price.toLocaleString('es-CL')}</span>
+                                <span class="text-warning">
+                                    <i class="bi bi-star-fill"></i> ${product.rating}
+                                </span>
+                            </div>
+                            <a href="producto-detalle.html?id=${product.id}" class="btn btn-outline-primary w-100 mt-2">
+                                Ver Producto
+                            </a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(col);
+            });
+        }
+
+        // Cargar reseñas
+        async function loadReviews() {
+            // Mock data
+            const reviews = [
+                {
+                    id: 1,
+                    author: 'María González',
+                    rating: 5,
+                    date: '2025-10-15',
+                    comment: 'Excelente calidad, muy fresco y delicioso.'
+                },
+                {
+                    id: 2,
+                    author: 'Pedro Muñoz',
+                    rating: 4,
+                    date: '2025-10-10',
+                    comment: 'Muy bueno, aunque el tamaño de las porciones podría ser mejor.'
+                }
+            ];
+
+            const container = document.getElementById('reviewsContainer');
+            container.innerHTML = '';
+
+            reviews.forEach(review => {
+                const div = document.createElement('div');
+                div.className = 'card mb-3';
+                
+                const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                
+                div.innerHTML = `
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>${review.author}</strong>
+                            <small class="text-muted">${new Date(review.date).toLocaleDateString('es-CL')}</small>
+                        </div>
+                        <div class="text-warning mb-2">${stars}</div>
+                        <p class="mb-0">${review.comment}</p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Cargar producto al inicio
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProduct();
+        });
+    </script>
+</body>
+</html>

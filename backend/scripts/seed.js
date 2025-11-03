@@ -1,5 +1,5 @@
 // ===================================
-// scripts/seed.js - CORREGIDO
+// scripts/seed.js 
 // Poblar BD con datos de prueba
 // ===================================
 import mongoose from 'mongoose';

@@ -1,6 +1,5 @@
 // ===================================
 // src/controllers/authController.js
-// VERSIÓN CON DEBUG LOGS
 // ===================================
 import jwt from 'jsonwebtoken';
 import { User, SessionToken } from '../models/index.js';

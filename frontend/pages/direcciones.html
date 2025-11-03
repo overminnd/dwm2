@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direcciones - Mi Cuenta</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/variables.css">
+</head>
+<body>
+    <!-- Header Component -->
+    <div id="header-container"></div>
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Configuración de Cuenta</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <h5 class="card-title p-3 mb-0 border-bottom">Mi Cuenta</h5>
+                        <nav class="nav flex-column">
+                            <a class="nav-link d-flex align-items-center px-3 py-2" href="historial.html">
+                                <i class="bi bi-bag me-2"></i>
+                                Mis Compras
+                            </a>
+                            <a class="nav-link d-flex align-items-center px-3 py-2" href="ajustes.html">
+                                <i class="bi bi-person me-2"></i>
+                                Perfil
+                            </a>
+                            <a class="nav-link active d-flex align-items-center px-3 py-2 bg-primary bg-opacity-10" href="direcciones.html">
+                                <i class="bi bi-geo-alt me-2"></i>
+                                Direcciones
+                            </a>
+                            <a class="nav-link d-flex align-items-center px-3 py-2" href="seguridad.html">
+                                <i class="bi bi-shield-check me-2"></i>
+                                Seguridad
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9 col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="card-title mb-0">Mis Direcciones</h4>
+                            <button 
+                                type="button" 
+                                class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#addressModal"
+                                onclick="openAddressModal()"
+                            >
+                                <i class="bi bi-plus-lg me-2"></i>
+                                Nueva Dirección
+                            </button>
+                        </div>
+
+                        <!-- Loading Spinner -->
+                        <div id="loadingSpinner" class="text-center py-5 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div id="emptyState" class="text-center py-5 d-none">
+                            <i class="bi bi-geo-alt display-1 text-muted mb-3"></i>
+                            <h5 class="text-muted">No tienes direcciones guardadas</h5>
+                            <p class="text-muted">Agrega una dirección para facilitar tus compras</p>
+                        </div>
+
+                        <!-- Direcciones Grid -->
+                        <div id="addressesContainer" class="row g-3">
+                            <!-- Las direcciones se cargarán dinámicamente aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar/Editar Dirección -->
+    <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addressModalLabel">Nueva Dirección</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addressForm" novalidate>
+                    <div class="modal-body">
+                        <input type="hidden" id="addressId" name="addressId">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="addressName" class="form-label">
+                                    Nombre de la Dirección <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="addressName" 
+                                    name="addressName"
+                                    placeholder="Casa, Oficina, etc."
+                                    required
+                                    data-field="addressName"
+                                >
+                                <div class="invalid-feedback">
+                                    Por favor ingresa un nombre para la dirección
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="recipientName" class="form-label">
+                                    Nombre del Destinatario <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="recipientName" 
+                                    name="recipientName"
+                                    placeholder="Nombre completo"
+                                    required
+                                    data-field="recipientName"
+                                >
+                                <div class="invalid-feedback">
+                                    Por favor ingresa el nombre del destinatario
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="street" class="form-label">
+                                    Calle <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="street" 
+                                    name="street"
+                                    placeholder="Nombre de la calle"
+                                    required
+                                    data-field="street"
+                                >
+                                <div class="invalid-feedback">
+                                    Por favor ingresa la calle
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="number" class="form-label">
+                                    Número <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="number" 
+                                    name="number"
+                                    placeholder="Ej: 123"
+                                    required
+                                    data-field="number"
+                                >
+                                <div class="invalid-feedback">
+                                    Por favor ingresa el número
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="apartment" class="form-label">
+                                    Departamento/Casa (Opcional)
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="apartment" 
+                                    name="apartment"
+                                    placeholder="Depto 101, Casa A, etc."
+                                    data-field="apartment"
+                                >
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="commune" class="form-label">
+                                    Comuna <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="commune" 
+                                    name="commune"
+                                    placeholder="Ej: Providencia"
+                                    required
+                                    data-field="commune"
+                                >
+                                <div class="invalid-feedback">
+                                    Por favor ingresa la comuna
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="city" class="form-label">
+                                    Ciudad <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="city" 
+                                    name="city"
+                                    placeholder="Ej: Santiago"
+                                    required
+                                    data-field="city"
+                                >
+                                <div class="invalid-feedback">
+                                    Por favor ingresa la ciudad
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="region" class="form-label">
+                                    Región <span class="text-danger">*</span>
+                                </label>
+                                <select 
+                                    class="form-select" 
+                                    id="region" 
+                                    name="region"
+                                    required
+                                    data-field="region"
+                                >
+                                    <option value="">Selecciona una región</option>
+                                    <option value="Región Metropolitana">Región Metropolitana</option>
+                                    <option value="Región de Valparaíso">Región de Valparaíso</option>
+                                    <option value="Región del Biobío">Región del Biobío</option>
+                                    <option value="Región de La Araucanía">Región de La Araucanía</option>
+                                    <option value="Región de Los Lagos">Región de Los Lagos</option>
+                                    <option value="Región de Antofagasta">Región de Antofagasta</option>
+                                    <option value="Región de Coquimbo">Región de Coquimbo</option>
+                                    <option value="Región de O'Higgins">Región de O'Higgins</option>
+                                    <option value="Región del Maule">Región del Maule</option>
+                                    <option value="Región de Ñuble">Región de Ñuble</option>
+                                    <option value="Región de Los Ríos">Región de Los Ríos</option>
+                                    <option value="Región de Aysén">Región de Aysén</option>
+                                    <option value="Región de Magallanes">Región de Magallanes</option>
+                                    <option value="Región de Arica y Parinacota">Región de Arica y Parinacota</option>
+                                    <option value="Región de Tarapacá">Región de Tarapacá</option>
+                                    <option value="Región de Atacama">Región de Atacama</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Por favor selecciona una región
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">
+                                    Teléfono <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="tel" 
+                                    class="form-control" 
+                                    id="phone" 
+                                    name="phone"
+                                    placeholder="+56 9 1234 5678"
+                                    required
+                                    data-field="phone"
+                                >
+                                <div class="invalid-feedback">
+                                    Por favor ingresa un teléfono de contacto
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="postalCode" class="form-label">
+                                    Código Postal (Opcional)
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="postalCode" 
+                                    name="postalCode"
+                                    placeholder="Ej: 8320000"
+                                    data-field="postalCode"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="reference" class="form-label">
+                                    Referencias adicionales (Opcional)
+                                </label>
+                                <textarea 
+                                    class="form-control" 
+                                    id="reference" 
+                                    name="reference"
+                                    rows="3"
+                                    placeholder="Ej: Portón azul, cerca del supermercado"
+                                    data-field="reference"
+                                ></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-check">
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                id="isDefault" 
+                                name="isDefault"
+                                data-field="isDefault"
+                            >
+                            <label class="form-check-label" for="isDefault">
+                                Usar como dirección predeterminada
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Dirección</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Eliminación -->
+    <div class="modal fade" id="deleteAddressModal" tabindex="-1" aria-labelledby="deleteAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteAddressModalLabel">Eliminar Dirección</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar esta dirección?</p>
+                    <p class="text-muted mb-0">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteAddress">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Component -->
+    <div id="footer-container"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script type="module" src="../js/app.js"></script>
+    <script type="module">
+        // Importar servicios necesarios cuando estén disponibles
+        // import { AddressService } from '../js/services/AddressService.js';
+
+        let addresses = [];
+        let currentAddressId = null;
+        let addressToDelete = null;
+
+        // Función para cargar direcciones
+        async function loadAddresses() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const emptyState = document.getElementById('emptyState');
+            const addressesContainer = document.getElementById('addressesContainer');
+
+            loadingSpinner.classList.remove('d-none');
+            emptyState.classList.add('d-none');
+            addressesContainer.innerHTML = '';
+
+            try {
+                // Simular carga de datos (reemplazar con llamada real al backend)
+                // const response = await AddressService.getAddresses();
+                // addresses = response.data;
+                
+                // Mock data para pruebas
+                addresses = [
+                    {
+                        id: 1,
+                        addressName: 'Casa',
+                        recipientName: 'Juan Pérez',
+                        street: 'Av. Providencia',
+                        number: '1234',
+                        apartment: 'Depto 501',
+                        commune: 'Providencia',
+                        city: 'Santiago',
+                        region: 'Región Metropolitana',
+                        phone: '+56 9 1234 5678',
+                        postalCode: '7500000',
+                        reference: 'Edificio azul, frente al metro',
+                        isDefault: true
+                    }
+                ];
+
+                loadingSpinner.classList.add('d-none');
+
+                if (addresses.length === 0) {
+                    emptyState.classList.remove('d-none');
+                } else {
+                    renderAddresses();
+                }
+            } catch (error) {
+                console.error('Error al cargar direcciones:', error);
+                loadingSpinner.classList.add('d-none');
+                alert('Error al cargar las direcciones');
+            }
+        }
+
+        // Función para renderizar direcciones
+        function renderAddresses() {
+            const container = document.getElementById('addressesContainer');
+            container.innerHTML = '';
+
+            addresses.forEach(address => {
+                const addressCard = createAddressCard(address);
+                container.appendChild(addressCard);
+            });
+        }
+
+        // Función para crear tarjeta de dirección
+        function createAddressCard(address) {
+            const col = document.createElement('div');
+            col.className = 'col-md-6 col-lg-4';
+
+            const fullAddress = `${address.street} ${address.number}${address.apartment ? ', ' + address.apartment : ''}, ${address.commune}, ${address.city}`;
+
+            col.innerHTML = `
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-geo-alt-fill me-1"></i>
+                                ${address.addressName}
+                            </h5>
+                            ${address.isDefault ? '<span class="badge bg-primary">Predeterminada</span>' : ''}
+                        </div>
+                        <p class="card-text mb-2">
+                            <strong>${address.recipientName}</strong>
+                        </p>
+                        <p class="card-text text-muted mb-2">
+                            ${fullAddress}
+                        </p>
+                        <p class="card-text text-muted mb-2">
+                            <i class="bi bi-telephone me-1"></i>
+                            ${address.phone}
+                        </p>
+                        ${address.reference ? `<p class="card-text text-muted small mb-3">${address.reference}</p>` : ''}
+                        <div class="d-flex gap-2">
+                            <button 
+                                class="btn btn-sm btn-outline-primary flex-fill" 
+                                onclick="editAddress(${address.id})"
+                            >
+                                <i class="bi bi-pencil me-1"></i>
+                                Editar
+                            </button>
+                            <button 
+                                class="btn btn-sm btn-outline-danger" 
+                                onclick="confirmDeleteAddress(${address.id})"
+                            >
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return col;
+        }
+
+        // Función para abrir modal en modo crear
+        window.openAddressModal = function() {
+            currentAddressId = null;
+            document.getElementById('addressModalLabel').textContent = 'Nueva Dirección';
+            document.getElementById('addressForm').reset();
+            document.getElementById('addressForm').classList.remove('was-validated');
+        };
+
+        // Función para editar dirección
+        window.editAddress = function(id) {
+            currentAddressId = id;
+            const address = addresses.find(a => a.id === id);
+            
+            if (!address) return;
+
+            document.getElementById('addressModalLabel').textContent = 'Editar Dirección';
+            document.getElementById('addressId').value = address.id;
+            document.getElementById('addressName').value = address.addressName;
+            document.getElementById('recipientName').value = address.recipientName;
+            document.getElementById('street').value = address.street;
+            document.getElementById('number').value = address.number;
+            document.getElementById('apartment').value = address.apartment || '';
+            document.getElementById('commune').value = address.commune;
+            document.getElementById('city').value = address.city;
+            document.getElementById('region').value = address.region;
+            document.getElementById('phone').value = address.phone;
+            document.getElementById('postalCode').value = address.postalCode || '';
+            document.getElementById('reference').value = address.reference || '';
+            document.getElementById('isDefault').checked = address.isDefault;
+
+            const modal = new bootstrap.Modal(document.getElementById('addressModal'));
+            modal.show();
+        };
+
+        // Función para confirmar eliminación
+        window.confirmDeleteAddress = function(id) {
+            addressToDelete = id;
+            const modal = new bootstrap.Modal(document.getElementById('deleteAddressModal'));
+            modal.show();
+        };
+
+        // Submit formulario de dirección
+        const addressForm = document.getElementById('addressForm');
+        addressForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!addressForm.checkValidity()) {
+                e.stopPropagation();
+                addressForm.classList.add('was-validated');
+                return;
+            }
+
+            const formData = {
+                id: currentAddressId,
+                addressName: document.getElementById('addressName').value,
+                recipientName: document.getElementById('recipientName').value,
+                street: document.getElementById('street').value,
+                number: document.getElementById('number').value,
+                apartment: document.getElementById('apartment').value,
+                commune: document.getElementById('commune').value,
+                city: document.getElementById('city').value,
+                region: document.getElementById('region').value,
+                phone: document.getElementById('phone').value,
+                postalCode: document.getElementById('postalCode').value,
+                reference: document.getElementById('reference').value,
+                isDefault: document.getElementById('isDefault').checked
+            };
+
+            try {
+                // Llamar al servicio (descomentar cuando esté disponible)
+                // const response = currentAddressId 
+                //     ? await AddressService.updateAddress(currentAddressId, formData)
+                //     : await AddressService.createAddress(formData);
+
+                // Mock success
+                console.log('Guardando dirección:', formData);
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addressModal'));
+                modal.hide();
+                
+                // Recargar direcciones
+                await loadAddresses();
+                
+                alert(currentAddressId ? 'Dirección actualizada' : 'Dirección creada exitosamente');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al guardar la dirección');
+            }
+        });
+
+        // Confirmar eliminación
+        document.getElementById('confirmDeleteAddress').addEventListener('click', async function() {
+            if (!addressToDelete) return;
+
+            try {
+                // Llamar al servicio (descomentar cuando esté disponible)
+                // await AddressService.deleteAddress(addressToDelete);
+
+                console.log('Eliminando dirección:', addressToDelete);
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteAddressModal'));
+                modal.hide();
+                
+                // Recargar direcciones
+                await loadAddresses();
+                
+                alert('Dirección eliminada exitosamente');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al eliminar la dirección');
+            }
+        });
+
+        // Cargar direcciones al inicio
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAddresses();
+        });
+    </script>
+</body>
+</html>
