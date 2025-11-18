@@ -1,139 +1,75 @@
-// API Configuration
-export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
-  TIMEOUT: 30000,
-  HEADERS: {
-    'Content-Type': 'application/json'
-  }
-};
+// ============================================
+// CONFIGURACIÓN GLOBAL DEL PROYECTO
+// ============================================
 
-// App Configuration
-export const APP_CONFIG = {
-  APP_NAME: 'MarAzul',
-  APP_VERSION: '1.0.0',
-  CURRENCY: 'CLP',
-  CURRENCY_SYMBOL: '$',
-  LOCALE: 'es-CL',
-  ITEMS_PER_PAGE: 12,
-  MAX_CART_ITEMS: 50
-};
+// URLs base
+export const BASE_PATH = '/MARAZUL/MARAZUL';
+export const API_BASE_URL = 'http://localhost:5000/api';
 
-// Storage Keys
-export const STORAGE_KEYS = {
-  AUTH_TOKEN: 'marazul_auth_token',
-  USER: 'marazul_user',
-  CART: 'marazul_cart',
-  WISHLIST: 'marazul_wishlist',
-  THEME: 'marazul_theme',
-  LANGUAGE: 'marazul_language'
-};
-
-// Routes
+// Rutas de la aplicación
 export const ROUTES = {
-  HOME: '/index.html',
-  LOGIN: '/pages/login.html',
-  REGISTER: '/pages/registro.html',
-  PROFILE: '/pages/ajustes.html',
-  CART: '/pages/carrito.html',
-  CHECKOUT: '/pages/checkout.html',
-  ORDERS: '/pages/historial.html',
-  PRODUCT_DETAIL: '/pages/producto-detalle.html',
-  CONTACT: '/pages/contacto.html',
-  ABOUT: '/pages/quienes-somos.html'
+  HOME: `${BASE_PATH}/index.html`,
+  LOGIN: `${BASE_PATH}/components/login.html`,
+  REGISTRO: `${BASE_PATH}/components/registro.html`,
+  HISTORIAL: `${BASE_PATH}/components/historial.html`,
+  AJUSTES: `${BASE_PATH}/components/ajustes.html`,
+  CONTACTO: `${BASE_PATH}/components/contacto.html`,
+  QUIENES_SOMOS: `${BASE_PATH}/components/quienes-somos.html`
 };
 
-// API Endpoints
+// Endpoints de la API
 export const API_ENDPOINTS = {
   // Auth
-  LOGIN: '/auth/login',
-  REGISTER: '/auth/register',
-  LOGOUT: '/auth/logout',
-  REFRESH_TOKEN: '/auth/refresh',
-  PROFILE: '/auth/profile',
+  LOGIN: `${API_BASE_URL}/auth/login`,
+  REGISTER: `${API_BASE_URL}/auth/register`,
+  LOGOUT: `${API_BASE_URL}/auth/logout`,
+  
+  // Users
+  USER_PROFILE: `${API_BASE_URL}/users/profile`,
+  UPDATE_PROFILE: `${API_BASE_URL}/users/profile`,
   
   // Products
-  PRODUCTS: '/products',
-  PRODUCT_BY_ID: (id) => `/products/${id}`,
-  PRODUCTS_BY_CATEGORY: (categoryId) => `/products/category/${categoryId}`,
-  PRODUCT_SEARCH: '/products/search',
+  PRODUCTS: `${API_BASE_URL}/products`,
+  FEATURED_PRODUCTS: `${API_BASE_URL}/products/featured`,
+  PRODUCT_BY_ID: (id) => `${API_BASE_URL}/products/${id}`,
   
   // Categories
-  CATEGORIES: '/categories',
-  CATEGORY_BY_ID: (id) => `/categories/${id}`,
+  CATEGORIES: `${API_BASE_URL}/categories`,
+  ACTIVE_CATEGORIES: `${API_BASE_URL}/categories/active`,
   
   // Cart
-  CART: '/cart',
-  CART_ADD: '/cart/add',
-  CART_UPDATE: '/cart/update',
-  CART_REMOVE: '/cart/remove',
-  CART_CLEAR: '/cart/clear',
+  CART: `${API_BASE_URL}/cart`,
+  ADD_TO_CART: `${API_BASE_URL}/cart/add`,
+  UPDATE_CART_ITEM: (id) => `${API_BASE_URL}/cart/items/${id}`,
+  REMOVE_FROM_CART: (id) => `${API_BASE_URL}/cart/items/${id}`,
   
   // Orders
-  ORDERS: '/orders',
-  ORDER_BY_ID: (id) => `/orders/${id}`,
-  CREATE_ORDER: '/orders/create',
+  ORDERS: `${API_BASE_URL}/orders`,
+  ORDER_BY_ID: (id) => `${API_BASE_URL}/orders/${id}`,
   
   // Addresses
-  ADDRESSES: '/addresses',
-  ADDRESS_BY_ID: (id) => `/addresses/${id}`,
+  ADDRESSES: `${API_BASE_URL}/addresses`,
+  ADDRESS_BY_ID: (id) => `${API_BASE_URL}/addresses/${id}`,
   
-  // Payments
-  PAYMENT_CREATE: '/payments/create',
-  PAYMENT_CONFIRM: '/payments/confirm'
+  // Banners
+  ACTIVE_BANNERS: `${API_BASE_URL}/banners/active`,
+  
+  // Contact
+  CONTACT: `${API_BASE_URL}/contact`
 };
 
-// Image placeholders
-export const PLACEHOLDERS = {
-  PRODUCT: '/assets/images/placeholder.jpg',
-  CATEGORY: '/assets/images/placeholder.jpg',
-  USER: 'https://ui-avatars.com/api/?name=Usuario&size=200&background=003366&color=fff'
+// Configuración del localStorage
+export const STORAGE_KEYS = {
+  USER: 'marazul_current_user',
+  TOKEN: 'marazul_token',
+  CART_COUNT: 'marazul_cart_count',
+  CART_ITEMS: 'marazul_cart_items'
 };
 
-// Validation Rules
-export const VALIDATION = {
-  EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  PHONE_REGEX: /^[0-9]{8,9}$/,
-  PASSWORD_MIN_LENGTH: 6,
-  NAME_MIN_LENGTH: 2,
-  NAME_MAX_LENGTH: 50
-};
-
-// Date Formats
-export const DATE_FORMATS = {
-  SHORT: 'DD/MM/YYYY',
-  LONG: 'DD [de] MMMM [de] YYYY',
-  TIME: 'HH:mm',
-  DATETIME: 'DD/MM/YYYY HH:mm'
-};
-
-// Order Status
-export const ORDER_STATUS = {
-  PENDING_PAYMENT: 'pending_payment',
-  PAID: 'paid',
-  PROCESSING: 'processing',
-  SHIPPED: 'shipped',
-  DELIVERED: 'delivered',
-  CANCELLED: 'cancelled',
-  REFUNDED: 'refunded'
-};
-
-// Payment Methods
-export const PAYMENT_METHODS = {
-  CREDIT_CARD: 'credit_card',
-  DEBIT_CARD: 'debit_card',
-  BANK_TRANSFER: 'bank_transfer',
-  CASH: 'cash'
-};
-
-export default {
-  API_CONFIG,
-  APP_CONFIG,
-  STORAGE_KEYS,
-  ROUTES,
-  API_ENDPOINTS,
-  PLACEHOLDERS,
-  VALIDATION,
-  DATE_FORMATS,
-  ORDER_STATUS,
-  PAYMENT_METHODS
+// Configuración general
+export const CONFIG = {
+  ITEMS_PER_PAGE: 12,
+  FEATURED_PRODUCTS_LIMIT: 6,
+  MAX_CART_QUANTITY: 99,
+  MIN_PASSWORD_LENGTH: 6
 };

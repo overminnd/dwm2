@@ -1,0 +1,157 @@
+<!-- Modal Universal de Producto -->
+<div class="modal fade" id="productoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="row g-0">
+          
+          <!-- Imagen (50%) -->
+          <div class="col-md-6 position-relative">
+            <img id="modalProductImg" 
+                 class="img-fluid w-100 h-100 object-fit-cover" 
+                 src="" 
+                 alt="Producto">
+            
+            <!-- Badge de stock (si hay poco stock) -->
+            <div id="modalStockBadge" 
+                 class="position-absolute top-0 end-0 m-3 badge bg-warning text-dark d-none">
+              <i class="bi bi-exclamation-triangle me-1"></i>
+              <span id="modalStockText">Últimas unidades</span>
+            </div>
+          </div>
+          
+          <!-- Panel derecho (50%) -->
+          <div class="col-md-6 p-4 d-flex flex-column bg-white">
+            
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="flex-grow-1">
+                <h5 id="modalProductTitle" class="mb-1"></h5>
+                <p id="modalProductCategory" class="text-muted small mb-0"></p>
+              </div>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Descripción -->
+            <p id="modalProductDesc" class="text-muted mb-3"></p>
+
+            <!-- Info adicional (peso, SKU) -->
+            <div id="modalProductInfo" class="mb-3 small d-none">
+              <div class="d-flex gap-3">
+                <span id="modalProductWeight" class="text-muted"></span>
+                <span id="modalProductSKU" class="text-muted"></span>
+              </div>
+            </div>
+
+            <!-- Precio unitario -->
+            <div class="mb-3">
+              <div class="fw-semibold small text-muted">Precio unitario:</div>
+              <div id="modalProductPrice" class="fs-5 fw-bold">$0</div>
+            </div>
+
+            <!-- Contador de cantidad -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Cantidad</label>
+              <div class="input-group w-50">
+                <button id="modalQtyMinus" 
+                        class="btn btn-outline-secondary" 
+                        type="button"
+                        aria-label="Disminuir cantidad">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <input id="modalQtyInput" 
+                       type="text" 
+                       class="form-control text-center" 
+                       value="1" 
+                       inputmode="numeric" 
+                       pattern="[0-9]*"
+                       aria-label="Cantidad">
+                <button id="modalQtyPlus" 
+                        class="btn btn-outline-secondary" 
+                        type="button"
+                        aria-label="Aumentar cantidad">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+              <div class="small text-muted mt-1">
+                Stock disponible: <span id="modalStockAvailable">0</span>
+              </div>
+            </div>
+
+            <!-- Footer: Total + Botón -->
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="small text-muted">Total</div>
+                  <div id="modalTotal" class="fw-bold fs-4 text-success">$0</div>
+                </div>
+                <button id="modalAddBtn" 
+                        class="btn btn-primary btn-lg" 
+                        type="button">
+                  <i class="bi bi-cart-plus me-2"></i>
+                  Agregar al carrito
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Búsqueda -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Buscar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="searchForm" class="mb-3">
+          <div class="input-group">
+            <input id="searchInput" 
+                   type="search" 
+                   class="form-control" 
+                   placeholder="Buscar producto o categoría..." 
+                   autocomplete="off">
+            <button class="btn btn-primary" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+
+        <!-- Resultados de búsqueda -->
+        <div id="searchResults" class="d-none">
+          <div class="list-group">
+            <!-- Los resultados se inyectarán aquí -->
+          </div>
+        </div>
+
+        <!-- Mensaje inicial -->
+        <div id="searchEmpty" class="small text-muted text-center py-3">
+          <i class="bi bi-search me-1"></i>
+          Escribe para buscar productos
+        </div>
+
+        <!-- Loading -->
+        <div id="searchLoading" class="text-center py-3 d-none">
+          <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Buscando...</span>
+          </div>
+        </div>
+
+        <!-- Sin resultados -->
+        <div id="searchNoResults" class="text-center py-3 d-none">
+          <i class="bi bi-inbox fs-3 text-muted"></i>
+          <p class="text-muted mb-0">No se encontraron productos</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

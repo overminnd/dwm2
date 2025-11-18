@@ -1,97 +1,280 @@
-import { APP_CONFIG, VALIDATION } from './config.js';
+// ============================================
+// UTILS - FUNCIONES AUXILIARES
+// ============================================
+
+// ============================================
+// FORMATO DE NÚMEROS Y MONEDA
+// ============================================
 
 /**
- * Format currency
+ * Formatea un número como precio en pesos chilenos
  */
-export function formatCurrency(amount) {
-  return new Intl.NumberFormat(APP_CONFIG.LOCALE, {
-    style: 'currency',
-    currency: APP_CONFIG.CURRENCY,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount);
+export function formatPrice(price) {
+  return `$${price.toLocaleString('es-CL')}`;
 }
 
 /**
- * Format date
+ * Formatea un número con separadores de miles
  */
-export function formatDate(date, format = 'short') {
+export function formatNumber(number) {
+  return number.toLocaleString('es-CL');
+}
+
+// ============================================
+// FORMATO DE FECHAS
+// ============================================
+
+/**
+ * Formatea una fecha a formato DD/MM/YYYY
+ */
+export function formatDate(date) {
   const d = new Date(date);
-  const options = {
-    short: { year: 'numeric', month: '2-digit', day: '2-digit' },
-    long: { year: 'numeric', month: 'long', day: 'numeric' },
-    time: { hour: '2-digit', minute: '2-digit' },
-    datetime: { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }
-  };
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+/**
+ * Formatea una fecha con hora
+ */
+export function formatDateTime(date) {
+  const d = new Date(date);
+  const dateStr = formatDate(date);
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  return `${dateStr} ${hours}:${minutes}`;
+}
+
+/**
+ * Obtiene tiempo relativo (hace 2 días, hace 1 hora, etc.)
+ */
+export function getRelativeTime(date) {
+  const now = new Date();
+  const diff = now - new Date(date);
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
   
-  return new Intl.DateTimeFormat(APP_CONFIG.LOCALE, options[format] || options.short).format(d);
+  if (days > 0) return `Hace ${days} día${days > 1 ? 's' : ''}`;
+  if (hours > 0) return `Hace ${hours} hora${hours > 1 ? 's' : ''}`;
+  if (minutes > 0) return `Hace ${minutes} minuto${minutes > 1 ? 's' : ''}`;
+  return 'Hace un momento';
+}
+
+// ============================================
+// VALIDACIÓN
+// ============================================
+
+/**
+ * Valida un email
+ */
+export function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
 /**
- * Validate email
+ * Valida un teléfono chileno (8 o 9 dígitos)
  */
-export function validateEmail(email) {
-  return VALIDATION.EMAIL_REGEX.test(email);
+export function isValidPhone(phone) {
+  const phoneRegex = /^[0-9]{8,9}$/;
+  return phoneRegex.test(phone.replace(/\s/g, ''));
 }
 
 /**
- * Validate phone
+ * Valida una contraseña (mínimo 6 caracteres)
  */
-export function validatePhone(phone) {
-  const cleanPhone = phone.replace(/\D/g, '');
-  return VALIDATION.PHONE_REGEX.test(cleanPhone);
+export function isValidPassword(password) {
+  return password && password.length >= 6;
 }
 
 /**
- * Validate password
+ * Valida un RUT chileno
  */
-export function validatePassword(password) {
-  return password && password.length >= VALIDATION.PASSWORD_MIN_LENGTH;
-}
-
-/**
- * Show alert message
- */
-export function showAlert(type, message, container = '#alert-container', duration = 5000) {
-  const alertContainer = document.querySelector(container);
-  if (!alertContainer) return;
+export function isValidRut(rut) {
+  // Remover puntos y guión
+  rut = rut.replace(/\./g, '').replace(/-/g, '');
   
-  const alertId = `alert-${Date.now()}`;
+  // Separar número y dígito verificador
+  const rutNum = rut.slice(0, -1);
+  const dv = rut.slice(-1).toUpperCase();
+  
+  // Calcular dígito verificador
+  let suma = 0;
+  let multiplo = 2;
+  
+  for (let i = rutNum.length - 1; i >= 0; i--) {
+    suma += parseInt(rutNum.charAt(i)) * multiplo;
+    multiplo = multiplo < 7 ? multiplo + 1 : 2;
+  }
+  
+  const dvEsperado = 11 - (suma % 11);
+  const dvFinal = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : String(dvEsperado);
+  
+  return dv === dvFinal;
+}
+
+// ============================================
+// MANIPULACIÓN DE STRINGS
+// ============================================
+
+/**
+ * Capitaliza la primera letra de un string
+ */
+export function capitalize(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+/**
+ * Trunca un texto a cierta longitud
+ */
+export function truncate(text, maxLength = 100) {
+  if (!text || text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+}
+
+/**
+ * Genera un slug a partir de un texto
+ */
+export function slugify(text) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-');
+}
+
+// ============================================
+// ALERTAS Y NOTIFICACIONES
+// ============================================
+
+/**
+ * Muestra una alerta de Bootstrap
+ */
+export function showAlert(containerId, message, type = 'info', dismissible = true) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
   const alertHTML = `
-    <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+    <div class="alert alert-${type} ${dismissible ? 'alert-dismissible' : ''} fade show" role="alert">
       ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      ${dismissible ? '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' : ''}
     </div>
   `;
   
-  alertContainer.insertAdjacentHTML('beforeend', alertHTML);
+  container.innerHTML = alertHTML;
   
-  if (duration > 0) {
+  // Auto-cerrar después de 5 segundos si es dismissible
+  if (dismissible) {
     setTimeout(() => {
-      const alert = document.getElementById(alertId);
+      const alert = container.querySelector('.alert');
       if (alert) {
         const bsAlert = new bootstrap.Alert(alert);
         bsAlert.close();
       }
-    }, duration);
+    }, 5000);
   }
 }
 
 /**
- * Validate form
+ * Muestra un toast (requiere Bootstrap 5)
  */
-export function validateForm(form) {
-  if (!form.checkValidity()) {
-    form.classList.add('was-validated');
-    return false;
-  }
-  return true;
+export function showToast(message, type = 'info') {
+  // TODO: Implementar sistema de toasts
+  console.log(`[Toast ${type}]:`, message);
+}
+
+// ============================================
+// LOADING STATES
+// ============================================
+
+/**
+ * Muestra un spinner de loading
+ */
+export function showLoading(elementId) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  
+  element.innerHTML = `
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  `;
 }
 
 /**
- * Debounce function
+ * Oculta el loading y muestra contenido
  */
-export function debounce(func, wait) {
+export function hideLoading(elementId) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  
+  element.innerHTML = '';
+}
+
+/**
+ * Deshabilita un botón y muestra spinner
+ */
+export function setButtonLoading(button, loading = true) {
+  if (!button) return;
+  
+  if (loading) {
+    button.disabled = true;
+    const originalText = button.querySelector('.btn-text');
+    const spinner = button.querySelector('.spinner-border');
+    
+    if (originalText) originalText.classList.add('d-none');
+    if (spinner) spinner.classList.remove('d-none');
+  } else {
+    button.disabled = false;
+    const originalText = button.querySelector('.btn-text');
+    const spinner = button.querySelector('.spinner-border');
+    
+    if (originalText) originalText.classList.remove('d-none');
+    if (spinner) spinner.classList.add('d-none');
+  }
+}
+
+// ============================================
+// SCROLL
+// ============================================
+
+/**
+ * Hace scroll suave a un elemento
+ */
+export function scrollToElement(elementId, offset = 0) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  
+  const y = element.getBoundingClientRect().top + window.pageYOffset + offset;
+  window.scrollTo({ top: y, behavior: 'smooth' });
+}
+
+/**
+ * Hace scroll al top de la página
+ */
+export function scrollToTop(smooth = true) {
+  window.scrollTo({
+    top: 0,
+    behavior: smooth ? 'smooth' : 'auto'
+  });
+}
+
+// ============================================
+// DEBOUNCE Y THROTTLE
+// ============================================
+
+/**
+ * Debounce - Ejecuta una función después de cierto tiempo de inactividad
+ */
+export function debounce(func, wait = 300) {
   let timeout;
   return function executedFunction(...args) {
     const later = () => {
@@ -104,9 +287,9 @@ export function debounce(func, wait) {
 }
 
 /**
- * Throttle function
+ * Throttle - Limita la frecuencia de ejecución de una función
  */
-export function throttle(func, limit) {
+export function throttle(func, limit = 300) {
   let inThrottle;
   return function(...args) {
     if (!inThrottle) {
@@ -117,191 +300,56 @@ export function throttle(func, limit) {
   };
 }
 
-/**
- * Get query parameter from URL
- */
-export function getQueryParam(param) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(param);
-}
+// ============================================
+// LOCAL STORAGE HELPERS
+// ============================================
 
 /**
- * Set query parameter in URL
+ * Guarda en localStorage de forma segura
  */
-export function setQueryParam(param, value) {
-  const url = new URL(window.location);
-  url.searchParams.set(param, value);
-  window.history.pushState({}, '', url);
-}
-
-/**
- * Remove query parameter from URL
- */
-export function removeQueryParam(param) {
-  const url = new URL(window.location);
-  url.searchParams.delete(param);
-  window.history.pushState({}, '', url);
-}
-
-/**
- * Scroll to top
- */
-export function scrollToTop(smooth = true) {
-  window.scrollTo({
-    top: 0,
-    behavior: smooth ? 'smooth' : 'auto'
-  });
-}
-
-/**
- * Scroll to element
- */
-export function scrollToElement(element, offset = 0) {
-  const el = typeof element === 'string' ? document.querySelector(element) : element;
-  if (el) {
-    const y = el.getBoundingClientRect().top + window.pageYOffset + offset;
-    window.scrollTo({ top: y, behavior: 'smooth' });
-  }
-}
-
-/**
- * Generate unique ID
- */
-export function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
-
-/**
- * Deep clone object
- */
-export function deepClone(obj) {
-  return JSON.parse(JSON.stringify(obj));
-}
-
-/**
- * Check if object is empty
- */
-export function isEmpty(obj) {
-  return Object.keys(obj).length === 0;
-}
-
-/**
- * Truncate text
- */
-export function truncate(text, length = 100, suffix = '...') {
-  if (text.length <= length) return text;
-  return text.substring(0, length).trim() + suffix;
-}
-
-/**
- * Capitalize first letter
- */
-export function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
-
-/**
- * Format file size
- */
-export function formatFileSize(bytes) {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-}
-
-/**
- * Check if element is in viewport
- */
-export function isInViewport(element) {
-  const rect = element.getBoundingClientRect();
-  return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  );
-}
-
-/**
- * Copy to clipboard
- */
-export async function copyToClipboard(text) {
+export function setStorage(key, value) {
   try {
-    await navigator.clipboard.writeText(text);
+    localStorage.setItem(key, JSON.stringify(value));
     return true;
-  } catch (err) {
-    console.error('Failed to copy:', err);
+  } catch (error) {
+    console.error('Error al guardar en localStorage:', error);
     return false;
   }
 }
 
 /**
- * Load image
+ * Obtiene de localStorage de forma segura
  */
-export function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
-
-/**
- * Handle API Error
- */
-export function handleApiError(error) {
-  console.error('API Error:', error);
-  
-  if (error.response) {
-    // Server responded with error
-    return {
-      success: false,
-      message: error.response.data?.message || 'Error en el servidor',
-      status: error.response.status
-    };
-  } else if (error.request) {
-    // Request made but no response
-    return {
-      success: false,
-      message: 'No se pudo conectar con el servidor',
-      status: 0
-    };
-  } else {
-    // Something else happened
-    return {
-      success: false,
-      message: error.message || 'Error desconocido',
-      status: 0
-    };
+export function getStorage(key, defaultValue = null) {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    console.error('Error al leer de localStorage:', error);
+    return defaultValue;
   }
 }
 
-export default {
-  formatCurrency,
-  formatDate,
-  validateEmail,
-  validatePhone,
-  validatePassword,
-  showAlert,
-  validateForm,
-  debounce,
-  throttle,
-  getQueryParam,
-  setQueryParam,
-  removeQueryParam,
-  scrollToTop,
-  scrollToElement,
-  generateId,
-  deepClone,
-  isEmpty,
-  truncate,
-  capitalize,
-  formatFileSize,
-  isInViewport,
-  copyToClipboard,
-  loadImage,
-  handleApiError
-};
+/**
+ * Elimina de localStorage
+ */
+export function removeStorage(key) {
+  try {
+    localStorage.removeItem(key);
+    return true;
+  } catch (error) {
+    console.error('Error al eliminar de localStorage:', error);
+    return false;
+  }
+}
+
+// ============================================
+// GENERADORES DE IDS
+// ============================================
+
+/**
+ * Genera un ID único
+ */
+export function generateId() {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
