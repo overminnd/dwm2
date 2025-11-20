@@ -157,17 +157,20 @@ function renderCategories(categories) {
     const bgColor = colors[category.nombre.toUpperCase()] || colors['default'];
     
     html += `
-      <div class="col-6 col-md-4">
-        <div class="card category-card h-100 border-0 shadow-sm" 
-             data-category-id="${category._id}"
-             style="cursor: pointer; transition: transform 0.2s;">
-          <div class="card-body text-center" style="background-color: ${bgColor}; color: white;">
-            <i class="fas fa-fish fa-2x mb-2"></i>
-            <h6 class="mb-0">${category.nombre}</h6>
-            ${category.descripcion ? `<p class="small mb-0 mt-1">${category.descripcion}</p>` : ''}
-          </div>
+        <div class="col-12 col-sm-6 col-md-4">
+            <a href="#${categoryId}"
+            class="text-decoration-none d-block"
+            data-cat="${categoryId}"
+            data-category-id="${category._id}"
+            role="button">
+            <div class="card text-white text-center h-100 shadow-sm" 
+                style="background-color:${bgColor};">
+                <div class="card-body d-flex flex-column justify-content-center p-3">
+                <h5 class="fw-bold m-0">${category.nombre.toUpperCase()}</h5>
+                </div>
+            </div>
+            </a>
         </div>
-      </div>
     `;
   });
   
@@ -348,38 +351,41 @@ function createProductCard(product, horizontal = false) {
   if (horizontal) {
     // Card horizontal para catálogo
     return `
-      <div class="col-12">
-        <div class="card product-card h-100 border-0 shadow-sm ${!disponible ? 'opacity-75' : ''}">
-          <div class="row g-0">
-            <div class="col-4">
-              <img src="${imageUrl}" 
-                   class="img-fluid rounded-start h-100 object-fit-cover" 
-                   alt="${product.nombre}"
-                   style="max-height: 180px;">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm producto-card"
+           role="button"
+           data-product-id="${product._id}"
+           data-title="${product.nombre}"
+           data-short-desc="${product.descripcion || ''}"
+           data-full-desc="${product.descripcionLarga || product.descripcion}"
+           data-price="${product.precio}"
+           data-img="${product.imagen}">
+        
+        <div class="row g-0 h-100">
+          <div class="col-5">
+            <img src="${product.imagen}"
+                 class="img-fluid h-100 rounded-start object-fit-cover" 
+                 alt="${product.nombre}">
+          </div>
+          
+          <div class="col-7 d-flex flex-column justify-content-between p-3">
+            <div>
+              <h5 class="fw-bold mb-1 producto-title">${product.nombre}</h5>
+              <p class="mb-2 small producto-short-desc">${product.descripcion}</p>
             </div>
-            <div class="col-8">
-              <div class="card-body d-flex flex-column h-100">
-                <h6 class="card-title mb-2">${product.nombre}</h6>
-                <p class="card-text text-muted small mb-2">${product.descripcion || 'Producto fresco del mar'}</p>
-                <div class="mt-auto">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span class="h5 mb-0 text-success">${formatPrice(product.precio)}</span>
-                    ${disponible ? `
-                      <button class="btn btn-primary btn-sm rounded-circle btn-add-to-cart" 
-                              data-product-id="${product._id}"
-                              style="width: 36px; height: 36px;">
-                        <i class="fas fa-plus"></i>
-                      </button>
-                    ` : `
-                      <span class="badge bg-secondary">Agotado</span>
-                    `}
-                  </div>
-                </div>
-              </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span class="fw-bold text-success producto-precio" data-price="${product.precio}">
+                $${formatPrice(product.precio)}
+              </span>
+              <button class="btn btn-light rounded-circle btn-sm add-to-cart" 
+                      data-product-id="${product._id}"
+                      aria-label="Agregar rápido">+</button>
             </div>
           </div>
         </div>
       </div>
+    </div>
     `;
   } else {
     // Card vertical para destacados
