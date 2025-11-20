@@ -1,0 +1,27 @@
+<!-- ==========================================
+     PRODUCTOS DESTACADOS - Template dinámico
+     Se pobla desde /api/products/featured
+     ========================================== -->
+<section class="productos-destacados py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">Productos Destacados</h2>
+
+    <!-- Loading state -->
+    <div id="featuredLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando productos...</span>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div id="featuredError" class="alert alert-danger d-none" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <span>Error al cargar productos destacados.</span>
+    </div>
+
+    <!-- Grid de productos - se inyectan dinámicamente -->
+    <div id="featuredProducts" class="row g-4 d-none">
+      <!-- Los productos se cargarán aquí con JavaScript -->
+    </div>
+  </div>
+</section>

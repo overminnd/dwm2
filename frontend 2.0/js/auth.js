@@ -204,18 +204,18 @@ export function initPage(options = {}) {
     if (!requireAuth()) return;
   }
 
-  // Cargar header
+  // Cargar header - RUTA ABSOLUTA
   if (loadHeader) {
-    const headerPath = options.headerPath || '../components/header.html';
+    const headerPath = options.headerPath || '/MARAZUL/MARAZUL/frontend 2.0/components/header.html';
     loadComponent('header-container', headerPath, () => {
       initHeader();
       updateCartBadge();
     });
   }
 
-  // Cargar carrito
+  // Cargar carrito - RUTA ABSOLUTA
   if (loadCarrito) {
-    const carritoPath = options.carritoPath || '../components/carrito.html';
+    const carritoPath = options.carritoPath || '/MARAZUL/MARAZUL/frontend 2.0/components/carrito.html';
     loadComponent('carrito-container', carritoPath, () => {
       // Aquí se pueden agregar más inicializaciones del carrito
     });

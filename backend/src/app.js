@@ -24,10 +24,18 @@ const app = express();
 
 // Middlewares
 app.use(helmet());
+
+// CORS - Permitir múltiples orígenes
 app.use(cors({
-  origin: config.frontendUrl,
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
+    config.frontendUrl // Mantener el original también
+  ].filter(Boolean), // Filtrar undefined si config.frontendUrl no existe
   credentials: true
 }));
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

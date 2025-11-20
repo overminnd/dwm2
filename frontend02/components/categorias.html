@@ -1,0 +1,28 @@
+<!-- ==========================================
+     CATEGORÍAS COMPONENT - Template dinámico
+     Se pobla desde /api/categories/active
+     ========================================== -->
+<section class="categorias py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">CATEGORÍAS</h2>
+    
+    <!-- Loading state -->
+    <div id="categoriesLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando categorías...</span>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div id="categoriesError" class="alert alert-danger d-none" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <span>Error al cargar categorías.</span>
+      <button class="btn btn-sm btn-link" onclick="location.reload()">Reintentar</button>
+    </div>
+
+    <!-- Grid de categorías - se inyectan dinámicamente -->
+    <div id="categoriesGrid" class="row g-3 d-none">
+      <!-- Las categorías se cargarán aquí con JavaScript -->
+    </div>
+  </div>
+</section>

@@ -3,7 +3,7 @@
 // ============================================
 
 // URLs base
-export const BASE_PATH = '/MARAZUL/MARAZUL';
+export const BASE_PATH = '/MARAZUL/MARAZUL/frontend 2.0';
 export const API_BASE_URL = 'http://localhost:5000/api';
 
 // Rutas de la aplicación

@@ -1,0 +1,28 @@
+<!-- ==========================================
+     CATÁLOGO COMPLETO - Template dinámico
+     Se pobla con productos organizados por categoría
+     ========================================== -->
+<section id="catalogo" class="productos-catalogo py-5">
+  <div class="container">
+
+    <!-- Loading state -->
+    <div id="catalogoLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando catálogo...</span>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div id="catalogoError" class="alert alert-danger d-none" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <span>Error al cargar catálogo.</span>
+    </div>
+
+    <!-- Secciones de categorías - se inyectan dinámicamente -->
+    <div id="catalogoSections">
+      <!-- Cada categoría será una sección con sus productos -->
+      <!-- Se cargarán dinámicamente desde JavaScript -->
+    </div>
+
+  </div>
+</section>

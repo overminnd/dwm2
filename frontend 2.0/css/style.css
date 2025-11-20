@@ -1,0 +1,297 @@
+/* ========================================
+   MARAZUL - ESTILOS PERSONALIZADOS
+   ======================================== */
+
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ================= HEADER ================= */
+.header {
+  background-color: #003366 !important;  /* Azul corporativo - FORZADO */
+  color: #fff !important;
+  padding: 15px 0;
+  border-bottom: 1px solid #000;
+}
+
+/* Logo como ícono */
+.logo-icon i {
+  font-size: 2rem;
+  color: #fff !important;
+  transition: color 0.3s ease;
+}
+
+.logo-icon:hover i {
+  color: #1d82b1 !important;
+}
+
+/* Íconos del header */
+.header .header-icon i {
+  color: #fff !important;
+}
+
+.header .header-icon:hover i {
+  color: #1d82b1 !important;
+}
+
+/* Links dentro del header */
+.header .nav-link {
+  color: #fff !important;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.header .nav-link:hover {
+  color: #1d82b1 !important;
+}
+
+/* Botones outline dentro del header */
+.header .btn-outline-dark {
+  color: #fff !important;
+  border-color: #fff !important;
+  transition: all 0.3s ease;
+}
+
+.header .btn-outline-dark:hover {
+  background-color: #fff !important;
+  color: #003366 !important;
+  border-color: #fff !important;
+}
+
+/* Badge carrito en header */
+.header .position-relative .badge {
+  font-size: 0.6rem;
+}
+
+.header .cart-badge {
+  font-size: 0.7rem;
+  padding: 0.25em 0.5em;
+}
+
+/* Offcanvas móvil del header */
+.header .offcanvas {
+  background-color: #003366;
+  color: #fff;
+}
+
+.header .offcanvas-title {
+  color: #fff;
+}
+
+.header .offcanvas-body a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.header .offcanvas-body a:hover {
+  color: #1d82b1;
+}
+
+/* Dropdown del usuario */
+.header .dropdown-menu {
+  background-color: #fff;
+}
+
+.header .dropdown-item {
+  color: #333;
+}
+
+.header .dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.header .dropdown-header {
+  color: #666;
+}
+
+/* ================= CARRUSEL ================= */
+#carouselOfertas .carousel-item {
+  height: 320px;
+}
+
+#carouselOfertas img {
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Responsividad carrusel */
+@media (max-width: 768px) {
+  #carouselOfertas .carousel-item {
+    height: 220px;
+  }
+}
+
+@media (min-width: 1200px) {
+  #carouselOfertas .carousel-item {
+    height: 400px;
+  }
+}
+
+/* ================= MODAL ================= */
+.modal-6col {
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .modal-6col {
+    max-width: 50%;
+  }
+}
+
+/* ================= PRODUCTOS ================= */
+.producto-card {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.producto-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.producto-title {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+
+.producto-desc,
+.producto-short-desc {
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+}
+
+.producto-precio {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+/* Botón agregar rápido */
+.add-to-cart {
+  transition: all 0.3s ease;
+}
+
+.add-to-cart:hover {
+  transform: scale(1.1);
+  background-color: #4CAF50 !important;
+  color: white !important;
+}
+
+/* ================= CATEGORÍAS ================= */
+.categorias .card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 100px;
+}
+
+.categorias .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25) !important;
+}
+
+/* ================= CARRITO OFFCANVAS ================= */
+#carritoOffcanvas .offcanvas-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-item {
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem 0;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+/* ================= UTILIDADES ================= */
+.object-fit-cover {
+  object-fit: cover;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ================= FOOTER ================= */
+footer {
+  background-color: #212529;
+  color: #fff;
+  padding: 2rem 0;
+  margin-top: auto;
+}
+
+footer a {
+  color: #fff;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #1d82b1;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 0;
+  }
+  
+  .logo-icon i {
+    font-size: 1.5rem;
+  }
+  
+  .header .btn-outline-dark {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* ================= ANIMACIONES ================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* ================= ACCESIBILIDAD ================= */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ================= PRINT ================= */
+@media print {
+  .header,
+  .carrito,
+  .modal {
+    display: none;
+  }
+}

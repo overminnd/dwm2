@@ -1,5 +1,5 @@
 // ============================================
-// API - LLAMADAS AL BACKEND
+// API - LLAMADAS AL BACKEND CON JQUERY
 // ============================================
 
 import { API_ENDPOINTS, STORAGE_KEYS } from './config.js';
@@ -9,359 +9,314 @@ import { API_ENDPOINTS, STORAGE_KEYS } from './config.js';
 // ============================================
 
 /**
- * Obtiene el token de autenticación
+ * Obtiene el token JWT del localStorage
  */
 function getAuthToken() {
   return localStorage.getItem(STORAGE_KEYS.TOKEN);
 }
 
 /**
- * Headers por defecto para las peticiones
+ * Obtiene headers con autenticación
  */
-function getHeaders(includeAuth = true) {
-  const headers = {
-    'Content-Type': 'application/json'
+function getAuthHeaders() {
+  const token = getAuthToken();
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` })
   };
-  
-  if (includeAuth) {
-    const token = getAuthToken();
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-  }
-  
-  return headers;
-}
-
-/**
- * Maneja errores de la API
- */
-function handleApiError(error) {
-  console.error('API Error:', error);
-  throw error;
 }
 
 // ============================================
-// AUTH
+// AUTENTICACIÓN
 // ============================================
 
 /**
  * Login de usuario
  */
-export async function login(email, password) {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(API_ENDPOINTS.LOGIN, {
-    //   method: 'POST',
-    //   headers: getHeaders(false),
-    //   body: JSON.stringify({ email, password })
-    // });
-    
-    // SIMULACIÓN - Eliminar cuando se conecte al backend
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const mockUser = {
-          id: '1',
-          email: email,
-          name: 'Usuario Demo',
-          token: 'mock-token-123'
-        };
-        resolve({ success: true, data: mockUser });
-      }, 500);
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function login(email, password) {
+  return $.ajax({
+    url: API_ENDPOINTS.LOGIN,
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ email, password })
+  });
 }
 
 /**
  * Registro de usuario
  */
-export async function register(userData) {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(API_ENDPOINTS.REGISTER, {
-    //   method: 'POST',
-    //   headers: getHeaders(false),
-    //   body: JSON.stringify(userData)
-    // });
-    
-    // SIMULACIÓN
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ 
-          success: true, 
-          data: { 
-            id: '1', 
-            email: userData.email,
-            name: userData.firstName 
-          } 
-        });
-      }, 500);
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function register(userData) {
+  return $.ajax({
+    url: API_ENDPOINTS.REGISTER,
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(userData)
+  });
+}
+
+/**
+ * Logout de usuario
+ */
+export function logout() {
+  return $.ajax({
+    url: API_ENDPOINTS.LOGOUT,
+    method: 'POST',
+    headers: getAuthHeaders()
+  });
 }
 
 // ============================================
-// PRODUCTS
+// PRODUCTOS
 // ============================================
+
+/**
+ * Obtiene todos los productos
+ */
+export function getProducts(params = {}) {
+  return $.ajax({
+    url: API_ENDPOINTS.PRODUCTS,
+    method: 'GET',
+    data: params
+  });
+}
 
 /**
  * Obtiene productos destacados
  */
-export async function getFeaturedProducts(limit = 6) {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(`${API_ENDPOINTS.FEATURED_PRODUCTS}?limit=${limit}`);
-    // return await response.json();
-    
-    // SIMULACIÓN
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const mockProducts = [
-          {
-            _id: '1',
-            name: 'Filete de Salmón',
-            shortDescription: 'Fresco del día',
-            price: 8990,
-            mainImage: 'https://picsum.photos/seed/salmon/400/300',
-            stock: 15,
-            category: { name: 'Pescado' }
-          },
-          {
-            _id: '2',
-            name: 'Merluza Austral',
-            shortDescription: 'Premium',
-            price: 5990,
-            mainImage: 'https://picsum.photos/seed/merluza/400/300',
-            stock: 20,
-            category: { name: 'Pescado' }
-          },
-          {
-            _id: '3',
-            name: 'Camarones Grandes',
-            shortDescription: 'Por kilo',
-            price: 12990,
-            mainImage: 'https://picsum.photos/seed/camarones/400/300',
-            stock: 10,
-            category: { name: 'Mariscos' }
-          }
-        ];
-        resolve({ success: true, data: mockProducts });
-      }, 300);
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function getFeaturedProducts(limit = 6) {
+  return $.ajax({
+    url: API_ENDPOINTS.FEATURED_PRODUCTS,
+    method: 'GET',
+    data: { limit }
+  });
 }
 
 /**
- * Obtiene todas las categorías activas
+ * Obtiene un producto por ID
  */
-export async function getActiveCategories() {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(API_ENDPOINTS.ACTIVE_CATEGORIES);
-    // return await response.json();
-    
-    // SIMULACIÓN
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const mockCategories = [
-          { _id: '1', name: 'Pescado', slug: 'pescado', isActive: true },
-          { _id: '2', name: 'Mariscos', slug: 'mariscos', isActive: true },
-          { _id: '3', name: 'Congelados', slug: 'congelados', isActive: true }
-        ];
-        resolve({ success: true, data: mockCategories });
-      }, 300);
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function getProductById(id) {
+  return $.ajax({
+    url: API_ENDPOINTS.PRODUCT_BY_ID(id),
+    method: 'GET'
+  });
 }
 
 // ============================================
-// CART
+// CATEGORÍAS
 // ============================================
 
 /**
- * Obtiene el carrito actual
+ * Obtiene todas las categorías
  */
-export async function getCart() {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(API_ENDPOINTS.CART, {
-    //   headers: getHeaders()
-    // });
-    // return await response.json();
-    
-    // SIMULACIÓN - usar localStorage
-    const cartItems = JSON.parse(localStorage.getItem(STORAGE_KEYS.CART_ITEMS) || '[]');
-    return { success: true, data: { items: cartItems } };
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function getCategories() {
+  return $.ajax({
+    url: API_ENDPOINTS.CATEGORIES,
+    method: 'GET'
+  });
+}
+
+/**
+ * Obtiene categorías activas
+ */
+export function getActiveCategories() {
+  return $.ajax({
+    url: API_ENDPOINTS.ACTIVE_CATEGORIES,
+    method: 'GET'
+  });
+}
+
+// ============================================
+// CARRITO
+// ============================================
+
+/**
+ * Obtiene el carrito del usuario
+ */
+export function getCart() {
+  return $.ajax({
+    url: API_ENDPOINTS.CART,
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
 }
 
 /**
  * Agrega un producto al carrito
  */
-export async function addToCart(productId, quantity) {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(API_ENDPOINTS.ADD_TO_CART, {
-    //   method: 'POST',
-    //   headers: getHeaders(),
-    //   body: JSON.stringify({ productId, quantity })
-    // });
-    // return await response.json();
-    
-    // SIMULACIÓN - usar localStorage
-    const cartItems = JSON.parse(localStorage.getItem(STORAGE_KEYS.CART_ITEMS) || '[]');
-    const existingIndex = cartItems.findIndex(item => item.productId === productId);
-    
-    if (existingIndex >= 0) {
-      cartItems[existingIndex].quantity += quantity;
-    } else {
-      cartItems.push({ productId, quantity });
-    }
-    
-    localStorage.setItem(STORAGE_KEYS.CART_ITEMS, JSON.stringify(cartItems));
-    localStorage.setItem(STORAGE_KEYS.CART_COUNT, cartItems.length.toString());
-    
-    return { success: true, data: { items: cartItems } };
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function addToCart(productId, quantity = 1) {
+  return $.ajax({
+    url: API_ENDPOINTS.ADD_TO_CART,
+    method: 'POST',
+    headers: getAuthHeaders(),
+    data: JSON.stringify({ productId, quantity })
+  });
+}
+
+/**
+ * Actualiza la cantidad de un item del carrito
+ */
+export function updateCartItem(itemId, quantity) {
+  return $.ajax({
+    url: API_ENDPOINTS.UPDATE_CART_ITEM(itemId),
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    data: JSON.stringify({ quantity })
+  });
+}
+
+/**
+ * Elimina un item del carrito
+ */
+export function removeFromCart(itemId) {
+  return $.ajax({
+    url: API_ENDPOINTS.REMOVE_FROM_CART(itemId),
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
 }
 
 // ============================================
-// ORDERS
+// ÓRDENES
 // ============================================
 
 /**
  * Obtiene las órdenes del usuario
  */
-export async function getOrders(page = 1, limit = 10) {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(`${API_ENDPOINTS.ORDERS}?page=${page}&limit=${limit}`, {
-    //   headers: getHeaders()
-    // });
-    // return await response.json();
-    
-    // SIMULACIÓN
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ 
-          success: true, 
-          data: {
-            orders: [],
-            totalPages: 0,
-            currentPage: page
-          }
-        });
-      }, 300);
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function getOrders(page = 1, limit = 10) {
+  return $.ajax({
+    url: API_ENDPOINTS.ORDERS,
+    method: 'GET',
+    headers: getAuthHeaders(),
+    data: { page, limit }
+  });
+}
+
+/**
+ * Obtiene una orden por ID
+ */
+export function getOrderById(orderId) {
+  return $.ajax({
+    url: API_ENDPOINTS.ORDER_BY_ID(orderId),
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
+}
+
+/**
+ * Crea una nueva orden
+ */
+export function createOrder(orderData) {
+  return $.ajax({
+    url: API_ENDPOINTS.ORDERS,
+    method: 'POST',
+    headers: getAuthHeaders(),
+    data: JSON.stringify(orderData)
+  });
 }
 
 // ============================================
-// USER PROFILE
+// PERFIL DE USUARIO
 // ============================================
 
 /**
  * Obtiene el perfil del usuario
  */
-export async function getUserProfile() {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(API_ENDPOINTS.USER_PROFILE, {
-    //   headers: getHeaders()
-    // });
-    // return await response.json();
-    
-    // SIMULACIÓN
-    const user = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER) || 'null');
-    return { success: true, data: user };
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function getUserProfile() {
+  return $.ajax({
+    url: API_ENDPOINTS.USER_PROFILE,
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
 }
 
 /**
  * Actualiza el perfil del usuario
  */
-export async function updateUserProfile(profileData) {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(API_ENDPOINTS.UPDATE_PROFILE, {
-    //   method: 'PUT',
-    //   headers: getHeaders(),
-    //   body: JSON.stringify(profileData)
-    // });
-    // return await response.json();
-    
-    // SIMULACIÓN
-    const user = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER) || '{}');
-    const updatedUser = { ...user, ...profileData };
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updatedUser));
-    return { success: true, data: updatedUser };
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function updateUserProfile(profileData) {
+  return $.ajax({
+    url: API_ENDPOINTS.UPDATE_PROFILE,
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    data: JSON.stringify(profileData)
+  });
 }
 
 // ============================================
-// ADDRESSES
+// DIRECCIONES
 // ============================================
 
 /**
  * Obtiene las direcciones del usuario
  */
-export async function getAddresses() {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(API_ENDPOINTS.ADDRESSES, {
-    //   headers: getHeaders()
-    // });
-    // return await response.json();
-    
-    // SIMULACIÓN
-    return { success: true, data: [] };
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function getAddresses() {
+  return $.ajax({
+    url: API_ENDPOINTS.ADDRESSES,
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
+}
+
+/**
+ * Crea una nueva dirección
+ */
+export function createAddress(addressData) {
+  return $.ajax({
+    url: API_ENDPOINTS.ADDRESSES,
+    method: 'POST',
+    headers: getAuthHeaders(),
+    data: JSON.stringify(addressData)
+  });
+}
+
+/**
+ * Actualiza una dirección
+ */
+export function updateAddress(addressId, addressData) {
+  return $.ajax({
+    url: API_ENDPOINTS.ADDRESS_BY_ID(addressId),
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    data: JSON.stringify(addressData)
+  });
+}
+
+/**
+ * Elimina una dirección
+ */
+export function deleteAddress(addressId) {
+  return $.ajax({
+    url: API_ENDPOINTS.ADDRESS_BY_ID(addressId),
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
 }
 
 // ============================================
-// CONTACT
+// BANNERS
+// ============================================
+
+/**
+ * Obtiene los banners activos
+ */
+export function getActiveBanners() {
+  return $.ajax({
+    url: API_ENDPOINTS.ACTIVE_BANNERS,
+    method: 'GET'
+  });
+}
+
+// ============================================
+// CONTACTO
 // ============================================
 
 /**
  * Envía un mensaje de contacto
  */
-export async function sendContactMessage(messageData) {
-  try {
-    // TODO: Conectar con backend real
-    // const response = await fetch(API_ENDPOINTS.CONTACT, {
-    //   method: 'POST',
-    //   headers: getHeaders(false),
-    //   body: JSON.stringify(messageData)
-    // });
-    // return await response.json();
-    
-    // SIMULACIÓN
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ success: true, message: 'Mensaje enviado correctamente' });
-      }, 500);
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
+export function sendContactMessage(messageData) {
+  return $.ajax({
+    url: API_ENDPOINTS.CONTACT,
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(messageData)
+  });
 }

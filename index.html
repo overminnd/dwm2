@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarAzul - Mariscos Frescos a tu Puerta</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- CSS personalizado -->
+  <link rel="stylesheet" href="/MARAZUL/MARAZUL/frontend02/css/style.css">
+</head>
+<body>
+
+  <!-- ==================== HEADER ==================== -->
+  <!-- Header cargado dinámicamente -->
+  <div id="header-container"></div>
+
+  <!-- ==================== CARRUSEL ==================== -->
+  <!-- Carrusel cargado dinámicamente -->
+  <div id="carrusel-container"></div>
+
+  <!-- ==================== CATEGORÍAS ==================== -->
+  <!-- Categorías cargadas dinámicamente -->
+  <div id="categorias-container"></div>
+
+  <!-- ==================== PRODUCTOS DESTACADOS ==================== -->
+  <!-- Productos destacados cargados dinámicamente -->
+  <div id="productos-container"></div>
+
+  <!-- ==================== CATÁLOGO COMPLETO ==================== -->
+  <!-- Catálogo completo cargado dinámicamente -->
+  <div id="catalogo-container"></div>
+
+  <!-- ==================== CARRITO OFFCANVAS ==================== -->
+  <!-- Carrito cargado dinámicamente -->
+  <div id="carrito-container"></div>
+
+  <!-- ==================== MODAL DE BÚSQUEDA ==================== -->
+  <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-6col">
+      <div class="modal-content">
+        
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="searchModalLabel">Buscar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="searchForm" class="mb-3">
+            <div class="input-group">
+              <input 
+                id="searchInput" 
+                type="search" 
+                class="form-control" 
+                placeholder="Buscar producto o categoría..." 
+                aria-label="Buscar"
+                autocomplete="off">
+              <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </form>
+
+          <!-- Resultados de búsqueda -->
+          <div id="searchResults" class="d-none">
+            <div class="list-group">
+              <!-- Los resultados se inyectarán aquí dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Mensaje inicial -->
+          <div id="searchEmpty" class="small text-muted text-center py-3">
+            <i class="bi bi-search me-1"></i>
+            Escribe para buscar productos
+          </div>
+
+          <!-- Loading -->
+          <div id="searchLoading" class="text-center py-3 d-none">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Buscando...</span>
+            </div>
+          </div>
+
+          <!-- Sin resultados -->
+          <div id="searchNoResults" class="text-center py-3 d-none">
+            <i class="bi bi-inbox fs-3 text-muted"></i>
+            <p class="text-muted mb-0 mt-2">No se encontraron productos</p>
+          </div>
+        </div>
+
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL DE PRODUCTO ==================== -->
+  <div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        
+        <div class="modal-body p-0">
+          <div class="row g-0">
+            
+            <!-- Izquierda: Imagen del producto (50%) -->
+            <div class="col-md-6">
+              <img 
+                id="modalProductImage" 
+                class="img-fluid w-100 h-100 object-fit-cover rounded-start" 
+                src="https://picsum.photos/seed/placeholder/600/400" 
+                alt="Producto">
+            </div>
+
+            <!-- Derecha: Detalles del producto (50%) -->
+            <div class="col-md-6 d-flex flex-column">
+              
+              <!-- Header con botón cerrar -->
+              <div class="modal-header border-0">
+                <h5 class="modal-title" id="productoModalLabel">Detalle del Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+
+              <!-- Contenido del producto -->
+              <div class="modal-body flex-grow-1">
+                
+                <!-- Nombre del producto -->
+                <h3 id="modalProductName" class="mb-3">Nombre del Producto</h3>
+
+                <!-- Precio -->
+                <div class="mb-4">
+                  <span class="text-success fs-3 fw-bold" id="modalProductPrice">$0</span>
+                  <span class="text-muted small ms-2">por unidad</span>
+                </div>
+
+                <!-- Descripción -->
+                <div class="mb-4">
+                  <h6 class="text-muted mb-2">Descripción:</h6>
+                  <p id="modalProductDescription" class="text-muted">
+                    Descripción del producto...
+                  </p>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="mb-4">
+                  <div class="row g-3">
+                    <div class="col-6">
+                      <small class="text-muted d-block">Categoría</small>
+                      <span id="modalProductCategory">-</span>
+                    </div>
+                    <div class="col-6">
+                      <small class="text-muted d-block">Stock</small>
+                      <span id="modalProductStock" class="badge bg-success">Disponible</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Footer con cantidad y botón agregar -->
+              <div class="modal-footer border-top">
+                <div class="d-flex align-items-center gap-3 w-100">
+                  
+                  <!-- Contador de cantidad -->
+                  <div class="input-group" style="max-width: 150px;">
+                    <button 
+                      class="btn btn-outline-secondary" 
+                      type="button" 
+                      id="decreaseQuantity"
+                      aria-label="Disminuir cantidad">
+                      <i class="bi bi-dash"></i>
+                    </button>
+                    <input 
+                      type="number" 
+                      class="form-control text-center" 
+                      id="modalProductQuantity" 
+                      value="1" 
+                      min="1" 
+                      max="99"
+                      aria-label="Cantidad">
+                    <button 
+                      class="btn btn-outline-secondary" 
+                      type="button" 
+                      id="increaseQuantity"
+                      aria-label="Aumentar cantidad">
+                      <i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+
+                  <!-- Botón agregar al carrito -->
+                  <button 
+                    type="button" 
+                    class="btn btn-primary flex-grow-1" 
+                    id="addToCartModalBtn">
+                    <i class="bi bi-cart-plus me-2"></i>
+                    Agregar al Carrito
+                  </button>
+
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- jQuery (requerido ANTES de Bootstrap y módulos) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script para cargar componentes dinámicamente -->
+  <script>
+    /**
+     * Función para cargar componentes HTML dinámicamente
+     * @param {string} containerId - ID del contenedor donde cargar el componente
+     * @param {string} filePath - Ruta del archivo HTML a cargar
+     * @param {function} callback - Función opcional a ejecutar después de cargar
+     */
+    function loadComponent(containerId, filePath, callback) {
+      fetch(filePath)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status} - No se pudo cargar ${filePath}`);
+          return res.text();
+        })
+        .then(html => {
+          const container = document.getElementById(containerId);
+          if (container) {
+            container.innerHTML = html;
+            // Ejecutar callback si existe
+            if (typeof callback === 'function') {
+              callback();
+            }
+          } else {
+            console.warn(`Contenedor #${containerId} no encontrado`);
+          }
+        })
+        .catch(err => {
+          console.error(`Error al cargar componente ${filePath}:`, err);
+          // Mostrar mensaje de error en el contenedor
+          const container = document.getElementById(containerId);
+          if (container) {
+            container.innerHTML = `
+              <div class="alert alert-warning m-3" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Error al cargar componente. Por favor, recarga la página.
+              </div>
+            `;
+          }
+        });
+    }
+
+    /**
+     * Cargar todos los componentes cuando el DOM esté listo
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ruta base para los componentes
+      const BASE_PATH = '/MARAZUL/MARAZUL/frontend02/components/';
+
+      // 1. Cargar HEADER primero (importante para el navbar)
+      loadComponent('header-container', BASE_PATH + 'header.html', () => {
+        console.log('Header cargado');
+        // Inicializar comportamiento del header si existe la función
+        if (typeof initHeader === 'function') {
+          initHeader();
+        }
+      });
+
+      // 2. Cargar CARRITO (offcanvas)
+      loadComponent('carrito-container', BASE_PATH + 'carrito.html', () => {
+        console.log('Carrito cargado');
+        // Inicializar carrito si existe la función
+        if (typeof initCart === 'function') {
+          initCart();
+        }
+      });
+
+      // 3. Cargar CARRUSEL
+      loadComponent('carrusel-container', BASE_PATH + 'carrusel.html', () => {
+        console.log('Carrusel cargado');
+        // Inicializar carrusel si existe la función
+        if (typeof initCarousel === 'function') {
+          initCarousel();
+        }
+      });
+
+      // 4. Cargar CATEGORÍAS
+      loadComponent('categorias-container', BASE_PATH + 'categorias.html', () => {
+        console.log('Categorías cargadas');
+        // Inicializar botones de categorías si existe la función
+        if (typeof initCategoryButtons === 'function') {
+          initCategoryButtons();
+        }
+      });
+
+      // 5. Cargar PRODUCTOS DESTACADOS
+      loadComponent('productos-container', BASE_PATH + 'ProductoDestacado.html', () => {
+        console.log('Productos destacados cargados');
+        // Inicializar productos destacados si existe la función
+        if (typeof initFeaturedProducts === 'function') {
+          initFeaturedProducts();
+        }
+      });
+
+      // 6. Cargar CATÁLOGO COMPLETO
+      loadComponent('catalogo-container', BASE_PATH + 'catalogo.html', () => {
+        console.log('Catálogo cargado');
+        // Inicializar catálogo si existe la función
+        if (typeof initCatalog === 'function') {
+          initCatalog();
+        }
+      });
+    });
+  </script>
+
+  <!-- Módulo JavaScript principal (ES6) - Se carga después de los componentes -->
+  <script type="module" src="/MARAZUL/MARAZUL/frontend02/js/pages/index.js"></script>
+
+</body>
+</html>
