@@ -1,25 +1,92 @@
-<!-- components/carrito.html -->
-<div class="offcanvas offcanvas-end text-dark bg-light" tabindex="-1" id="carritoOffcanvas" aria-labelledby="carritoLabel">
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CARRITO OFFCANVAS - MARAZUL E-COMMERCE
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     Diseño preservado del original:
+     - Offcanvas posicionado a la derecha
+     - Header con título y botón cerrar
+     - Body con productos dinámicos (cart.js)
+     - Footer con total y botón procesar
+     - Estilos consistentes con diseño corporativo
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<div class="offcanvas offcanvas-end" 
+     tabindex="-1" 
+     id="carritoOffcanvas" 
+     aria-labelledby="carritoOffcanvasLabel">
+  
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- HEADER DEL OFFCANVAS -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div class="offcanvas-header border-bottom">
-    <h5 class="offcanvas-title fw-bold" id="carritoLabel">Tu Carrito</h5>
-    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    <h5 class="offcanvas-title" id="carritoOffcanvasLabel">
+      <i class="bi bi-cart3 me-2"></i>
+      Carrito de Compras
+    </h5>
+    <button type="button" 
+            class="btn-close" 
+            data-bs-dismiss="offcanvas" 
+            aria-label="Cerrar">
+    </button>
   </div>
-
+  
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- BODY DEL OFFCANVAS -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
   <div class="offcanvas-body d-flex flex-column">
-    <!-- Encabezado adicional -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <span class="small text-muted">20 min</span>
-      <select class="form-select form-select-sm w-auto">
-        <option>Trinidad, para retirar</option>
-      </select>
+    
+    <!-- Contenedor de items del carrito (dinámico con cart.js) -->
+    <div id="cart-items" class="flex-grow-1 overflow-auto">
+      <!-- Se llena dinámicamente con renderCart() -->
+      
+      <!-- Estado vacío (se muestra si no hay productos) -->
+      <div id="empty-cart-message" class="text-center py-5">
+        <i class="bi bi-cart-x display-1 text-muted"></i>
+        <p class="text-muted mt-3">Tu carrito está vacío</p>
+        <button class="btn btn-primary btn-sm" 
+                data-bs-dismiss="offcanvas">
+          Ir a comprar
+        </button>
+      </div>
     </div>
-
-    <hr>
-
-    <!-- Cuerpo del carrito vacío -->
-    <div class="flex-grow-1 d-flex flex-column justify-content-center text-center">
-      <h6 class="fw-bold">Tu carrito está vacío</h6>
-      <p class="text-muted small">Los productos que agregues aparecerán aquí</p>
+    
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- FOOTER CON TOTAL Y BOTÓN -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div id="cart-footer" class="border-top pt-3 mt-3" style="display: none;">
+      
+      <!-- Total -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Total:</h5>
+        <h4 class="mb-0 text-primary" id="cart-total">$0</h4>
+      </div>
+      
+      <!-- Botón Procesar Pedido -->
+      <button class="btn btn-primary w-100" 
+              id="btn-procesar-pedido"
+              type="button">
+        <i class="bi bi-credit-card me-2"></i>
+        Procesar Pedido
+      </button>
+      
+      <!-- Botón Vaciar Carrito -->
+      <button class="btn btn-outline-danger w-100 mt-2" 
+              id="btn-vaciar-carrito"
+              type="button">
+        <i class="bi bi-trash me-2"></i>
+        Vaciar Carrito
+      </button>
+      
     </div>
+    
   </div>
+  
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     NOTAS:
+     - El contenido de #cart-items se genera dinámicamente en cart.js
+     - El total se calcula y actualiza en cart.js
+     - Los eventos de botones se manejan en cart.js
+     - El estado vacío se muestra/oculta automáticamente
+     ═══════════════════════════════════════════════════════════════════════════ -->

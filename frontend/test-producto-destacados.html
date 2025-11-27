@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEST - Componente 5: Productos Destacados | MarAzul</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  
+  <!-- CSS del proyecto -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <style>
+    /* Estilos específicos del test */
+    body {
+      padding-top: 20px;
+      background-color: #f8f9fa;
+    }
+    
+    .test-header {
+      background: linear-gradient(135deg, #003366 0%, #4db6ac 100%);
+      color: white;
+      padding: 30px 0;
+      margin-bottom: 30px;
+      border-radius: 10px;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 5px;
+    }
+    
+    .status-success { background: #28a745; color: white; }
+    .status-error { background: #dc3545; color: white; }
+    .status-warning { background: #ffc107; color: #000; }
+    
+    .checklist {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .checklist h4 {
+      color: #003366;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #4db6ac;
+      padding-bottom: 10px;
+    }
+    
+    .checklist-item {
+      padding: 10px;
+      margin: 5px 0;
+      border-left: 3px solid #e9ecef;
+      transition: all 0.3s;
+    }
+    
+    .checklist-item:hover {
+      background: #f8f9fa;
+      border-left-color: #4db6ac;
+    }
+    
+    .code-block {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container">
+    
+    <!-- Header del Test -->
+    <div class="test-header text-center">
+      <h1>🧪 TEST - COMPONENTE 5</h1>
+      <h2>Productos Destacados</h2>
+      <p class="mb-0">Prueba aislada del componente sin dependencias de index.html completo</p>
+    </div>
+    
+    <!-- Estado del Backend -->
+    <div class="checklist">
+      <h4>📡 Estado del Backend</h4>
+      <div id="backend-status" class="text-center py-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Verificando...</span>
+        </div>
+        <p class="mt-2">Verificando conexión con backend...</p>
+      </div>
+    </div>
+    
+    <!-- Checklist de Verificación de Módulos -->
+    <div class="checklist">
+      <h4>✅ Checklist de Verificación Visual</h4>
+      
+      <div class="checklist-item">
+        <input type="checkbox" id="check1"> Se muestran 4 productos destacados
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check2"> Cards con diseño horizontal (imagen 40% | contenido 60%)
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check3"> Imágenes cargan correctamente
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check4"> Precios formateados como $15.990
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check5"> Botón "+" circular verde presente
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check6"> Hover en card hace efecto de elevación
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check7"> Click en card abre modal con datos correctos
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check8"> Modal muestra título, imagen, descripción, precio
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check9"> Contador +/- funciona en modal
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check10"> Botón "Agregar al Carrito" funciona
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check11"> Badge del carrito se actualiza correctamente
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check12"> Modal se cierra al agregar producto
+      </div>
+    </div>
+    
+    <!-- Sección de Productos Destacados -->
+    <section class="productos-destacados py-5" style="background: white; border-radius: 10px;">
+      <div class="container">
+        <h2 class="text-center mb-4">Productos Destacados</h2>
+        
+        <!-- Grid de productos (se inyecta dinámicamente) -->
+        <div class="row g-4" id="productos-destacados-grid">
+          <!-- Las cards se generan con JavaScript -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- Modal de Producto -->
+    <div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="modalProductTitle" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalProductTitle">Producto</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <!-- Imagen (50%) -->
+              <div class="col-md-6">
+                <img id="modalProductImage" src="" class="img-fluid rounded" alt="Producto">
+              </div>
+              
+              <!-- Contenido (50%) -->
+              <div class="col-md-6">
+                <p id="modalProductDescription" class="mb-3">Descripción del producto</p>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h4 class="text-success mb-0" id="modalProductPrice">$0</h4>
+                  <small class="text-muted" id="modalProductStock">Stock: 0</small>
+                </div>
+                
+                <!-- Cantidad -->
+                <div class="input-group mb-3" style="max-width: 200px;">
+                  <button class="btn btn-outline-secondary" type="button" id="modalQuantityMinus">-</button>
+                  <input type="number" class="form-control text-center" id="modalQuantity" value="1" min="1">
+                  <button class="btn btn-outline-secondary" type="button" id="modalQuantityPlus">+</button>
+                </div>
+                
+                <!-- Total -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span>Total:</span>
+                  <h4 class="text-primary mb-0" id="modalTotal">$0</h4>
+                </div>
+                
+                <!-- Botón Agregar -->
+                <button type="button" class="btn btn-primary w-100" id="modalAddToCart">
+                  <i class="bi bi-cart-plus me-2"></i>
+                  Agregar al Carrito
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Offcanvas del Carrito (simplificado para test) -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="carritoOffcanvas">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title">
+          <i class="bi bi-cart3 me-2"></i>
+          Mi Carrito
+          <span class="badge bg-primary ms-2" id="cart-badge">0</span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div id="cart-items-list">
+          <p class="text-center text-muted">El carrito está vacío</p>
+        </div>
+        
+        <div class="mt-auto pt-3 border-top">
+          <div class="d-flex justify-content-between mb-3">
+            <strong>Total:</strong>
+            <strong id="cart-total">$0</strong>
+          </div>
+          <button class="btn btn-primary w-100">Ir a Pagar</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Botón flotante del carrito -->
+    <button class="btn btn-primary position-fixed bottom-0 end-0 m-4 rounded-circle shadow-lg" 
+            style="width: 60px; height: 60px; z-index: 1000;"
+            data-bs-toggle="offcanvas" 
+            data-bs-target="#carritoOffcanvas">
+      <i class="bi bi-cart3 fs-4"></i>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+            id="cart-badge-float">
+        0
+      </span>
+    </button>
+    
+    <!-- Logs de Consola (visible en página) -->
+    <div class="checklist mt-4">
+      <h4>📋 Logs de Consola</h4>
+      <div id="console-logs" class="code-block" style="max-height: 300px; overflow-y: auto;">
+        <div class="text-muted">Los logs aparecerán aquí...</div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- CONFIG (inline para test) -->
+  <script>
+    // Configuración inline para el test
+    const CONFIG = {
+      BASE_PATH: '/MARAZUL/MARAZUL/frontend',
+      API_URL: 'http://localhost:5000/api',
+      DEFAULT_IMAGE: 'https://via.placeholder.com/400x300?text=Sin+Imagen',
+      isProduction: false
+    };
+    
+    // Storage keys
+    const STORAGE_KEYS = {
+      CART: 'marazul_cart',
+      CART_COUNT: 'marazul_cart_count'
+    };
+  </script>
+  
+  <!-- UTILS (inline para test) -->
+  <script>
+    // Funciones de utilidad
+    function formatPrice(price) {
+      return '$' + price.toLocaleString('es-CL');
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function getAuthToken() {
+      return localStorage.getItem('marazul_token');
+    }
+    
+    // Logger personalizado que muestra en página
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    function addLogToPage(message, type = 'log') {
+      const logsContainer = document.getElementById('console-logs');
+      const timestamp = new Date().toLocaleTimeString();
+      const color = type === 'error' ? 'text-danger' : type === 'warn' ? 'text-warning' : 'text-success';
+      
+      const logEntry = document.createElement('div');
+      logEntry.className = color;
+      logEntry.innerHTML = `[${timestamp}] ${message}`;
+      
+      logsContainer.appendChild(logEntry);
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      addLogToPage(args.join(' '), 'log');
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      addLogToPage(args.join(' '), 'error');
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      addLogToPage(args.join(' '), 'warn');
+    };
+  </script>
+  
+  <!-- API CLIENT (inline simplificado para test) -->
+  <script>
+    // Cliente API simplificado
+    async function apiRequest(method, endpoint, data = null) {
+      try {
+        const url = CONFIG.API_URL + endpoint;
+        const token = getAuthToken();
+        
+        const headers = {
+          'Content-Type': 'application/json'
+        };
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const ajaxConfig = {
+          url: url,
+          method: method.toUpperCase(),
+          headers: headers,
+          dataType: 'json',
+          timeout: 30000
+        };
+        
+        if (data && (method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT')) {
+          ajaxConfig.data = JSON.stringify(data);
+        }
+        
+        console.log('🌐 API Request:', method, endpoint);
+        
+        const response = await $.ajax(ajaxConfig);
+        
+        console.log('✅ API Response:', response);
+        
+        return {
+          success: response.success !== false,
+          data: response.data || response.Datos || response.datos || [],
+          pagination: response.pagination || response.Paginación || null,
+          error: null
+        };
+        
+      } catch (error) {
+        console.error('❌ Error en API:', error);
+        return {
+          success: false,
+          data: [],
+          error: {
+            message: error.responseJSON?.message || error.statusText || 'Error de conexión',
+            status: error.status
+          }
+        };
+      }
+    }
+    
+    // Funciones de productos
+    async function getProducts(filters = {}) {
+      let endpoint = '/products';
+      
+      const params = new URLSearchParams();
+      
+      if (filters.featured) {
+        params.append('featured', 'true');
+      }
+      
+      if (filters.limit) {
+        params.append('limit', filters.limit);
+      }
+      
+      if (params.toString()) {
+        endpoint += '?' + params.toString();
+      }
+      
+      return await apiRequest('GET', endpoint);
+    }
+    
+    async function getFeaturedProducts(limit = 6) {
+      return await getProducts({ featured: true, limit: limit });
+    }
+    
+    // Función para verificar backend
+    async function checkBackendHealth() {
+      const statusDiv = document.getElementById('backend-status');
+      
+      try {
+        const response = await fetch(CONFIG.API_URL.replace('/api', '') + '/health', {
+          method: 'GET',
+          timeout: 5000
+        });
+        
+        if (response.ok) {
+          statusDiv.innerHTML = `
+            <span class="status-badge status-success">
+              ✅ Backend disponible
+            </span>
+            <p class="mt-2 mb-0">Conectado a: ${CONFIG.API_URL}</p>
+          `;
+        } else {
+          throw new Error('Backend responde pero con error');
+        }
+      } catch (error) {
+        statusDiv.innerHTML = `
+          <span class="status-badge status-error">
+            ❌ Backend no disponible
+          </span>
+          <p class="mt-2 mb-0 text-danger">
+            Asegúrate de ejecutar: <code>cd backend && npm run dev</code>
+          </p>
+        `;
+      }
+    }
+  </script>
+  
+  <!-- CART (inline simplificado para test) -->
+  <script>
+    // Funciones de carrito simplificadas
+    function getCart() {
+      const cart = localStorage.getItem(STORAGE_KEYS.CART);
+      return cart ? JSON.parse(cart) : { items: [], total: 0 };
+    }
+    
+    function saveCart(cart) {
+      localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
+      localStorage.setItem(STORAGE_KEYS.CART_COUNT, cart.items.length);
+      updateCartBadge();
+    }
+    
+    function addToCart(product, quantity = 1) {
+      const cart = getCart();
+      
+      // Buscar si el producto ya existe
+      const existingItem = cart.items.find(item => item.id === product.id);
+      
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.items.push({
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          img: product.img,
+          quantity: quantity
+        });
+      }
+      
+      // Calcular total
+      cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      
+      saveCart(cart);
+      
+      console.log(`✅ Producto agregado: ${product.title} x${quantity}`);
+    }
+    
+    function updateCartBadge() {
+      const cart = getCart();
+      const count = cart.items.length;
+      
+      $('#cart-badge').text(count);
+      $('#cart-badge-float').text(count);
+      
+      // Actualizar lista en offcanvas
+      if (count === 0) {
+        $('#cart-items-list').html('<p class="text-center text-muted">El carrito está vacío</p>');
+        $('#cart-total').text('$0');
+      } else {
+        let html = '';
+        cart.items.forEach(item => {
+          html += `
+            <div class="mb-3 pb-3 border-bottom">
+              <h6>${item.title}</h6>
+              <p class="mb-0">Cantidad: ${item.quantity} x ${formatPrice(item.price)}</p>
+            </div>
+          `;
+        });
+        $('#cart-items-list').html(html);
+        $('#cart-total').text(formatPrice(cart.total));
+      }
+    }
+  </script>
+  
+  <!-- PRODUCTOS DESTACADOS (index.js) -->
+  <script src="js/pages/index.js"></script>
+  
+  <!-- Inicialización del test -->
+  <script>
+    $(document).ready(function() {
+      console.log('🧪 Iniciando test del Componente 5...');
+      
+      // Verificar backend
+      checkBackendHealth();
+      
+      // Actualizar badge inicial
+      updateCartBadge();
+      
+      console.log('✅ Test inicializado. Esperando carga de productos...');
+    });
+  </script>
+  
+</body>
+</html>

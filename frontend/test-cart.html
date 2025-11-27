@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarAzul - Test Carrito</title>
+  
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  
+  <style>
+    .product-card {
+      transition: transform 0.2s;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .cart-item img {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  
+  <!-- Header Simple -->
+  <header class="bg-primary text-white py-3 mb-4">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <h5 class="mb-0">
+            <i class="bi bi-shop me-2"></i>
+            MarAzul - Test Carrito
+          </h5>
+        </div>
+        <div class="col"></div>
+        <div class="col-auto">
+          <!-- Botón Carrito -->
+          <button class="btn btn-light position-relative" 
+                  data-bs-toggle="offcanvas" 
+                  data-bs-target="#carritoOffcanvas">
+            <i class="bi bi-cart3"></i>
+            <span id="cart-badge" 
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style="display: none;">
+              0
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <div class="container py-4">
+    
+    <!-- Status General -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-cart-check text-success me-2"></i>
+              Test de Carrito - CART.js
+            </h5>
+            <div id="cart-status" class="mt-3">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              Verificando módulo CART...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Resumen del Carrito -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-clipboard-data me-2"></i>
+              Resumen del Carrito
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <tbody>
+                  <tr>
+                    <th style="width: 200px;">Items únicos</th>
+                    <td id="summary-unique">...</td>
+                  </tr>
+                  <tr>
+                    <th>Cantidad total</th>
+                    <td id="summary-count">...</td>
+                  </tr>
+                  <tr>
+                    <th>Subtotal</th>
+                    <td id="summary-subtotal">...</td>
+                  </tr>
+                  <tr>
+                    <th>Total</th>
+                    <td id="summary-total">...</td>
+                  </tr>
+                  <tr>
+                    <th>¿Está vacío?</th>
+                    <td id="summary-empty">...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <button class="btn btn-sm btn-danger" onclick="testClearCart()">
+              <i class="bi bi-trash me-1"></i>
+              Vaciar Carrito
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Productos de Prueba -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-bag-plus me-2"></i>
+              Productos de Prueba
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-3">
+              <small>Agrega productos al carrito y observa cómo se actualiza automáticamente el badge y el offcanvas</small>
+            </p>
+            
+            <div class="row g-3" id="test-products">
+              <!-- Se generarán con JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Checklist -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="alert alert-light border" role="alert">
+          <h5 class="alert-heading">
+            <i class="bi bi-clipboard-check me-2"></i>
+            Checklist de Verificación
+          </h5>
+          <div id="checklist">
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            Ejecutando tests...
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Offcanvas del Carrito -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="carritoOffcanvas" 
+       aria-labelledby="carritoOffcanvasLabel">
+    <div class="offcanvas-header border-bottom">
+      <h5 class="offcanvas-title" id="carritoOffcanvasLabel">
+        <i class="bi bi-cart3 me-2"></i>
+        Mi Carrito
+      </h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    
+    <div class="offcanvas-body">
+      
+      <!-- Carrito Vacío -->
+      <div id="cart-empty" class="text-center py-5" style="display: none;">
+        <i class="bi bi-cart-x display-1 text-muted"></i>
+        <p class="text-muted mt-3">Tu carrito está vacío</p>
+        <button class="btn btn-primary btn-sm" data-bs-dismiss="offcanvas">
+          Continuar Comprando
+        </button>
+      </div>
+      
+      <!-- Carrito con Items -->
+      <div id="cart-content">
+        <!-- Items del carrito -->
+        <div id="cart-items" class="mb-3">
+          <!-- Se renderizarán dinámicamente -->
+        </div>
+        
+        <!-- Totales -->
+        <div class="border-top pt-3">
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <strong id="cart-subtotal">$0</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span class="h5 mb-0">Total:</span>
+            <strong class="h5 mb-0 text-primary" id="cart-total">$0</strong>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary" onclick="handleCheckout()">
+              <i class="bi bi-credit-card me-2"></i>
+              Proceder al Pago
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">
+              Continuar Comprando
+            </button>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- jQuery 3.7.1 (REQUERIDO) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" 
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" 
+          crossorigin="anonymous"></script>
+  
+  <!-- Bootstrap 5.3 Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- CONFIG, UTILS, AUTH y CART -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  
+  <!-- Tests -->
+  <script>
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PRODUCTOS DE PRUEBA
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    const testProducts = [
+      {
+        id: 'prod-1',
+        name: 'Salmón Fresco',
+        price: 12990,
+        category: 'Pescados',
+        image: 'https://via.placeholder.com/150x150/2196F3/FFFFFF?text=Salmon'
+      },
+      {
+        id: 'prod-2',
+        name: 'Camarones Premium',
+        price: 8990,
+        category: 'Mariscos',
+        image: 'https://via.placeholder.com/150x150/E91E63/FFFFFF?text=Camarones'
+      },
+      {
+        id: 'prod-3',
+        name: 'Atún en Aceite',
+        price: 2990,
+        category: 'Conservas',
+        image: 'https://via.placeholder.com/150x150/FF9800/FFFFFF?text=Atun'
+      },
+      {
+        id: 'prod-4',
+        name: 'Merluza Austral',
+        price: 6990,
+        category: 'Congelados',
+        image: 'https://via.placeholder.com/150x150/00BCD4/FFFFFF?text=Merluza'
+      },
+      {
+        id: 'prod-5',
+        name: 'Ostiones Frescos',
+        price: 15990,
+        category: 'Premium',
+        image: 'https://via.placeholder.com/150x150/9C27B0/FFFFFF?text=Ostiones'
+      },
+      {
+        id: 'prod-6',
+        name: 'Centolla',
+        price: 24990,
+        category: 'Premium',
+        image: 'https://via.placeholder.com/150x150/4CAF50/FFFFFF?text=Centolla'
+      }
+    ];
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TESTS AUTOMÁTICOS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    $(document).ready(function() {
+      console.log('═══════════════════════════════════════════════════════');
+      console.log('🧪 INICIANDO TESTS DE CART');
+      console.log('═══════════════════════════════════════════════════════');
+      
+      let errores = 0;
+      
+      // Test 1: Verificar que CART existe
+      if (typeof CART !== 'undefined') {
+        console.log('✅ CART está definido');
+        $('#cart-status').html(`
+          <div class="alert alert-success mb-0">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <strong>CART.js cargado correctamente</strong>
+            <div class="small mt-1">${Object.keys(CART).length} funciones disponibles</div>
+          </div>
+        `);
+      } else {
+        console.error('❌ CART no está definido');
+        errores++;
+        $('#cart-status').html(`
+          <div class="alert alert-danger mb-0">
+            <i class="bi bi-x-circle-fill me-2"></i>
+            <strong>Error:</strong> CART.js no se cargó
+          </div>
+        `);
+      }
+      
+      // Renderizar productos de prueba
+      renderTestProducts();
+      
+      // Actualizar resumen inicial
+      updateSummary();
+      
+      // Checklist
+      setTimeout(() => {
+        const checks = [
+          { name: 'CART.js cargado', status: typeof CART !== 'undefined' },
+          { name: 'getCartItems() disponible', status: typeof getCartItems === 'function' },
+          { name: 'addToCart() disponible', status: typeof addToCart === 'function' },
+          { name: 'removeFromCart() disponible', status: typeof removeFromCart === 'function' },
+          { name: 'updateQuantity() disponible', status: typeof updateQuantity === 'function' },
+          { name: 'clearCart() disponible', status: typeof clearCart === 'function' },
+          { name: 'calculateCartSubtotal() disponible', status: typeof calculateCartSubtotal === 'function' },
+          { name: 'calculateCartTotal() disponible', status: typeof calculateCartTotal === 'function' },
+          { name: 'getCartSummary() disponible', status: typeof getCartSummary === 'function' },
+          { name: 'renderCartOffcanvas() disponible', status: typeof renderCartOffcanvas === 'function' },
+        ];
+        
+        let checklistHTML = '<ul class="list-unstyled mb-0">';
+        checks.forEach(check => {
+          const icon = check.status ? '✅' : '❌';
+          const className = check.status ? 'text-success' : 'text-danger';
+          checklistHTML += `<li class="${className}"><strong>${icon}</strong> ${check.name}</li>`;
+          if (!check.status) errores++;
+        });
+        checklistHTML += '</ul>';
+        
+        if (errores === 0) {
+          checklistHTML += '<div class="alert alert-success mt-3 mb-0"><strong>¡Todos los tests pasaron!</strong> El componente CART está listo.</div>';
+        } else {
+          checklistHTML += `<div class="alert alert-danger mt-3 mb-0"><strong>Errores detectados:</strong> ${errores} error(es)</div>`;
+        }
+        
+        $('#checklist').html(checklistHTML);
+      }, 500);
+      
+      console.log('═══════════════════════════════════════════════════════');
+    });
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FUNCIONES DE LA UI
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function renderTestProducts() {
+      let productsHTML = '';
+      
+      testProducts.forEach(product => {
+        productsHTML += `
+          <div class="col-md-4 col-lg-3">
+            <div class="card product-card shadow-sm h-100">
+              <img src="${product.image}" class="card-img-top" alt="${product.name}">
+              <div class="card-body">
+                <h6 class="card-title">${product.name}</h6>
+                <p class="text-primary fw-bold mb-2">${formatPrice(product.price)}</p>
+                <button class="btn btn-sm btn-primary w-100" onclick="handleAddToCart('${product.id}')">
+                  <i class="bi bi-cart-plus me-1"></i>
+                  Agregar
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      $('#test-products').html(productsHTML);
+    }
+    
+    function handleAddToCart(productId) {
+      const product = testProducts.find(p => p.id === productId);
+      
+      if (!product) {
+        alert('Producto no encontrado');
+        return;
+      }
+      
+      const result = addToCart(product, 1);
+      
+      if (result.success) {
+        // Mostrar toast o notificación
+        console.log('✅', result.message);
+        
+        // Actualizar resumen
+        updateSummary();
+        
+        // Opcional: abrir offcanvas automáticamente
+        // const offcanvas = new bootstrap.Offcanvas(document.getElementById('carritoOffcanvas'));
+        // offcanvas.show();
+      } else {
+        alert(result.message);
+      }
+    }
+    
+    function updateSummary() {
+      const summary = getCartSummary();
+      
+      $('#summary-unique').html(`<span class="badge bg-primary">${summary.uniqueItems}</span>`);
+      $('#summary-count').html(`<span class="badge bg-info">${summary.itemCount}</span>`);
+      $('#summary-subtotal').html(`<strong>${formatPrice(summary.subtotal)}</strong>`);
+      $('#summary-total').html(`<strong class="text-primary">${formatPrice(summary.total)}</strong>`);
+      $('#summary-empty').html(
+        summary.isEmpty 
+          ? '<span class="badge bg-secondary">SÍ</span>' 
+          : '<span class="badge bg-success">NO</span>'
+      );
+    }
+    
+    function testClearCart() {
+      if (!confirm(CONFIG.MESSAGES.WARNING.CLEAR_CART)) {
+        return;
+      }
+      
+      const result = clearCart();
+      
+      if (result.success) {
+        console.log('✅', result.message);
+        updateSummary();
+      } else {
+        alert(result.message);
+      }
+    }
+    
+    function handleCheckout() {
+      const summary = getCartSummary();
+      
+      if (summary.isEmpty) {
+        alert('El carrito está vacío');
+        return;
+      }
+      
+      alert(`Procesando pago de ${formatPrice(summary.total)}\n\n(Esta funcionalidad se implementará en la siguiente fase)`);
+      
+      console.log('💳 Checkout iniciado:', summary);
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // EVENTOS DEL CARRITO
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    // Cuando se actualiza el carrito, actualizar resumen
+    $(document).on('cart:updated', function() {
+      updateSummary();
+    });
+    
+    // Cuando se abre el offcanvas, renderizar contenido
+    $('#carritoOffcanvas').on('show.bs.offcanvas', function() {
+      renderCartOffcanvas();
+    });
+    
+    // Logging de eventos para debugging
+    $(document).on('cart:item-added', function(e, item) {
+      console.log('📦 Item agregado:', item);
+    });
+    
+    $(document).on('cart:item-updated', function(e, item) {
+      console.log('✏️  Item actualizado:', item);
+    });
+    
+    $(document).on('cart:item-removed', function(e, itemId) {
+      console.log('🗑️  Item eliminado:', itemId);
+    });
+    
+    $(document).on('cart:cleared', function() {
+      console.log('🧹 Carrito vaciado');
+    });
+  </script>
+  
+</body>
+</html>

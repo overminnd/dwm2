@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarAzul - Test Config & Utils</title>
+  
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+  
+  <!-- Header -->
+  <header class="bg-primary text-white py-3 mb-4">
+    <div class="container">
+      <h1 class="h3 mb-0">
+        <i class="bi bi-gear-fill me-2"></i>
+        MarAzul - Test de Configuración
+      </h1>
+      <p class="mb-0 small">Verificación de config.js y utils.js</p>
+    </div>
+  </header>
+  
+  <div class="container">
+    
+    <!-- Status General -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-check-circle text-success me-2"></i>
+              Estado de Carga
+            </h5>
+            <div id="load-status" class="mt-3">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              Verificando módulos...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Test de CONFIG -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-gear me-2"></i>
+              Test CONFIG.js
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <tbody>
+                  <tr>
+                    <th style="width: 200px;">Entorno</th>
+                    <td id="test-env">...</td>
+                  </tr>
+                  <tr>
+                    <th>BASE_PATH</th>
+                    <td id="test-basepath">...</td>
+                  </tr>
+                  <tr>
+                    <th>API_URL</th>
+                    <td id="test-apiurl">...</td>
+                  </tr>
+                  <tr>
+                    <th>Rutas Principales</th>
+                    <td id="test-routes">...</td>
+                  </tr>
+                  <tr>
+                    <th>Componentes</th>
+                    <td id="test-components">...</td>
+                  </tr>
+                  <tr>
+                    <th>Storage Keys</th>
+                    <td id="test-storage">...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Test de UTILS -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-tools me-2"></i>
+              Test UTILS.js
+            </h5>
+          </div>
+          <div class="card-body">
+            
+            <!-- Formateo de Precios -->
+            <div class="mb-3">
+              <h6 class="fw-bold">Formateo de Precios</h6>
+              <div class="row g-2">
+                <div class="col-auto">
+                  <button class="btn btn-sm btn-outline-primary" onclick="testFormatPrice()">
+                    Test formatPrice()
+                  </button>
+                </div>
+                <div class="col">
+                  <div id="result-formatprice" class="small text-muted">
+                    Haz clic para probar
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Formateo de Fechas -->
+            <div class="mb-3">
+              <h6 class="fw-bold">Formateo de Fechas</h6>
+              <div class="row g-2">
+                <div class="col-auto">
+                  <button class="btn btn-sm btn-outline-primary" onclick="testFormatDate()">
+                    Test formatDate()
+                  </button>
+                </div>
+                <div class="col">
+                  <div id="result-formatdate" class="small text-muted">
+                    Haz clic para probar
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Validación Email -->
+            <div class="mb-3">
+              <h6 class="fw-bold">Validación de Email</h6>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <input type="text" id="input-email" class="form-control form-control-sm" 
+                         placeholder="Ingresa un email" value="test@marazul.com">
+                </div>
+                <div class="col-auto">
+                  <button class="btn btn-sm btn-outline-primary" onclick="testValidateEmail()">
+                    Validar
+                  </button>
+                </div>
+                <div class="col">
+                  <div id="result-email" class="small text-muted">
+                    Haz clic para validar
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Validación RUT -->
+            <div class="mb-3">
+              <h6 class="fw-bold">Validación de RUT</h6>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <input type="text" id="input-rut" class="form-control form-control-sm" 
+                         placeholder="Ingresa un RUT (12345678-9)">
+                </div>
+                <div class="col-auto">
+                  <button class="btn btn-sm btn-outline-primary" onclick="testValidateRUT()">
+                    Validar
+                  </button>
+                </div>
+                <div class="col">
+                  <div id="result-rut" class="small text-muted">
+                    Haz clic para validar
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Truncate Text -->
+            <div class="mb-3">
+              <h6 class="fw-bold">Truncar Texto</h6>
+              <div class="row g-2">
+                <div class="col-auto">
+                  <button class="btn btn-sm btn-outline-primary" onclick="testTruncate()">
+                    Test truncateText()
+                  </button>
+                </div>
+                <div class="col">
+                  <div id="result-truncate" class="small text-muted">
+                    Haz clic para probar
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Storage -->
+            <div class="mb-3">
+              <h6 class="fw-bold">LocalStorage</h6>
+              <div class="row g-2">
+                <div class="col-auto">
+                  <button class="btn btn-sm btn-outline-success" onclick="testSaveStorage()">
+                    Guardar
+                  </button>
+                </div>
+                <div class="col-auto">
+                  <button class="btn btn-sm btn-outline-info" onclick="testReadStorage()">
+                    Leer
+                  </button>
+                </div>
+                <div class="col-auto">
+                  <button class="btn btn-sm btn-outline-danger" onclick="testClearStorage()">
+                    Limpiar
+                  </button>
+                </div>
+                <div class="col">
+                  <div id="result-storage" class="small text-muted">
+                    Haz clic para probar
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Test de Carga de Componentes -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header bg-warning">
+            <h5 class="mb-0">
+              <i class="bi bi-puzzle me-2"></i>
+              Test Carga de Componentes (loadComponent)
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="mb-3">
+              <small class="text-muted">
+                Esta función será crítica para cargar header, carrito, etc.
+                Por ahora solo verificamos que la función existe y está lista.
+              </small>
+            </p>
+            <div class="alert alert-info mb-0" id="component-test">
+              <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              Verificando...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Resultado Final -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="alert alert-light border" role="alert">
+          <h5 class="alert-heading">
+            <i class="bi bi-info-circle me-2"></i>
+            Resultado de Tests
+          </h5>
+          <div id="final-result">
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            Ejecutando tests...
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- jQuery 3.7.1 (REQUERIDO) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" 
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" 
+          crossorigin="anonymous"></script>
+  
+  <!-- Bootstrap 5.3 Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- CONFIG y UTILS -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  
+  <!-- Tests -->
+  <script>
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TESTS AUTOMÁTICOS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    $(document).ready(function() {
+      console.log('═══════════════════════════════════════════════════════');
+      console.log('🧪 INICIANDO TESTS DE CONFIG Y UTILS');
+      console.log('═══════════════════════════════════════════════════════');
+      
+      let errores = 0;
+      let warnings = 0;
+      
+      // Test 1: Verificar que CONFIG existe
+      if (typeof CONFIG !== 'undefined') {
+        console.log('✅ CONFIG está definido');
+        $('#test-env').html(`<span class="badge bg-${CONFIG.isProduction ? 'danger' : 'success'}">${CONFIG.isProduction ? 'PRODUCCIÓN' : 'DESARROLLO'}</span>`);
+        $('#test-basepath').html(`<code>${CONFIG.BASE_PATH}</code>`);
+        $('#test-apiurl').html(`<code>${CONFIG.API_URL}</code>`);
+        $('#test-routes').html(`${Object.keys(CONFIG.ROUTES).length} rutas definidas`);
+        $('#test-components').html(`${Object.keys(CONFIG.COMPONENTS).length} componentes definidos`);
+        $('#test-storage').html(`${Object.keys(CONFIG.STORAGE_KEYS).length} keys definidas`);
+      } else {
+        console.error('❌ CONFIG no está definido');
+        errores++;
+      }
+      
+      // Test 2: Verificar que UTILS existe
+      if (typeof UTILS !== 'undefined') {
+        console.log('✅ UTILS está definido');
+        console.log(`📦 ${Object.keys(UTILS).length} funciones disponibles`);
+      } else {
+        console.error('❌ UTILS no está definido');
+        errores++;
+      }
+      
+      // Test 3: Verificar jQuery
+      if (typeof $ !== 'undefined' && $.fn.jquery) {
+        console.log('✅ jQuery cargado:', $.fn.jquery);
+      } else {
+        console.error('❌ jQuery NO está cargado');
+        errores++;
+      }
+      
+      // Test 4: Verificar función loadComponent
+      if (typeof loadComponent === 'function') {
+        console.log('✅ loadComponent() disponible');
+        $('#component-test').removeClass('alert-info').addClass('alert-success')
+          .html('<i class="bi bi-check-circle me-2"></i>Función loadComponent() lista para usar');
+      } else {
+        console.error('❌ loadComponent() no disponible');
+        errores++;
+        $('#component-test').removeClass('alert-info').addClass('alert-danger')
+          .html('<i class="bi bi-x-circle me-2"></i>Error: loadComponent() no encontrada');
+      }
+      
+      // Actualizar status de carga
+      if (errores === 0) {
+        $('#load-status').html(`
+          <div class="alert alert-success mb-0">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <strong>¡Todo cargado correctamente!</strong> 
+            CONFIG y UTILS están listos para usar.
+          </div>
+        `);
+      } else {
+        $('#load-status').html(`
+          <div class="alert alert-danger mb-0">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Errores detectados:</strong> ${errores} error(es)
+          </div>
+        `);
+      }
+      
+      // Resultado final
+      setTimeout(() => {
+        $('#final-result').html(`
+          <div class="row">
+            <div class="col-md-4">
+              <div class="text-center">
+                <div class="display-4 ${errores === 0 ? 'text-success' : 'text-danger'}">
+                  ${errores === 0 ? '✓' : '✗'}
+                </div>
+                <div class="small text-muted">Errores: ${errores}</div>
+              </div>
+            </div>
+            <div class="col-md-8">
+              ${errores === 0 
+                ? '<p class="mb-0"><strong>¡Éxito!</strong> Todos los módulos base están funcionando correctamente. Puedes continuar con el siguiente componente.</p>'
+                : '<p class="mb-0"><strong>Atención:</strong> Hay errores que deben corregirse antes de continuar.</p>'
+              }
+            </div>
+          </div>
+        `);
+      }, 500);
+      
+      console.log('═══════════════════════════════════════════════════════');
+      console.log(`✅ ${errores === 0 ? 'TESTS COMPLETADOS SIN ERRORES' : 'TESTS COMPLETADOS CON ' + errores + ' ERROR(ES)'}`);
+      console.log('═══════════════════════════════════════════════════════');
+    });
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FUNCIONES DE TEST INTERACTIVAS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function testFormatPrice() {
+      const result1 = formatPrice(12990);
+      const result2 = formatPrice(1500);
+      const result3 = formatPrice(999999);
+      
+      $('#result-formatprice').html(`
+        <strong>Resultados:</strong><br>
+        formatPrice(12990) = <code>${result1}</code><br>
+        formatPrice(1500) = <code>${result2}</code><br>
+        formatPrice(999999) = <code>${result3}</code>
+      `).removeClass('text-muted').addClass('text-success');
+    }
+    
+    function testFormatDate() {
+      const result1 = formatDate(new Date());
+      const result2 = formatDateTime(new Date());
+      
+      $('#result-formatdate').html(`
+        <strong>Resultados:</strong><br>
+        formatDate(hoy) = <code>${result1}</code><br>
+        formatDateTime(ahora) = <code>${result2}</code>
+      `).removeClass('text-muted').addClass('text-success');
+    }
+    
+    function testValidateEmail() {
+      const email = $('#input-email').val();
+      const isValid = validateEmail(email);
+      
+      $('#result-email').html(`
+        Email: <code>${email}</code><br>
+        Resultado: <span class="badge bg-${isValid ? 'success' : 'danger'}">
+          ${isValid ? 'VÁLIDO ✓' : 'INVÁLIDO ✗'}
+        </span>
+      `).removeClass('text-muted').addClass(isValid ? 'text-success' : 'text-danger');
+    }
+    
+    function testValidateRUT() {
+      const rut = $('#input-rut').val();
+      const isValid = validateRUT(rut);
+      
+      $('#result-rut').html(`
+        RUT: <code>${rut}</code><br>
+        Resultado: <span class="badge bg-${isValid ? 'success' : 'danger'}">
+          ${isValid ? 'VÁLIDO ✓' : 'INVÁLIDO ✗'}
+        </span>
+      `).removeClass('text-muted').addClass(isValid ? 'text-success' : 'text-danger');
+    }
+    
+    function testTruncate() {
+      const text = "Este es un texto muy largo que necesita ser truncado para mostrar solo una parte.";
+      const result = truncateText(text, 30);
+      
+      $('#result-truncate').html(`
+        <strong>Original:</strong> "${text}"<br>
+        <strong>Truncado (30):</strong> <code>${result}</code>
+      `).removeClass('text-muted').addClass('text-success');
+    }
+    
+    function testSaveStorage() {
+      const testData = { 
+        nombre: 'Juan Pérez',
+        email: 'juan@test.com',
+        timestamp: new Date().toISOString()
+      };
+      
+      const success = saveToStorage('test_data', testData);
+      
+      $('#result-storage').html(`
+        <span class="badge bg-${success ? 'success' : 'danger'}">
+          ${success ? 'Guardado OK ✓' : 'Error al guardar ✗'}
+        </span>
+        <small class="d-block mt-1">Dato guardado en localStorage</small>
+      `).removeClass('text-muted').addClass('text-success');
+    }
+    
+    function testReadStorage() {
+      const data = getFromStorage('test_data', null);
+      
+      if (data) {
+        $('#result-storage').html(`
+          <span class="badge bg-success">Lectura OK ✓</span>
+          <pre class="mt-2 mb-0 small bg-light p-2 rounded">${JSON.stringify(data, null, 2)}</pre>
+        `).removeClass('text-muted').addClass('text-success');
+      } else {
+        $('#result-storage').html(`
+          <span class="badge bg-warning">No hay datos</span>
+          <small class="d-block mt-1">Primero guarda algo con el botón "Guardar"</small>
+        `).removeClass('text-muted').addClass('text-warning');
+      }
+    }
+    
+    function testClearStorage() {
+      removeFromStorage('test_data');
+      
+      $('#result-storage').html(`
+        <span class="badge bg-info">Limpiado ✓</span>
+        <small class="d-block mt-1">LocalStorage limpiado</small>
+      `).removeClass('text-muted').addClass('text-info');
+    }
+  </script>
+  
+</body>
+</html>

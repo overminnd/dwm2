@@ -1,4 +1,15 @@
-/* Reset básico */
+/* ═══════════════════════════════════════════════════════════════════════════
+   MARAZUL E-COMMERCE - ESTILOS GLOBALES
+   ═══════════════════════════════════════════════════════════════════════════
+   
+   Archivo: style.css
+   Descripción: Estilos personalizados preservando diseño original
+   Versión: 1.0
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESET BÁSICO
+   ═══════════════════════════════════════════════════════════════════════════ */
 * {
   margin: 0;
   padding: 0;
@@ -13,24 +24,25 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ================= HEADER ================= */
+/* ═══════════════════════════════════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════════════════════════════════ */
 .header {
   background-color: #003366;  /* Azul corporativo */
   color: #fff;
   padding: 15px 0;
-  border-bottom: 1px solid #000; /* línea negra inferior */
+  border-bottom: 1px solid #000; /* Línea negra inferior */
 }
 
 /* Logo como ícono */
 .logo-icon i {
-  font-size: 2rem;   /* tamaño del ícono */
-  color: #fff;       /* color blanco dentro del header */
+  font-size: 2rem;   /* Tamaño del ícono */
+  color: #fff;       /* Color blanco dentro del header */
 }
-
 
 /* Íconos del header */
 .header .header-icon i {
-  color: #fff; /* forzamos íconos blancos */
+  color: #fff; /* Forzamos íconos blancos */
 }
 
 /* Links dentro del header */
@@ -41,7 +53,7 @@ html {
 }
 
 .header .nav-link:hover {
-  color: #1d82b1 !important; /* hover amarillo */
+  color: #1d82b1 !important; /* Hover azul claro */
 }
 
 /* Botones outline dentro del header */
@@ -60,32 +72,36 @@ html {
   font-size: 0.6rem;
 }
 
-/* ================= CARRUSEL ================= */
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARRUSEL
+   ═══════════════════════════════════════════════════════════════════════════ */
 #carouselOfertas .carousel-item {
-  height: 320px; /* altura base */
+  height: 320px; /* Altura base */
 }
 
 #carouselOfertas img {
   height: 100%;
-  object-fit: cover; /* recorta sin deformar */
+  object-fit: cover; /* Recorta sin deformar */
   border-radius: 12px;
 }
 
 /* Responsividad carrusel */
 @media (max-width: 768px) {
   #carouselOfertas .carousel-item {
-    height: 220px; /* más bajo en móviles */
+    height: 220px; /* Más bajo en móviles */
   }
 }
 
 @media (min-width: 1200px) {
   #carouselOfertas .carousel-item {
-    height: 400px; /* más alto en pantallas grandes */
+    height: 400px; /* Más alto en pantallas grandes */
   }
 }
 
-/* ================= MODAL ================= */
-/* ancho de modal: en md+ ocupa ~6 columnas */
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* Ancho de modal: en md+ ocupa ~6 columnas */
 .modal-6col {
   max-width: 100%;
 }
@@ -95,7 +111,9 @@ html {
   }
 }
 
-/* ================= PRODUCTOS ================= */
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRODUCTOS
+   ═══════════════════════════════════════════════════════════════════════════ */
 .producto-title {
   font-size: clamp(1rem, 2vw, 1.5rem);
 }
@@ -106,4 +124,112 @@ html {
 
 .producto-precio {
   font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATEGORÍAS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.categoria-card {
+  transition: transform 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.categoria-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARRITO OFFCANVAS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.offcanvas-end {
+  width: 400px;
+  max-width: 90%;
+}
+
+.cart-item-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILIDADES
+   ═══════════════════════════════════════════════════════════════════════════ */
+.text-primary-custom {
+  color: #003366 !important;
+}
+
+.bg-primary-custom {
+  background-color: #003366 !important;
+}
+
+.border-primary-custom {
+  border-color: #003366 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DROPDOWN DE USUARIO - ESTILOS ADICIONALES
+   ═══════════════════════════════════════════════════════════════════════════
+   
+   INSTRUCCIONES:
+   1. Abre: frontend/css/style.css
+   2. Pega este código AL FINAL del archivo
+   3. Guarda (Ctrl + S)
+   4. Recarga página (Ctrl + Shift + R)
+   
+   ═══════════════════════════════════════════════════════════════════════════
+*/
+
+/* Dropdown de usuario - Fondo blanco */
+.user-dropdown-menu {
+  background-color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Items del dropdown - Hover effect */
+.user-dropdown-menu .dropdown-item {
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.user-dropdown-menu .dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #003366;
+}
+
+.user-dropdown-menu .dropdown-item:active {
+  background-color: #e9ecef;
+}
+
+/* Hover especial para cerrar sesión */
+.user-dropdown-menu .dropdown-item.text-danger:hover {
+  background-color: #fff5f5;
+  color: #dc3545 !important;
+}
+
+/* Quitar flecha del dropdown */
+.dropdown-toggle-no-caret::after {
+  display: none !important;
+}
+
+/* Header del dropdown */
+.user-dropdown-menu .dropdown-header {
+  font-size: 0.85rem;
+  padding: 0.75rem 1rem;
+  margin: 0;
+}
+
+/* Divider más sutil */
+.user-dropdown-menu .dropdown-divider {
+  margin: 0.25rem 0;
+  opacity: 0.5;
+}
+
+/* Ícono del botón de usuario - Hover effect */
+#user-area .btn-link:hover i {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
 }

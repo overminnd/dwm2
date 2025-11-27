@@ -3,152 +3,231 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi Proyecto</title>
-  <!-- Bootstrap CSS -->
+  <title>Quiénes Somos - MarAzul</title>
+  
+  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- CSS Custom -->
   <link rel="stylesheet" href="../css/style.css">
+  
+  <style>
+    /* Estilos minimalistas adicionales */
+    .wave-divider {
+      width: 100%;
+      height: 30px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z' fill='%23003366' opacity='0.15'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+      margin: 2rem 0;
+    }
+    
+    .value-card {
+      transition: transform 0.3s ease;
+    }
+    
+    .value-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .value-icon {
+      font-size: 2.5rem;
+      color: #003366;
+      margin-bottom: 1rem;
+    }
+    
+    .cta-section {
+      background: linear-gradient(135deg, rgba(0,51,102,0.03) 0%, rgba(0,51,102,0.08) 100%);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-top: 3rem;
+    }
+  </style>
 </head>
+
 <body>
 
-  <!-- Header dinámico -->
-  <div id="header-container"></div>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- HEADER DINÁMICO -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div id="header-container"></div>
 
-  <!-- Contenido principal -->
-  <section class="py-5">
-    <div class="container">
-      <div class="row align-items-center">
-        <!-- Texto -->
-        <div class="col-md-7">
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- CARRITO DINÁMICO -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div id="carrito-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- CONTENIDO PRINCIPAL -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      
+      <!-- Columna de Texto -->
+      <div class="col-md-7">
         <h2 class="fw-bold mb-3">Quiénes Somos</h2>
+        
         <p class="lead">
           En <strong>MarAzul</strong> creemos que la buena comida comienza con ingredientes frescos, auténticos y seleccionados con cuidado.
         </p>
+        
         <p>
           Al igual que las grandes cadenas internacionales, trabajamos bajo un compromiso sólido: ofrecer un producto que no solo cumpla con los más altos estándares de calidad, sino que también refleje la pasión y la dedicación de quienes lo hacen posible. 
         </p>
+        
         <p>
           Nuestra historia nace junto al mar, de la mano de pescadores locales que cada día llevan lo mejor de nuestras costas hasta tu mesa. Nos inspira la confianza de nuestros clientes, y por eso buscamos ser más que un mercado: queremos ser un lugar de encuentro, tradición y sabor.
         </p>
+        
         <p>
           En MarAzul, no solo vendemos pescados y mariscos; entregamos experiencias. Creemos en la pesca responsable, en cuidar nuestros océanos y en apoyar a la comunidad que hace posible este viaje del mar a tu hogar.
         </p>
       </div>
-      <!-- Imagen -->
+      
+      <!-- Columna de Imagen -->
       <div class="col-md-5 text-center">
-        <img src="https://picsum.photos/500/700?random=1" 
+        <!-- Opción 1: Océano y pescadores -->
+        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=700&fit=crop" 
              class="img-fluid rounded shadow" 
              style="height: 450px; object-fit: cover; width:100%;" 
-             alt="Imagen aleatoria">
+             alt="MarAzul - Pescados y Mariscos Frescos">
+        
+        <!-- OPCIONES ALTERNATIVAS (descomenta la que prefieras):
+        
+        Opción 2: Pescado fresco
+        <img src="https://images.unsplash.com/photo-1534766555764-ce878a5e3a2b?w=500&h=700&fit=crop" 
+             class="img-fluid rounded shadow" 
+             style="height: 450px; object-fit: cover; width:100%;" 
+             alt="Pescados frescos">
+        
+        Opción 3: Costa chilena
+        <img src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=500&h=700&fit=crop" 
+             class="img-fluid rounded shadow" 
+             style="height: 450px; object-fit: cover; width:100%;" 
+             alt="Costa chilena">
+        
+        Opción 4: Mercado de mariscos
+        <img src="https://images.unsplash.com/photo-1615485736098-7a815f8a8f7d?w=500&h=700&fit=crop" 
+             class="img-fluid rounded shadow" 
+             style="height: 450px; object-fit: cover; width:100%;" 
+             alt="Mercado de mariscos">
+        -->
       </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Buscador -->
-<div id="catalogo-container"></div>
-<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-6col">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="searchModalLabel">Buscar</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-
-      <div class="modal-body">
-        <form onsubmit="event.preventDefault();" class="mb-3">
-          <input type="search" class="form-control" placeholder="Buscar producto o categoría..." aria-label="Buscar">
-        </form>
-        <div class="small text-muted">¿Qué desea buscar?</div>
-      </div>
-
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary btn-sm">Buscar</button>
-      </div>
+      
     </div>
   </div>
-</div>
+</section>
 
-<!-- Contenedor vacío para inyectar el carrito -->
-<div id="carrito-container"></div>
+<!-- Divider Decorativo (Olas) -->
+<div class="wave-divider"></div>
 
-  <!-- Bootstrap JS -->
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-  /* ===========================
-   initHeader
-   Asociado al registro de usuarios
-   Escucha sólo las cards dentro de #productos-container
-   =========================== */
-    function initHeader() {
-    const BASE = "/MARAZUL/MARAZUL";
-    const LOGIN_URL = BASE + "/components/login.html";
-    const HISTORIAL_URL = BASE + "/components/historial.html";
-    const AJUSTES_URL = BASE + "/components/ajustes.html";
-
-    const userArea = document.getElementById("user-area");
-    if (!userArea) return;
-
-    userArea.innerHTML = ""; // limpiar
-
-    const user = JSON.parse(localStorage.getItem("marazul_current_user") || "null");
-
-    if (user) {
-        userArea.innerHTML = `
-        <div class="dropdown">
-            <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button"
-                    id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-            ${user.name || user.email}
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-            <li><h6 class="dropdown-header">${user.email}</h6></li>
-            <li><a class="dropdown-item" href="${HISTORIAL_URL}">Historial de compras</a></li>
-            <li><a class="dropdown-item" href="${AJUSTES_URL}">Ajustes de usuario</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a id="logoutBtn" class="dropdown-item text-danger" href="#">Cerrar sesión</a></li>
-            </ul>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SECCIÓN DE VALORES CORPORATIVOS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-4">
+  <div class="container">
+    <div class="row text-center g-4">
+      
+      <!-- Valor 1: Calidad Premium -->
+      <div class="col-6 col-md-3">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="bi bi-star-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Calidad Premium</h5>
+          <p class="small text-muted mb-0">
+            Productos seleccionados con los más altos estándares
+          </p>
         </div>
-        `;
+      </div>
+      
+      <!-- Valor 2: Frescura Garantizada -->
+      <div class="col-6 col-md-3">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="bi bi-droplet-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Frescura Garantizada</h5>
+          <p class="small text-muted mb-0">
+            Del mar a tu mesa en menos de 24 horas
+          </p>
+        </div>
+      </div>
+      
+      <!-- Valor 3: Pesca Sostenible -->
+      <div class="col-6 col-md-3">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="bi bi-recycle"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Pesca Sostenible</h5>
+          <p class="small text-muted mb-0">
+            Comprometidos con el cuidado de nuestros océanos
+          </p>
+        </div>
+      </div>
+      
+      <!-- Valor 4: Compromiso Local -->
+      <div class="col-6 col-md-3">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="bi bi-heart-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Compromiso Local</h5>
+          <p class="small text-muted mb-0">
+            Apoyamos a pescadores y comunidades costeras
+          </p>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
 
-        document.getElementById("logoutBtn").addEventListener("click", (e) => {
-        e.preventDefault();
-        localStorage.removeItem("marazul_current_user");
-        location.reload();
-        });
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- CALL TO ACTION -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-4">
+  <div class="container">
+    <div class="cta-section text-center">
+      <h4 class="fw-bold mb-3">¿Listo para disfrutar lo mejor del mar?</h4>
+      <p class="text-muted mb-4">
+        Explora nuestro catálogo y descubre productos frescos de la más alta calidad
+      </p>
+      <a href="/MARAZUL/MARAZUL/frontend/index.html" class="btn btn-lg text-white" style="background-color: #003366;">
+        <i class="bi bi-shop me-2"></i>
+        Explorar Productos
+      </a>
+    </div>
+  </div>
+</section>
 
-    } else {
-        userArea.innerHTML = `
-        <a class="btn btn-outline-dark btn-sm" href="${LOGIN_URL}">Iniciar Sesión</a>
-        `;
-    }
-    }
-</script>
-<!-- Scripts -->
-<script>
-    function loadComponent(containerId, filePath, callback) {
-    fetch(filePath)
-        .then(res => {
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        return res.text();
-        })
-        .then(html => {
-        document.getElementById(containerId).innerHTML = html;
-        if (typeof callback === "function") callback();
-        })
-        .catch(err => console.error("Error al cargar " + filePath, err));
-    }
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
 
-    // Como este archivo está en /components/, hay que subir un nivel:
-    loadComponent("header-container", "../components/header.html", () => {
-    if (typeof initHeader === 'function') initHeader();
-    });
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    // Cargar carrito 
-    loadComponent("carrito-container", "../components/carrito.html");
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-</script>
+<!-- Scripts del proyecto (orden importante) -->
+<script src="../js/config.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/cart.js"></script>
+<script src="../js/api.js"></script>
+
+<!-- Script específico de esta página -->
+<script src="../js/pages/quienes-somos.js"></script>
+
 </body>
 </html>

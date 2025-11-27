@@ -1,57 +1,506 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ajustes de Usuario — MarAzul</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Cuenta - MarAzul</title>
+  
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  
+  <!-- Font Awesome (para el logo del ancla) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom CSS del proyecto -->
+  <link rel="stylesheet" href="../css/style.css">
+  
+  <!-- Custom CSS -->
+  <style>
+    :root {
+      --primary-color: #003366;
+      --sidebar-bg: #f8f9fa;
+      --active-color: #2563eb;
+      --border-color: #e5e7eb;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+    
+    /* ===== LAYOUT ===== */
+    .account-container {
+      min-height: 100vh;
+      padding-top: 80px; /* Espacio para header */
+    }
+    
+    .container-fluid {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* ===== SIDEBAR ===== */
+    .account-sidebar {
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      padding: 2rem 0;
+      min-height: calc(100vh - 80px);
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .sidebar-menu li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.875rem 1.5rem;
+      color: #6b7280;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .sidebar-menu a:hover {
+      background-color: #e5e7eb;
+      color: #1f2937;
+    }
+    
+    .sidebar-menu a.active {
+      background-color: #dbeafe;
+      color: var(--active-color);
+      border-left: 3px solid var(--active-color);
+    }
+    
+    .sidebar-menu a i {
+      font-size: 1.25rem;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .sidebar-footer {
+      margin-top: 3rem;
+      padding: 0 1.5rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    .sidebar-footer i {
+      color: #9ca3af;
+      margin-right: 0.5rem;
+    }
+    
+    /* ===== CONTENT AREA ===== */
+    .account-content {
+      padding: 2rem;
+    }
+    
+    .content-header {
+      margin-bottom: 2rem;
+    }
+    
+    .content-header h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    
+    .content-section {
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+    
+    .content-section.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* ===== CARDS ===== */
+    .settings-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .settings-card h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* ===== FORMS ===== */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    
+    .form-control {
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    
+    .form-control:focus {
+      border-color: var(--active-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      background-color: var(--active-color);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    
+    .btn-outline-secondary {
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      color: #6b7280;
+      transition: all 0.2s;
+    }
+    
+    .btn-outline-secondary:hover {
+      background-color: #f3f4f6;
+      border-color: #9ca3af;
+    }
+    
+    /* ===== ALERTS ===== */
+    .alert {
+      border-radius: 8px;
+      border: none;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .alert-success {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    
+    .alert-danger {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 991px) {
+      .account-sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        min-height: auto;
+      }
+      
+      .account-content {
+        padding: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .content-header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .settings-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </head>
-<body class="bg-white">
+<body>
 
-<div class="container my-4">
-  <div class="row">
-    <!-- Sidebar -->
-    <div class="col-md-3">
-      <div class="list-group">
-        <a href="#" class="list-group-item list-group-item-action active">
-          <i class="bi bi-person"></i> Perfil
-        </a>
-        <a href="#" class="list-group-item list-group-item-action">
-          <i class="bi bi-geo-alt"></i> Direcciones
-        </a>
-        <a href="#" class="list-group-item list-group-item-action">
-          <i class="bi bi-credit-card"></i> Pago
-        </a>
-      </div>
-    </div>
+  <!-- Header Container -->
+  <div id="header-container"></div>
 
-    <!-- Contenido principal -->
-    <div class="col-md-9">
-      <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Perfil</h5>
-          <form id="perfilForm">
-            <div class="mb-3">
-              <label for="nameInput" class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="nameInput" placeholder="Tu nombre">
+  <!-- Account Container -->
+  <div class="account-container">
+    <div class="container-fluid">
+      <div class="row">
+        
+        <!-- Sidebar -->
+        <aside class="col-lg-3 col-md-4 account-sidebar">
+          <nav>
+            <ul class="sidebar-menu">
+              <li>
+                <a href="#" class="sidebar-link active" data-section="perfil">
+                  <i class="bi bi-person-circle"></i>
+                  <span>Perfil</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="sidebar-link" data-section="direcciones">
+                  <i class="bi bi-geo-alt"></i>
+                  <span>Direcciones</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="sidebar-link" data-section="pedidos">
+                  <i class="bi bi-bag-check"></i>
+                  <span>Pedidos</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          
+          <!-- User Email Footer -->
+          <div class="sidebar-footer">
+            <i class="bi bi-person-badge"></i>
+            <span id="user-email-sidebar">Cargando...</span>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="col-lg-9 col-md-8 account-content">
+      
+      <!-- Mensajes de alerta -->
+      <div id="alert-container"></div>
+      
+      <!-- ===== SECCIÓN: PERFIL ===== -->
+      <div id="perfil-section" class="content-section active">
+        <div class="content-header">
+          <h1>Perfil</h1>
+        </div>
+        
+        <!-- Card: Información Personal -->
+        <div class="settings-card">
+          <h2>Información personal</h2>
+          <form id="profile-form">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label" for="firstName">Nombre</label>
+                  <input type="text" class="form-control" id="firstName" placeholder="Tu nombre" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label" for="lastName">Apellido</label>
+                  <input type="text" class="form-control" id="lastName" placeholder="Tu apellido" required>
+                </div>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="lastnameInput" class="form-label">Apellido</label>
-              <input type="text" class="form-control" id="lastnameInput" placeholder="Tu apellido">
+            
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input type="email" class="form-control" id="email" placeholder="tu@email.com" readonly>
+              <small class="text-muted">El email no se puede cambiar</small>
             </div>
-            <div class="mb-3">
-              <label for="passwordInput" class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="passwordInput" placeholder="••••••••">
+            
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-2"></i>
+                Guardar cambios
+              </button>
             </div>
-            <button type="submit" class="btn btn-primary">Guardar</button>
           </form>
+        </div>
+        
+        <!-- Card: Cambiar Contraseña -->
+        <div class="settings-card">
+          <h2>Cambiar contraseña</h2>
+          <form id="password-form">
+            <div class="form-group">
+              <label class="form-label" for="currentPassword">Contraseña actual</label>
+              <input type="password" class="form-control" id="currentPassword" placeholder="••••••••" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="newPassword">Nueva contraseña</label>
+              <input type="password" class="form-control" id="newPassword" placeholder="••••••••" required>
+              <small class="text-muted">Mínimo 8 caracteres</small>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="confirmPassword">Confirmar nueva contraseña</label>
+              <input type="password" class="form-control" id="confirmPassword" placeholder="••••••••" required>
+            </div>
+            
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-shield-lock me-2"></i>
+                Cambiar contraseña
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ===== SECCIÓN: DIRECCIONES ===== -->
+      <div id="direcciones-section" class="content-section">
+        <div class="content-header">
+          <h1>Mis direcciones</h1>
+        </div>
+        
+        <!-- Botón agregar dirección -->
+        <div class="mb-4">
+          <button class="btn btn-primary" id="btn-add-address">
+            <i class="bi bi-plus-lg me-2"></i>
+            Guardar una nueva dirección
+          </button>
+        </div>
+        
+        <!-- Lista de direcciones -->
+        <div id="addresses-list">
+          <!-- Se cargará dinámicamente con JavaScript -->
+        </div>
+      </div>
+
+      <!-- ===== SECCIÓN: PEDIDOS ===== -->
+      <div id="pedidos-section" class="content-section">
+        <div class="content-header">
+          <h1>Mis pedidos</h1>
+        </div>
+        
+        <!-- Barra de búsqueda y filtros -->
+        <div class="settings-card mb-3">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control border-start-0" id="search-orders" placeholder="Buscar pedidos...">
+              </div>
+            </div>
+            <div class="col-md-6 text-end">
+              <label class="me-2">Mostrar:</label>
+              <select class="form-select d-inline-block w-auto" id="orders-per-page">
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabla de pedidos -->
+        <div class="settings-card">
+          <div id="orders-list">
+            <!-- Se cargará dinámicamente con JavaScript -->
+          </div>
+        </div>
+      </div>
+
+    </main>
+    
+      </div><!-- /row -->
+    </div><!-- /container-fluid -->
+  </div><!-- /account-container -->
+
+  <!-- Modal: Agregar/Editar Dirección -->
+  <div class="modal fade" id="addressModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addressModalLabel">Agregar dirección</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="address-form">
+            <input type="hidden" id="address-id">
+            
+            <div class="form-group">
+              <label class="form-label" for="address-country">País</label>
+              <select class="form-control" id="address-country" required>
+                <option value="Chile" selected>Chile</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="address-street">Calle y número</label>
+              <input type="text" class="form-control" id="address-street" placeholder="Avenida Marathon 2956" required>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label" for="address-city">Ciudad</label>
+                  <input type="text" class="form-control" id="address-city" placeholder="Macul" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label" for="address-region">Comuna/Región</label>
+                  <input type="text" class="form-control" id="address-region" placeholder="San Miguel" required>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="address-postalCode">Código postal (opcional)</label>
+              <input type="text" class="form-control" id="address-postalCode" placeholder="8320000">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="address-reference">Referencia (opcional)</label>
+              <input type="text" class="form-control" id="address-reference" placeholder="Depto 101, edificio azul">
+            </div>
+            
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="address-default">
+              <label class="form-check-label" for="address-default">
+                Marcar como dirección predeterminada
+              </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn-save-address">Guardar dirección</button>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- MarAzul Scripts -->
+  <script src="../js/config.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/pages/ajustes.js"></script>
+
 </body>
 </html>

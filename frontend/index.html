@@ -1,69 +1,115 @@
 <!DOCTYPE html>
-<html lang="es"><head>
+<html lang="es">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi Proyecto</title>
-  <!-- Bootstrap CSS -->
+  <title>MarAzul - E-commerce de Productos del Mar</title>
+  
+  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- CSS Custom -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>  
+<body>
 
-<!-- Header cargado dinámicamente -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- CONTENEDORES DINÁMICOS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div id="header-container"></div>
-
-<!-- Carrusel cargado dinámicamente -->
+<div id="carrito-container"></div>
 <div id="carrusel-container"></div>
-<!-- Productos Destacados -->
 <div id="productos-container"></div>
-<!-- Categorias -->
 <div id="categorias-container"></div>
+<div id="catalogo-container"></div>
 
-<!-- Modal integrado (DESTACADO) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL UNIFICADO PARA PRODUCTOS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="modal fade" id="productoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-body p-0">
         <div class="row g-0">
-          <!-- Izquierda: imagen (50%) -->
+          
+          <!-- Izquierda: Imagen (50%) -->
           <div class="col-md-6">
-            <img class="img-fluid w-100 h-100 object-fit-cover modal-img"
-                 src="https://picsum.photos/seed/promo1/1200/900"
+            <img id="modalProductImage"
+                 class="img-fluid w-100 h-100 object-fit-cover"
+                 src="https://picsum.photos/seed/default/1200/900"
                  alt="Imagen producto">
           </div>
 
-          <!-- Derecha: panel con título, descripción, contador y acción -->
+          <!-- Derecha: Información (50%) -->
           <div class="col-md-6 p-4 d-flex flex-column bg-white">
+            
+            <!-- Header -->
             <div class="d-flex justify-content-between align-items-start mb-3">
-              <h5 class="modal-title-dinamica mb-0">Producto</h5>
+              <h5 id="modalProductTitle" class="mb-0">Producto</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <p class="modal-full-desc text-muted mb-3">Descripción larga del producto (se carga desde la card).</p>
+            <!-- Descripción -->
+            <p id="modalProductDescription" class="text-muted mb-3">
+              Descripción del producto
+            </p>
 
             <!-- Precio unitario -->
             <div class="mb-3">
               <div class="fw-semibold">Precio unitario:</div>
-              <div class="fs-5 fw-bold modal-price">$0</div>
+              <div id="modalProductPrice" class="fs-5 fw-bold text-primary">$0</div>
             </div>
 
-            <!-- Contador -->
+            <!-- Stock -->
             <div class="mb-3">
-              <label class="form-label">Cantidad</label>
-              <div class="input-group w-50">
-                <button class="btn btn-outline-secondary" type="button" id="qtyMinus">−</button>
-                <input type="text" id="productoQty" class="form-control text-center" value="1" inputmode="numeric" pattern="\d*">
-                <button class="btn btn-outline-secondary" type="button" id="qtyPlus">+</button>
+              <div class="text-muted small">
+                <i class="bi bi-box-seam me-1"></i>
+                Stock: <span id="modalProductStock">0</span> unidades
               </div>
-              <div class="small text-muted mt-1">Si la cantidad es 0, el botón Agregar queda deshabilitado.</div>
             </div>
 
-            <div class="mt-auto d-flex justify-content-between align-items-center">
-              <div class="fw-bold fs-5 modal-total">$0</div>
-              <button id="modalAddBtn" class="btn btn-primary" disabled>Agregar</button>
+            <!-- Cantidad -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Cantidad</label>
+              <div class="input-group" style="width: 150px;">
+                <button class="btn btn-outline-secondary" type="button" id="modalQuantityMinus">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <input type="number" 
+                       class="form-control text-center" 
+                       id="modalQuantity" 
+                       value="1" 
+                       min="1"
+                       readonly>
+                <button class="btn btn-outline-secondary" type="button" id="modalQuantityPlus">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Total -->
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                <span class="fw-bold">Total:</span>
+                <span id="modalTotal" class="fs-4 fw-bold text-primary">$0</span>
+              </div>
+            </div>
+
+            <!-- Botón Agregar -->
+            <div class="mt-auto">
+              <button class="btn btn-primary w-100 btn-lg" 
+                      id="modalAddToCart"
+                      type="button">
+                <i class="bi bi-cart-plus me-2"></i>
+                Agregar al Carrito
+              </button>
             </div>
 
           </div>
@@ -73,467 +119,82 @@
   </div>
 </div>
 
-<!-- Modal integrado (CATALOGO) -->
-<div class="modal fade" id="catalogoModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-body p-0">
-        <div class="row g-0">
-          <!-- Izquierda: imagen (50%) -->
-          <div class="col-md-6">
-            <img class="img-fluid w-100 h-100 object-fit-cover modal-img"
-                 src="https://picsum.photos/seed/promo1/1200/900"
-                 alt="Imagen producto">
-          </div>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
 
-          <!-- Derecha: panel con título, descripción, contador y acción -->
-          <div class="col-md-6 p-4 d-flex flex-column bg-white">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <h5 class="modal-title-dinamica mb-0">Producto</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
+<!-- jQuery (PRIMERO) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-            <p class="modal-full-desc text-muted mb-3">Descripción larga del producto (se carga desde la card).</p>
-
-            <!-- Precio unitario -->
-            <div class="mb-3">
-              <div class="fw-semibold">Precio unitario:</div>
-              <div class="fs-5 fw-bold modal-price">$0</div>
-            </div>
-
-            <!-- Contador -->
-            <div class="mb-3">
-              <label class="form-label">Cantidad</label>
-              <div class="input-group w-50">
-                <button class="btn btn-outline-secondary" type="button" id="qtyMinus">−</button>
-                <input type="text" id="productoQty" class="form-control text-center" value="1" inputmode="numeric" pattern="\d*">
-                <button class="btn btn-outline-secondary" type="button" id="qtyPlus">+</button>
-              </div>
-              <div class="small text-muted mt-1">Si la cantidad es 0, el botón Agregar queda deshabilitado.</div>
-            </div>
-
-            <div class="mt-auto d-flex justify-content-between align-items-center">
-              <div class="fw-bold fs-5 modal-total">$0</div>
-              <button id="modalAddBtn" class="btn btn-primary" disabled>Agregar</button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Contenedor vacío para inyectar el carrito -->
-<div id="carrito-container"></div>
-
-</body>
-
+<!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Módulos MarAzul (EN ORDEN DE DEPENDENCIAS) -->
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/api.js"></script>
+
+<!-- Página específica -->
+<script src="js/pages/index.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- INICIALIZACIÓN -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
 <script>
-  document.querySelectorAll(".add-to-cart").forEach(btn => {
-  btn.addEventListener("click", (event) => {
-    event.stopPropagation(); // evita que el click se propague a la card
-    alert("Producto agregado al carrito ✅");
-  });
-});
-
-</script>
-
-<script>
-  /* ===========================
-   initHeader
-   Asociado al registro de usuarios
-   Escucha sólo las cards dentro de #productos-container
-   =========================== */
-function initHeader() {
-  const BASE = "/MARAZUL/MARAZUL";
-  const LOGIN_URL = BASE + "/components/login.html";
-  const HISTORIAL_URL = BASE + "/components/historial.html";
-  const AJUSTES_URL = BASE + "/components/ajustes.html";
-
-  const userArea = document.getElementById("user-area");
-  if (!userArea) return;
-
-  userArea.innerHTML = ""; // limpiar
-
-  const user = JSON.parse(localStorage.getItem("marazul_current_user") || "null");
-
-  if (user) {
-    userArea.innerHTML = `
-      <div class="dropdown">
-        <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button"
-                id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-          ${user.name || user.email}
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-          <li><h6 class="dropdown-header">${user.email}</h6></li>
-          <li><a class="dropdown-item" href="${HISTORIAL_URL}">Historial de compras</a></li>
-          <li><a class="dropdown-item" href="${AJUSTES_URL}">Ajustes de usuario</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a id="logoutBtn" class="dropdown-item text-danger" href="#">Cerrar sesión</a></li>
-        </ul>
-      </div>
-    `;
-
-    document.getElementById("logoutBtn").addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.removeItem("marazul_current_user");
-      location.reload();
-    });
-
-  } else {
-    userArea.innerHTML = `
-      <a class="btn btn-outline-dark btn-sm" href="${LOGIN_URL}">Iniciar Sesión</a>
-    `;
-  }
-}
-</script>
-
-<script>
-  /* ===========================
-   initProductosDestacados
-   Asociado al modal #productoModal
-   Escucha sólo las cards dentro de #productos-container
-   =========================== */
-function initProductosDestacados() {
-  const modalEl = document.getElementById('productoModal');
-  if (!modalEl) return;
-  if (modalEl.dataset.inited === '1') return; // evita doble inicialización
-  const bsModal = new bootstrap.Modal(modalEl);
-
-  const modalTitle   = modalEl.querySelector('.modal-title-dinamica');
-  const modalImg     = modalEl.querySelector('.modal-img');
-  const modalDesc    = modalEl.querySelector('.modal-full-desc');
-  const modalPriceEl = modalEl.querySelector('.modal-price');
-  const modalTotal   = modalEl.querySelector('.modal-total');
-  const qtyInput     = modalEl.querySelector('#productoQty');
-  const btnMinus     = modalEl.querySelector('#qtyMinus');
-  const btnPlus      = modalEl.querySelector('#qtyPlus');
-  const addBtn       = modalEl.querySelector('#modalAddBtn');
-  const cartBadge    = document.getElementById('cartBadge');
-
-  function formatPrice(n){ return '$' + Number(n || 0).toLocaleString('es-CL'); }
-
-  function updateTotal(basePrice){
-    let qty = parseInt(qtyInput.value) || 0;
-    if (qty < 0) qty = 0;
-    qtyInput.value = qty;
-    modalTotal.textContent = formatPrice(basePrice * qty);
-    if (addBtn) addBtn.disabled = (qty === 0);
-  }
-
-  function updateCartBadge() {
-    const total = parseInt(localStorage.getItem('marazul_cart_count') || '0');
-    if (cartBadge) {
-      cartBadge.textContent = total;
-      cartBadge.classList.toggle('d-none', total === 0);
-    }
-  }
-
-  function addToCart(qty) {
-    let total = parseInt(localStorage.getItem('marazul_cart_count') || '0');
-    total += qty;
-    localStorage.setItem('marazul_cart_count', total);
-    updateCartBadge();
-  }
-
-  const container = document.querySelector('#productos-container');
-  if (!container) {
-    // si todavía no se cargó el componente, salimos
-    modalEl.dataset.inited = '1';
-    return;
-  }
-
-  // listeners en las cards dentro del contenedor de productos destacados
-  container.querySelectorAll('.producto-card').forEach(card => {
-    const quickBtn = card.querySelector('.add-to-cart');
-    if (quickBtn) {
-      quickBtn.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        addToCart(1);
-        quickBtn.blur();
-      });
-    }
-
-    card.addEventListener('click', (ev) => {
-      if (ev.target.closest('.add-to-cart')) return;
-      const title = card.dataset.title || card.querySelector('.producto-title')?.textContent || '';
-      const img   = card.dataset.img || card.querySelector('img')?.src || '';
-      const fullDesc = card.dataset.fullDesc || card.dataset['full-desc'] || '';
-      const price = Number(card.dataset.price || card.querySelector('.producto-precio')?.dataset.price || 0);
-
-      if (modalTitle) modalTitle.textContent = title;
-      if (modalImg) modalImg.src = img;
-      if (modalDesc) modalDesc.textContent = fullDesc;
-      if (modalPriceEl) modalPriceEl.textContent = formatPrice(price);
-      modalEl.dataset.basePrice = price;
-
-      if (qtyInput) qtyInput.value = 1;
-      updateTotal(price);
-
-      bsModal.show();
-    });
-  });
-
-  // Controles del modal (proteger nulls)
-  if (btnPlus) btnPlus.addEventListener('click', () => {
-    qtyInput.value = (parseInt(qtyInput.value || 0) + 1);
-    updateTotal(Number(modalEl.dataset.basePrice || 0));
-  });
-  if (btnMinus) btnMinus.addEventListener('click', () => {
-    qtyInput.value = Math.max(0, parseInt(qtyInput.value || 0) - 1);
-    updateTotal(Number(modalEl.dataset.basePrice || 0));
-  });
-  if (qtyInput) qtyInput.addEventListener('input', () => {
-    qtyInput.value = qtyInput.value.replace(/\D/g,'');
-    if (qtyInput.value === '') qtyInput.value = '0';
-    updateTotal(Number(modalEl.dataset.basePrice || 0));
-  });
-  if (addBtn) addBtn.addEventListener('click', () => {
-    const qty = Math.max(0, parseInt(qtyInput.value || 0));
-    if (qty === 0) return;
-    addToCart(qty);
-    bsModal.hide();
-  });
-
-  updateCartBadge();
-  modalEl.dataset.inited = '1';
-}
-
-/* ===========================
-   initProductosCatalogo
-   Asociado al modal #catalogoModal
-   Escucha sólo las cards dentro de #catalogo-container
-   =========================== */
-function initProductosCatalogo() {
-  const modalEl = document.getElementById('catalogoModal');
-  if (!modalEl) return;
-  if (modalEl.dataset.inited === '1') return;
-  const bsModal = new bootstrap.Modal(modalEl);
-
-  const modalTitle   = modalEl.querySelector('.modal-title-dinamica');
-  const modalImg     = modalEl.querySelector('.modal-img');
-  const modalDesc    = modalEl.querySelector('.modal-full-desc');
-  const modalPriceEl = modalEl.querySelector('.modal-price');
-  const modalTotal   = modalEl.querySelector('.modal-total');
-  const qtyInput     = modalEl.querySelector('#productoQty'); // el mismo id interno funciona por scope
-  const btnMinus     = modalEl.querySelector('#qtyMinus');
-  const btnPlus      = modalEl.querySelector('#qtyPlus');
-  const addBtn       = modalEl.querySelector('#modalAddBtn');
-  const cartBadge    = document.getElementById('cartBadge');
-
-  function formatPrice(n){ return '$' + Number(n || 0).toLocaleString('es-CL'); }
-
-  function updateTotal(basePrice){
-    let qty = parseInt(qtyInput.value) || 0;
-    if (qty < 0) qty = 0;
-    qtyInput.value = qty;
-    modalTotal.textContent = formatPrice(basePrice * qty);
-    if (addBtn) addBtn.disabled = (qty === 0);
-  }
-
-  function updateCartBadge() {
-    const total = parseInt(localStorage.getItem('marazul_cart_count') || '0');
-    if (cartBadge) {
-      cartBadge.textContent = total;
-      cartBadge.classList.toggle('d-none', total === 0);
-    }
-  }
-
-  function addToCart(qty) {
-    let total = parseInt(localStorage.getItem('marazul_cart_count') || '0');
-    total += qty;
-    localStorage.setItem('marazul_cart_count', total);
-    updateCartBadge();
-  }
-
-  const container = document.querySelector('#catalogo-container');
-  if (!container) {
-    modalEl.dataset.inited = '1';
-    return;
-  }
-
-  container.querySelectorAll('.producto-card').forEach(card => {
-    const quickBtn = card.querySelector('.add-to-cart');
-    if (quickBtn) {
-      quickBtn.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        addToCart(1);
-        quickBtn.blur();
-      });
-    }
-
-    card.addEventListener('click', (ev) => {
-      if (ev.target.closest('.add-to-cart')) return;
-      const title = card.dataset.title || card.querySelector('.producto-title')?.textContent || '';
-      const img   = card.dataset.img || card.querySelector('img')?.src || '';
-      const fullDesc = card.dataset.fullDesc || card.dataset['full-desc'] || '';
-      const price = Number(card.dataset.price || card.querySelector('.producto-precio')?.dataset.price || 0);
-
-      if (modalTitle) modalTitle.textContent = title;
-      if (modalImg) modalImg.src = img;
-      if (modalDesc) modalDesc.textContent = fullDesc;
-      if (modalPriceEl) modalPriceEl.textContent = formatPrice(price);
-      modalEl.dataset.basePrice = price;
-
-      if (qtyInput) qtyInput.value = 1;
-      updateTotal(price);
-
-      bsModal.show();
-    });
-  });
-
-  if (btnPlus) btnPlus.addEventListener('click', () => {
-    qtyInput.value = (parseInt(qtyInput.value || 0) + 1);
-    updateTotal(Number(modalEl.dataset.basePrice || 0));
-  });
-  if (btnMinus) btnMinus.addEventListener('click', () => {
-    qtyInput.value = Math.max(0, parseInt(qtyInput.value || 0) - 1);
-    updateTotal(Number(modalEl.dataset.basePrice || 0));
-  });
-  if (qtyInput) qtyInput.addEventListener('input', () => {
-    qtyInput.value = qtyInput.value.replace(/\D/g,'');
-    if (qtyInput.value === '') qtyInput.value = '0';
-    updateTotal(Number(modalEl.dataset.basePrice || 0));
-  });
-  if (addBtn) addBtn.addEventListener('click', () => {
-    const qty = Math.max(0, parseInt(qtyInput.value || 0));
-    if (qty === 0) return;
-    addToCart(qty);
-    bsModal.hide();
-  });
-
-  updateCartBadge();
-  modalEl.dataset.inited = '1';
-}
-
-</script>
-
-<script>
-/* ======= Flags ======= */
-let catalogLoaded = false;
-
-/* Si ya llamas loadComponent para el catálogo en otra parte, modifica su callback
-   para poner catalogLoaded = true. Si no, el siguiente loadComponent lo hará. */
-
-/* ======= Helper: scroll con offset (por si tu header ocupa espacio) ======= */
-function scrollToElementById(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  // calcular offset por header fijo (si existe)
-  const header = document.querySelector('header');
-  const headerHeight = header ? header.offsetHeight : 0;
-  const top = el.getBoundingClientRect().top + window.pageYOffset - headerHeight - 10; // 10px margen
-  window.scrollTo({ top, behavior: 'smooth' });
-  // accesibilidad: focus al elemento
-  el.setAttribute('tabindex', '-1');
-  el.focus({ preventScroll: true });
-  // actualizar hash en la URL sin romper el scroll
-  history.replaceState(null, '', '#' + id);
-}
-
-/* ======= Asegurar que el catálogo esté cargado ======= */
-function ensureCatalogIsLoaded(callback) {
-  // si ya cargado -> callback
-  if (catalogLoaded || document.getElementById('catalogo-container')?.querySelectorAll('[id]').length > 0) {
-    callback();
-    return;
-  }
-
-  // Si no está cargado, cargamos el catálogo y luego callback
-  loadComponent("catalogo-container", "components/catalogo.html", () => {
-    // tu inicializador del catálogo (según tu index)
-    if (typeof initProductosCatalogo === 'function') {
-      initProductosCatalogo();
-    }
-    catalogLoaded = true;
-    // dejar un pequeño delay para que el DOM pinte
-    setTimeout(callback, 80);
-  });
-}
-
-/* ======= Inicializar botones de categorias (llamar como callback de loadComponent) ======= */
-function initCategoryButtons() {
-  const container = document.getElementById('categorias-container');
-  if (!container) return;
-
-  // seleccionar todos los anchors con data-cat dentro del contenedor cargado
-  container.querySelectorAll('a[data-cat]').forEach(link => {
-    // evitar doble-binding
-    if (link.dataset.listenerAttached === '1') return;
-    link.dataset.listenerAttached = '1';
-
-    link.addEventListener('click', function(e) {
-      e.preventDefault(); // manejamos el scroll con JS
-      const targetId = this.dataset.cat;
-      if (!targetId) return;
-
-      // si el elemento ya existe -> scroll directo
-      if (document.getElementById(targetId)) {
-        scrollToElementById(targetId);
-        return;
-      }
-
-      // sino, aseguramos que el catálogo esté cargado y luego hacemos scroll
-      ensureCatalogIsLoaded(() => {
-        // si el elemento aún no existe (por nombre de id distinto), avisar en consola
-        if (!document.getElementById(targetId)) {
-          console.warn('No se encontró la sección con id="' + targetId + '". Revisa que catalogo.html tenga ese id exacto.');
-          return;
-        }
-        scrollToElementById(targetId);
-      });
-    });
-  });
-}
-
-
-</script>
-
-<script>
-// loadComponent con callback
-function loadComponent(containerId, filePath, callback) {
-  fetch(filePath)
-    .then(res => {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.text();
-    })
-    .then(html => {
-      document.getElementById(containerId).innerHTML = html;
-      if (typeof callback === "function") callback();
-    })
-    .catch(err => console.error("Error al cargar " + filePath, err));
-}
+$(document).ready(function() {
+  console.log('🚀 Inicializando index.html (COMPONENTE 10.1)...');
+  console.log('📦 Usando UTILS.loadComponent() desde utils.js');
   
-  // Cargar header primero
-  loadComponent("header-container", "components/header.html", () => {
-    // inicializamos comportamiento del header cuando ya esté en el DOM
-    if (typeof initHeader === 'function') initHeader();
+  // Verificar que UTILS existe
+  if (typeof UTILS === 'undefined' || typeof UTILS.loadComponent !== 'function') {
+    console.error('❌ CRÍTICO: UTILS.loadComponent no está disponible');
+    console.error('   Verifica que js/utils.js esté cargado correctamente');
+    return;
+  }
+  
+  // Cargar componentes usando UTILS.loadComponent
+  UTILS.loadComponent("header-container", "components/header.html", function() {
+    // Inicializar header después de cargarlo
+    if (typeof initHeader === 'function') {
+      initHeader();
+    }
   });
-
-// Llamadas (index.html)
-loadComponent("carrito-container", "components/carrito.html");
-
-
-// Carrusel (si usas initCarrusel, aquí iría)
-loadComponent("carrusel-container", "components/carrusel.html"/*, initCarrusel */);
-
-// Productos destacados
-loadComponent("productos-container", "components/ProductoDestacado.html", () => {
-  initProductosDestacados();
+  
+  UTILS.loadComponent("carrito-container", "components/carrito.html");
+  UTILS.loadComponent("carrusel-container", "components/carrusel.html");
+  
+  // PRODUCTOS DESTACADOS - Llamar a loadFeaturedProducts() después de cargar el componente
+  UTILS.loadComponent("productos-container", "components/ProductoDestacado.html", function() {
+    console.log('✅ ProductoDestacado.html cargado, ejecutando loadFeaturedProducts()...');
+    if (typeof loadFeaturedProducts === 'function') {
+      loadFeaturedProducts(4);
+    } else {
+      console.error('❌ loadFeaturedProducts no está definida');
+    }
+  });
+  
+  UTILS.loadComponent("categorias-container", "components/categorias.html", function() {
+    console.log('✅ categorias.html cargado, ejecutando initCategoryButtons()...');
+    if (typeof initCategoryButtons === 'function') {
+      initCategoryButtons();
+    }
+  });
+  
+  // CATÁLOGO - Llamar a loadCatalog() después de cargar el componente
+  UTILS.loadComponent("catalogo-container", "components/catalogo.html", function() {
+    console.log('✅ catalogo.html cargado, ejecutando loadCatalog()...');
+    if (typeof loadCatalog === 'function') {
+      loadCatalog();
+    } else {
+      console.error('❌ loadCatalog no está definida');
+    }
+  });
+  
+  console.log('✅ Todos los componentes se están cargando...');
 });
-
-// Catálogo
-loadComponent("catalogo-container", "components/catalogo.html", () => {
-  initProductosCatalogo();
-});
-
-// CATEGORÍAS (nuestro nuevo archivo)
-loadComponent("categorias-container", "components/categorias.html", () => {
-  initCategoryButtons();
-});
-
 </script>
 
+</body>
+</html>

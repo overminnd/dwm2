@@ -1,27 +1,144 @@
-<!-- carrusel.html -->
-<section class="mt-3">
-  <div class="container">
-    <div id="carouselOfertas" class="carousel slide" data-bs-ride="carousel">
-      
-      <div class="carousel-inner rounded shadow">
-        <div class="carousel-item active">
-          <img src="https://picsum.photos/seed/oferta1/1200/600" class="d-block w-100 img-carrusel" alt="Oferta 1">
-        </div>
-        <div class="carousel-item">
-          <img src="https://picsum.photos/seed/oferta2/1200/600" class="d-block w-100 img-carrusel" alt="Oferta 2">
-        </div>
-        <div class="carousel-item">
-          <img src="https://picsum.photos/seed/oferta3/1200/600" class="d-block w-100 img-carrusel" alt="Oferta 3">
-        </div>
-      </div>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CARRUSEL DE OFERTAS - MARAZUL E-COMMERCE
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     Diseño preservado del original:
+     - 3 slides con imágenes hero (1200x400)
+     - Captions con títulos y descripciones
+     - Controles de navegación
+     - Indicadores
+     - Autoplay cada 5 segundos
+     - Border-radius 12px
+     - Responsive: altura 220px móvil, 320px tablet, 400px desktop
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
-      <!-- Controles -->
-      <button class="carousel-control-prev" type="button" data-bs-target="#carouselOfertas" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
+<section class="container my-4">
+  
+  <div id="carouselOfertas" 
+       class="carousel slide carousel-fade" 
+       data-bs-ride="carousel"
+       data-bs-interval="5000">
+    
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- INDICADORES -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="carousel-indicators">
+      <button type="button" 
+              data-bs-target="#carouselOfertas" 
+              data-bs-slide-to="0" 
+              class="active" 
+              aria-current="true" 
+              aria-label="Slide 1">
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#carouselOfertas" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
+      <button type="button" 
+              data-bs-target="#carouselOfertas" 
+              data-bs-slide-to="1" 
+              aria-label="Slide 2">
+      </button>
+      <button type="button" 
+              data-bs-target="#carouselOfertas" 
+              data-bs-slide-to="2" 
+              aria-label="Slide 3">
       </button>
     </div>
+    
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SLIDES -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="carousel-inner">
+      
+      <!-- SLIDE 1: Productos Frescos -->
+      <div class="carousel-item active">
+        <img src="https://picsum.photos/seed/marazul-hero1/1200/400" 
+             class="d-block w-100" 
+             alt="Productos frescos del mar">
+        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
+          <h3 class="fw-bold">Productos Frescos del Mar</h3>
+          <p class="mb-2">Calidad garantizada desde 1990</p>
+          <a href="#catalogo" class="btn btn-light btn-sm">
+            <i class="bi bi-eye me-2"></i>
+            Ver Catálogo
+          </a>
+        </div>
+      </div>
+      
+      <!-- SLIDE 2: Envíos -->
+      <div class="carousel-item">
+        <img src="https://picsum.photos/seed/marazul-hero2/1200/400" 
+             class="d-block w-100" 
+             alt="Envíos a todo Chile">
+        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
+          <h3 class="fw-bold">Envíos a Todo Chile</h3>
+          <p class="mb-2">Rápido y seguro a tu puerta</p>
+          <a href="#productos-destacados" class="btn btn-light btn-sm">
+            <i class="bi bi-truck me-2"></i>
+            Conocer Más
+          </a>
+        </div>
+      </div>
+      
+      <!-- SLIDE 3: Variedad -->
+      <div class="carousel-item">
+        <img src="https://picsum.photos/seed/marazul-hero3/1200/400" 
+             class="d-block w-100" 
+             alt="Variedad de productos">
+        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
+          <h3 class="fw-bold">Variedad de Productos</h3>
+          <p class="mb-2">Más de 50 especies disponibles</p>
+          <a href="#categorias" class="btn btn-light btn-sm">
+            <i class="bi bi-grid me-2"></i>
+            Ver Categorías
+          </a>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- CONTROLES DE NAVEGACIÓN -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <button class="carousel-control-prev" 
+            type="button" 
+            data-bs-target="#carouselOfertas" 
+            data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Anterior</span>
+    </button>
+    
+    <button class="carousel-control-next" 
+            type="button" 
+            data-bs-target="#carouselOfertas" 
+            data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Siguiente</span>
+    </button>
+    
   </div>
+  
 </section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     ESTILOS APLICADOS DESDE style.css:
+     
+     #carouselOfertas .carousel-item {
+       height: 320px; (base)
+     }
+     
+     #carouselOfertas img {
+       height: 100%;
+       object-fit: cover;
+       border-radius: 12px;
+     }
+     
+     @media (max-width: 768px) {
+       #carouselOfertas .carousel-item {
+         height: 220px;
+       }
+     }
+     
+     @media (min-width: 1200px) {
+       #carouselOfertas .carousel-item {
+         height: 400px;
+       }
+     }
+     ═══════════════════════════════════════════════════════════════════════════ -->

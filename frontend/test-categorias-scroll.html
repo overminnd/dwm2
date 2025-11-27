@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEST - Componente 7: Categorías con Scroll | MarAzul</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  
+  <!-- CSS del proyecto -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <style>
+    body {
+      padding-top: 20px;
+      background-color: #f8f9fa;
+    }
+    
+    .test-header {
+      background: linear-gradient(135deg, #003366 0%, #4db6ac 100%);
+      color: white;
+      padding: 30px 0;
+      margin-bottom: 30px;
+      border-radius: 10px;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 5px;
+    }
+    
+    .status-success { background: #28a745; color: white; }
+    .status-error { background: #dc3545; color: white; }
+    
+    .checklist {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .checklist h4 {
+      color: #003366;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #4db6ac;
+      padding-bottom: 10px;
+    }
+    
+    .checklist-item {
+      padding: 10px;
+      margin: 5px 0;
+      border-left: 3px solid #e9ecef;
+    }
+    
+    .code-block {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    /* Estilos de categorías */
+    .categoria-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .category-link:hover {
+      text-decoration: none !important;
+    }
+    
+    /* Estilos del catálogo */
+    .catalogo-section {
+      margin-bottom: 50px;
+      scroll-margin-top: 100px; /* Offset para scroll */
+    }
+    
+    .catalogo-section h3 {
+      color: #003366;
+      border-bottom: 3px solid #4db6ac;
+      padding-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container">
+    
+    <!-- Header del Test -->
+    <div class="test-header text-center">
+      <h1>🧪 TEST - COMPONENTE 7</h1>
+      <h2>Categorías con Scroll Suave</h2>
+      <p class="mb-0">Prueba de navegación a secciones del catálogo</p>
+    </div>
+    
+    <!-- Checklist de Verificación -->
+    <div class="checklist">
+      <h4>✅ Checklist de Verificación</h4>
+      
+      <div class="checklist-item">
+        <input type="checkbox" id="check1"> 6 botones de categorías se muestran
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check2"> Cada botón tiene su color único correcto
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check3"> Hover en botones funciona (translateY)
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check4"> Click en PESCADO → scroll a #pescado
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check5"> Click en MARISCOS → scroll a #mariscos
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check6"> Click en CONGELADO → scroll a #congelado
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check7"> Scroll suave (animado 800ms)
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check8"> Offset correcto (100px desde top)
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check9"> Catálogo se carga si no existe
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check10"> Logs claros en consola
+      </div>
+    </div>
+    
+    <!-- Sección de Categorías -->
+    <section class="categorias py-5 bg-white rounded shadow-sm mb-4">
+      <div class="container">
+        <h2 class="text-center mb-4">Categorías</h2>
+        
+        <div class="row g-4">
+          
+          <!-- Categoría 1: PESCADO -->
+          <div class="col-6 col-md-4">
+            <a href="#pescado" data-cat="pescado" class="text-decoration-none category-link">
+              <div class="categoria-card text-white text-center p-4 rounded shadow-sm h-100" 
+                   style="background-color: #4db6ac; transition: transform 0.3s;">
+                <i class="bi bi-water fs-1 mb-2"></i>
+                <h3 class="fw-bold mb-2">PESCADO</h3>
+                <p class="mb-0 small">Frescos del día</p>
+              </div>
+            </a>
+          </div>
+          
+          <!-- Categoría 2: MARISCOS -->
+          <div class="col-6 col-md-4">
+            <a href="#mariscos" data-cat="mariscos" class="text-decoration-none category-link">
+              <div class="categoria-card text-white text-center p-4 rounded shadow-sm h-100" 
+                   style="background-color: #2e7d32; transition: transform 0.3s;">
+                <i class="bi bi-stars fs-1 mb-2"></i>
+                <h3 class="fw-bold mb-2">MARISCOS</h3>
+                <p class="mb-0 small">Variedad premium</p>
+              </div>
+            </a>
+          </div>
+          
+          <!-- Categoría 3: CONGELADO -->
+          <div class="col-6 col-md-4">
+            <a href="#congelado" data-cat="congelado" class="text-decoration-none category-link">
+              <div class="categoria-card text-white text-center p-4 rounded shadow-sm h-100" 
+                   style="background-color: #c62828; transition: transform 0.3s;">
+                <i class="bi bi-snow fs-1 mb-2"></i>
+                <h3 class="fw-bold mb-2">CONGELADO</h3>
+                <p class="mb-0 small">Calidad garantizada</p>
+              </div>
+            </a>
+          </div>
+          
+          <!-- Categoría 4: CONSERVAS -->
+          <div class="col-6 col-md-4">
+            <a href="#conservas" data-cat="conservas" class="text-decoration-none category-link">
+              <div class="categoria-card text-white text-center p-4 rounded shadow-sm h-100" 
+                   style="background-color: #f9a825; transition: transform 0.3s;">
+                <i class="bi bi-box-seam fs-1 mb-2"></i>
+                <h3 class="fw-bold mb-2">CONSERVAS</h3>
+                <p class="mb-0 small">Larga duración</p>
+              </div>
+            </a>
+          </div>
+          
+          <!-- Categoría 5: PREPARADOS -->
+          <div class="col-6 col-md-4">
+            <a href="#preparados" data-cat="preparados" class="text-decoration-none category-link">
+              <div class="categoria-card text-white text-center p-4 rounded shadow-sm h-100" 
+                   style="background-color: #ab47bc; transition: transform 0.3s;">
+                <i class="bi bi-egg-fried fs-1 mb-2"></i>
+                <h3 class="fw-bold mb-2">PREPARADOS</h3>
+                <p class="mb-0 small">Listos para cocinar</p>
+              </div>
+            </a>
+          </div>
+          
+          <!-- Categoría 6: ESPECIALIDADES -->
+          <div class="col-6 col-md-4">
+            <a href="#especialidades" data-cat="especialidades" class="text-decoration-none category-link">
+              <div class="categoria-card text-center p-4 rounded shadow-sm h-100" 
+                   style="background-color: #d4e157; transition: transform 0.3s; color: #333;">
+                <i class="bi bi-star-fill fs-1 mb-2" style="color: #333;"></i>
+                <h3 class="fw-bold mb-2" style="color: #333;">ESPECIALIDADES</h3>
+                <p class="mb-0 small" style="color: #555;">Productos únicos</p>
+              </div>
+            </a>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+    
+    <!-- Separador visual -->
+    <div class="text-center my-5">
+      <i class="bi bi-arrow-down-circle fs-1 text-primary"></i>
+      <p class="mt-2 text-muted">Scroll hacia abajo para ver las secciones del catálogo</p>
+    </div>
+    
+    <!-- Catálogo (secciones de destino) -->
+    <section class="catalogo py-5" style="background: white; border-radius: 10px;">
+      <div class="container">
+        <h2 class="text-center mb-5">Catálogo Completo</h2>
+        
+        <div id="catalogo-sections-container">
+          <!-- Las secciones se cargan dinámicamente -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- Logs de Consola -->
+    <div class="checklist mt-4">
+      <h4>📋 Logs de Consola</h4>
+      <div id="console-logs" class="code-block">
+        <div class="text-muted">Los logs aparecerán aquí...</div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- CONFIG -->
+  <script>
+    const CONFIG = {
+      BASE_PATH: '/MARAZUL/MARAZUL/frontend',
+      API_URL: 'http://localhost:5000/api',
+      DEFAULT_IMAGE: 'https://via.placeholder.com/400x300?text=Sin+Imagen',
+      isProduction: false
+    };
+  </script>
+  
+  <!-- UTILS -->
+  <script>
+    function formatPrice(price) {
+      return '$' + price.toLocaleString('es-CL');
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function getAuthToken() {
+      return localStorage.getItem('marazul_token');
+    }
+    
+    // Logger personalizado
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    function addLogToPage(message, type = 'log') {
+      const logsContainer = document.getElementById('console-logs');
+      const timestamp = new Date().toLocaleTimeString();
+      
+      let color = 'text-success';
+      if (type === 'error') color = 'text-danger';
+      if (type === 'warn') color = 'text-warning';
+      
+      const logEntry = document.createElement('div');
+      logEntry.className = color;
+      logEntry.innerHTML = `[${timestamp}] ${message}`;
+      
+      logsContainer.appendChild(logEntry);
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      addLogToPage(args.join(' '), 'log');
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      addLogToPage(args.join(' '), 'error');
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      addLogToPage(args.join(' '), 'warn');
+    };
+  </script>
+  
+  <!-- API CLIENT simplificado -->
+  <script>
+    async function apiRequest(method, endpoint) {
+      try {
+        const url = CONFIG.API_URL + endpoint;
+        const response = await $.ajax({ url, method, dataType: 'json' });
+        return { success: true, data: response.data || [] };
+      } catch (error) {
+        return { success: false, data: [], error: { message: 'Error de conexión' } };
+      }
+    }
+    
+    async function getProducts(filters = {}) {
+      const params = new URLSearchParams();
+      if (filters.categoryId) params.append('categoryId', filters.categoryId);
+      if (filters.limit) params.append('limit', filters.limit);
+      
+      const endpoint = '/products' + (params.toString() ? '?' + params : '');
+      return await apiRequest('GET', endpoint);
+    }
+    
+    async function getCategories() {
+      return await apiRequest('GET', '/categories');
+    }
+  </script>
+  
+  <!-- INDEX.JS (Componentes 5, 6, 7) -->
+  <script src="js/pages/index.js"></script>
+  
+  <!-- Inicialización -->
+  <script>
+    $(document).ready(function() {
+      console.log('🧪 Iniciando test del Componente 7...');
+      console.log('✅ Test inicializado. Haz click en alguna categoría para probar el scroll.');
+    });
+  </script>
+  
+</body>
+</html>

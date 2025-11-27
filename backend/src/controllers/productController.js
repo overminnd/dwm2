@@ -8,67 +8,119 @@ import { Product, Category } from '../models/index.js';
 // @access  Public
 export const getAllProducts = async (req, res) => {
   try {
-    const { 
-      category, 
-      featured, 
-      status = 'published',
+    // ═══════════════════════════════════════════════════════════════════
+    // EXTRAER QUERY PARAMETERS
+    // ═══════════════════════════════════════════════════════════════════
+    const {
+      featured,
+      category,      // Slug de categoría (ej: "pescado")
+      categoryId,    // ✅ NUEVO: ObjectId directo
       search,
+      minPrice,
+      maxPrice,
+      sort = '-createdAt',
       page = 1,
-      limit = 12,
-      sort = '-createdAt'
+      limit = 20
     } = req.query;
 
-    // Construir filtro
-    const filter = { status };
+    // ═══════════════════════════════════════════════════════════════════
+    // CONSTRUIR FILTROS
+    // ═══════════════════════════════════════════════════════════════════
+    const filters = {};
 
-    // Filtrar por categoría
-    if (category) {
-      const cat = await Category.findOne({ slug: category });
-      if (cat) {
-        filter.categoryId = cat._id;
+    // ✅ FILTRO POR FEATURED
+    if (featured !== undefined) {
+      filters.featured = featured === 'true' || featured === true;
+      console.log('🔍 Filtro featured aplicado:', filters.featured);
+    }
+
+    // ✅ FILTRO POR CATEGORÍA (MEJORADO - SOPORTA AMBOS)
+    if (categoryId) {
+      // OPCIÓN 1: categoryId viene directamente como ObjectId
+      filters.categoryId = categoryId;
+      console.log('🔍 Filtro categoryId (directo) aplicado:', categoryId);
+    } else if (category) {
+      // OPCIÓN 2: category viene como slug, buscar el ObjectId
+      const categoryDoc = await Category.findOne({ 
+        slug: category.toLowerCase() 
+      });
+      
+      if (categoryDoc) {
+        filters.categoryId = categoryDoc._id;
+        console.log('🔍 Filtro category (slug) aplicado:', category, '→', categoryDoc._id);
+      } else {
+        console.warn('⚠️ Categoría no encontrada:', category);
       }
     }
 
-    // Filtrar por destacados
-    if (featured === 'true') {
-      filter.featured = true;
-    }
-
-    // Búsqueda por nombre o descripción
+    // Filtro por búsqueda (nombre o descripción)
     if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
+      filters.$or = [
+        { name: { $regex: new RegExp(search, 'i') } },
+        { description: { $regex: new RegExp(search, 'i') } },
+        { shortDescription: { $regex: new RegExp(search, 'i') } }
       ];
     }
 
-    // Paginación
-    const skip = (page - 1) * limit;
+    // Filtro por rango de precio
+    if (minPrice || maxPrice) {
+      filters.price = {};
+      if (minPrice) filters.price.$gte = Number(minPrice);
+      if (maxPrice) filters.price.$lte = Number(maxPrice);
+    }
 
-    // Consulta
-    const products = await Product.find(filter)
+    // Solo productos publicados
+    filters.status = 'published';
+
+    // ═══════════════════════════════════════════════════════════════════
+    // LOG PARA DEBUGGING
+    // ═══════════════════════════════════════════════════════════════════
+    console.log('🔎 Filtros aplicados:', JSON.stringify(filters, null, 2));
+
+    // ═══════════════════════════════════════════════════════════════════
+    // CALCULAR PAGINACIÓN
+    // ═══════════════════════════════════════════════════════════════════
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    // ═══════════════════════════════════════════════════════════════════
+    // EJECUTAR QUERY
+    // ═══════════════════════════════════════════════════════════════════
+    const products = await Product.find(filters)
       .populate('categoryId', 'name slug')
       .sort(sort)
+      .limit(limitNumber)
       .skip(skip)
-      .limit(parseInt(limit));
+      .lean();
 
-    // Total de productos (para paginación)
-    const total = await Product.countDocuments(filter);
+    // Contar total de productos con estos filtros
+    const totalProducts = await Product.countDocuments(filters);
 
-    res.json({
+    // ═══════════════════════════════════════════════════════════════════
+    // RESPUESTA
+    // ═══════════════════════════════════════════════════════════════════
+    console.log(`✅ ${products.length} productos encontrados de ${totalProducts} totales`);
+
+    res.status(200).json({
       success: true,
       data: products,
       pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
+        currentPage: pageNumber,
+        totalPages: Math.ceil(totalProducts / limitNumber),
+        totalProducts,
+        productsPerPage: limitNumber,
+        hasNextPage: pageNumber * limitNumber < totalProducts,
+        hasPrevPage: pageNumber > 1
       }
     });
+
   } catch (error) {
+    console.error('❌ Error en getAllProducts:', error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Error al obtener productos',
+      error: error.message
     });
   }
 };
