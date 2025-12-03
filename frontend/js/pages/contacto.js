@@ -347,7 +347,8 @@ async function handleSubmit(event) {
   
   // Formulario válido, enviar al backend
   console.log('✅ Formulario válido, enviando al backend...');
-  await sendContactMessage(formData);
+  await submitContactForm(formData);
+
 }
 
 /**
@@ -374,19 +375,14 @@ function getFormData() {
  * 
  * @param {Object} data - Datos del formulario
  */
-async function sendContactMessage(data) {
+async function submitContactForm(data) {
   try {
     // Activar estado de loading
     setLoadingState(true);
     
-    // Enviar al backend usando jQuery AJAX
-    const response = await $.ajax({
-      url: `${CONFIG.API_BASE_URL}/contact`,
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(data),
-      timeout: 10000 // 10 segundos de timeout
-    });
+// Enviar al backend usando el cliente API centralizado
+    const response = await sendContactMessage(data);
+
     
     console.log('✅ Respuesta del backend:', response);
     

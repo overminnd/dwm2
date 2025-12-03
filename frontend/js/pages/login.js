@@ -219,7 +219,7 @@ async function handleLogin() {
       // Esperar 1.5 segundos antes de redirigir (dar tiempo a que localStorage se sincronice)
       setTimeout(() => {
         console.log('🔄 Redirigiendo a index.html...');
-        window.location.href = '/MARAZUL/MARAZUL/frontend/index.html';
+        window.location.href = CONFIG.ROUTES.HOME;
       }, 1500);
       
     } else {
@@ -373,7 +373,7 @@ $(document).ready(function() {
   // Verificar si el usuario ya está autenticado
   if (isAuthenticated()) {
     console.log('⚠️ Usuario ya autenticado, redirigiendo...');
-    window.location.href = '/MARAZUL/MARAZUL/frontend/index.html';
+    window.location.href = CONFIG.ROUTES.HOME;
     return;
   }
   

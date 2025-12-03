@@ -74,8 +74,8 @@ function checkAuthenticationAndLoadOrders() {
   if (!userString) {
     console.log('❌ Usuario no autenticado. Redirigiendo a login...');
     // Redirigir a login
-    window.location.href = '/MARAZUL/MARAZUL/frontend/components/login.html';
-    return;
+    window.location.href = CONFIG.ROUTES.LOGIN;
+
   }
   
   try {
@@ -86,7 +86,7 @@ function checkAuthenticationAndLoadOrders() {
     loadOrders();
   } catch (error) {
     console.error('❌ Error al parsear usuario:', error);
-    window.location.href = '/MARAZUL/MARAZUL/frontend/components/login.html';
+    window.location.href = CONFIG.ROUTES.LOGIN;
   }
 }
 

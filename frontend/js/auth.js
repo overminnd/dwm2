@@ -345,63 +345,81 @@ function checkRecentLoginAndUpdate() {
  */
 function renderUserDropdown(user) {
   const $userArea = $('#user-area');
-  
+
   const userEmail = user.email || 'Usuario';
-  const userName = user.firstName || user.name || userEmail;
-  
+  const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || userEmail;
+
   const dropdownHTML = `
-    <div class="dropdown">
-      <button class="btn btn-link text-white p-0 dropdown-toggle-no-caret" 
-              type="button" 
-              id="userDropdown" 
-              data-bs-toggle="dropdown" 
-              aria-expanded="false"
-              style="text-decoration: none;"
-              title="${escapeHtml(userName)}">
-        <i class="bi bi-person-circle fs-4"></i>
+    <div class="dropdown user-dropdown-wrapper">
+
+      <!-- BOTÓN IDENTICO AL CARRITO -->
+      <button
+        class="btn btn-outline-dark d-flex align-items-center gap-2"
+        type="button"
+        id="userDropdown"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+        style="
+          height: 31px;
+          padding: 0 10px;
+          color: white;
+          border-color: white;
+          font-size: 0.9rem;
+        "
+      >
+        <i class="bi bi-person-circle" style="font-size: 1rem;"></i>
+        <span class="fw-semibold">${escapeHtml(fullName)}</span>
       </button>
-      <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu shadow" 
-          aria-labelledby="userDropdown"
-          style="min-width: 220px; border: 1px solid #dee2e6; background-color: #ffffff;">
+
+      <!-- DROPDOWN CENTRADO BAJO EL BOTÓN -->
+      <ul
+        class="dropdown-menu dropdown-menu-end user-dropdown-menu shadow"
+        aria-labelledby="userDropdown"
+        style="min-width: 240px; border: 1px solid #dee2e6; background-color: #ffffff;"
+      >
+
         <li>
           <div class="dropdown-header bg-light border-bottom px-3 py-2">
-            <i class="bi bi-person-fill me-2" style="color: #003366;"></i>
             <small class="text-dark fw-bold d-block text-truncate">${escapeHtml(userEmail)}</small>
           </div>
         </li>
-        <li>
-          <a class="dropdown-item py-2 px-3" href="${CONFIG.ROUTES.HISTORIAL}">
-            <i class="bi bi-box-seam me-2" style="color: #003366;"></i>
-            Mis compras
-          </a>
-        </li>
+
         <li>
           <a class="dropdown-item py-2 px-3" href="${CONFIG.ROUTES.AJUSTES}">
             <i class="bi bi-gear me-2" style="color: #003366;"></i>
             Mi cuenta
           </a>
         </li>
+
         <li><hr class="dropdown-divider my-1"></li>
+
         <li>
           <a class="dropdown-item py-2 px-3 text-danger" href="#" id="logout-btn">
             <i class="bi bi-box-arrow-right me-2"></i>
             Cerrar sesión
           </a>
         </li>
+
       </ul>
     </div>
   `;
-  
+
   $userArea.html(dropdownHTML);
-  
-  // Evento logout
-  $('#logout-btn').on('click', function(e) {
+
+  $('#logout-btn').on('click', function (e) {
     e.preventDefault();
     logout();
   });
-  
-  console.log('👤 Dropdown de usuario renderizado');
+
+  console.log("✅ Botón de usuario renderizado con estilo igual al carrito");
 }
+
+
+
+
+
+
+
 
 /**
  * Renderiza el botón de login para usuarios no autenticados
@@ -487,6 +505,49 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+async function syncLocalCartIntoBackend() {
+  const localCart = getFromStorage(CONFIG.STORAGE_KEYS.CART, []);
+
+  if (!localCart || localCart.length === 0) {
+    console.log("🟦 No hay carrito local para sincronizar.");
+    return;
+  }
+
+  console.log("🔄 Fusionando carrito local → backend...", localCart);
+
+  for (const item of localCart) {
+    await addToCartBackend(item.productId, item.quantity);
+  }
+
+  // Limpia carrito local para evitar duplicación
+  saveToStorage(CONFIG.STORAGE_KEYS.CART, []);
+}
+
+async function refreshLocalCartFromBackend() {
+  const response = await getCartFromBackend();
+
+  if (!response.success) {
+    console.error("❌ No se pudo refrescar carrito desde backend");
+    return;
+  }
+
+  const backendItems = response.data.items || response.data;
+
+  const normalized = backendItems.map(item => ({
+    cartItemId: item._id,
+    productId: item.productId._id,
+    name: item.productId.name,
+    price: item.unitPrice,
+    image: item.productId.mainImage,
+    quantity: item.quantity
+  }));
+
+  saveToStorage(CONFIG.STORAGE_KEYS.CART, normalized);
+
+  console.log("🟢 Carrito local actualizado con backend:", normalized);
+}
+
+
 // ═══════════════════════════════════════════════════════════════════════════
 // EVENTOS GLOBALES
 // ═══════════════════════════════════════════════════════════════════════════
@@ -503,13 +564,22 @@ $(document).on('cart:updated', function() {
  * Escuchar evento de login exitoso
  * Cuando el usuario hace login, actualizar el header inmediatamente
  */
-$(document).on('auth:login', function(event, user) {
+$(document).on('auth:login', async function(event, user) {
   console.log('✅ Evento login detectado:', user.email || user.name);
-  
-  // Asegurar que el usuario esté guardado
+
+  // Asegurar que el usuario fue guardado
   setCurrentUser(user);
-  
-  // Actualizar header inmediatamente si está disponible
+
+  // 🔄 1. Fusionar carrito local → backend
+  await syncLocalCartIntoBackend();
+
+  // 🔄 2. Refrescar carrito local con datos reales del backend
+  await refreshLocalCartFromBackend();
+
+  // 🔄 3. Actualizar badge del carrito
+  updateCartBadge();
+
+  // 🔄 4. Re-renderizar header
   setTimeout(function() {
     if ($('#user-area').length > 0) {
       console.log('🔄 Actualizando header después de login...');
@@ -517,6 +587,7 @@ $(document).on('auth:login', function(event, user) {
     }
   }, 200);
 });
+
 
 /**
  * Escuchar evento de logout
@@ -584,3 +655,15 @@ $(document).ready(function() {
   // Verificar si hubo un login reciente y actualizar header
   setTimeout(checkRecentLoginAndUpdate, 100);
 });
+
+function updateHeaderCartVisibility() {
+    const wrapper = document.getElementById("header-cart-wrapper");
+
+    if (!wrapper) return;
+
+    if (isAuthenticated()) {
+        wrapper.style.display = "block";  // mostrar carrito
+    } else {
+        wrapper.style.display = "none";   // ocultar carrito
+    }
+}

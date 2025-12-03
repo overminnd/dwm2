@@ -61,76 +61,45 @@ $.ajaxSetup({
  * });
  */
 async function apiRequest(method, endpoint, data = null, options = {}) {
-  try {
-    // Construir URL completa
-    const url = CONFIG.API_URL + endpoint;
-    
-    // Obtener token de autenticación
-    const token = getAuthToken();
-    
-    // Configurar headers
-    const headers = {
-      'Content-Type': 'application/json',
-      ...options.headers
-    };
-    
-    // Agregar token si existe
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    // Configuración de la petición
-    const ajaxConfig = {
-      url: url,
-      method: method.toUpperCase(),
-      headers: headers,
-      dataType: 'json',
-      ...options
-    };
-    
-    // Agregar datos si existen
-    if (data && (method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT' || method.toUpperCase() === 'PATCH')) {
-      ajaxConfig.data = JSON.stringify(data);
-    }
-    
-    // Log en desarrollo
-    if (!CONFIG.isProduction) {
-      console.log('🌐 API Request:', method, endpoint);
-      if (data) console.log('   Data:', data);
-    }
-    
-    // Realizar petición
-    const response = await $.ajax(ajaxConfig);
-    
-    // Log en desarrollo
-    if (!CONFIG.isProduction) {
-      console.log('✅ API Response:', response);
-    }
-    
-    // ═══════════════════════════════════════════════════════════════════
-    // RETORNAR RESPUESTA DEL BACKEND
-    // ═══════════════════════════════════════════════════════════════════
-    
-    // IMPORTANTE: Solo normalizar si la respuesta tiene el formato data/pagination
-    // Respuestas como login retornan { success, token, user } directamente
-    
-    if (response.data !== undefined || response.Datos !== undefined || response.datos !== undefined) {
-      // Formato con data/pagination → Normalizar
-      return {
-        success: response.success !== false,
-        data: response.data || response.Datos || response.datos || [],
-        pagination: response.pagination || response.Paginación || response.paginacion || null,
-        error: null
-      };
-    } else {
-      // Formato directo (login, register, etc.) → Retornar tal cual
-      return response;
-    }
-    
-  } catch (error) {
-    // Manejar errores HTTP
-    return handleApiError(error, method, endpoint);
+  const url = `${CONFIG.API_URL}${endpoint}`;
+
+  const token = getAuthToken();
+
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
+
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url,
+      method,
+      headers,
+      data: data ? JSON.stringify(data) : null,
+      dataType: 'json',
+      timeout: 10000,
+      success: (response) => {
+        resolve(response);
+      },
+      error: (jqXHR) => {
+       const msg =
+        jqXHR.responseJSON?.message ||
+        jqXHR.responseJSON?.error ||
+        jqXHR.statusText ||
+        'Error desconocido';
+
+        reject({
+          status: jqXHR.status,
+          message: msg,
+          details: jqXHR.responseJSON
+        });
+      }
+    });
+  });
 }
 
 /**
@@ -444,7 +413,7 @@ async function searchProducts(query, limit = null) {
  * }
  */
 async function getCategories() {
-  return await apiRequest('GET', CONFIG.ENDPOINTS.CATEGORIES.ACTIVE);
+  return await apiRequest('GET', CONFIG.ENDPOINTS.CATEGORIES.ALL);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -463,40 +432,39 @@ async function getCategories() {
  *   console.log('Carrito sincronizado:', result.data);
  * }
  */
-async function syncCart() {
-  if (!isAuthenticated()) {
-    console.warn('⚠️  Usuario no autenticado, no se puede sincronizar carrito');
-    return {
-      success: false,
-      data: null,
-      error: { message: 'Usuario no autenticado' }
-    };
-  }
-  
-  const items = getCartItems();
-  
-  return await apiRequest('POST', CONFIG.ENDPOINTS.CART.SYNC, {
-    items: items
-  });
-}
-
-/**
- * Obtiene el carrito del backend
- * Requiere autenticación
- * 
- * @returns {Promise} { success, data: cart, error }
- */
 async function getCartFromBackend() {
   if (!isAuthenticated()) {
-    return {
-      success: false,
-      data: null,
-      error: { message: 'Usuario no autenticado' }
-    };
+    return { success: false, data: null, error: { message: 'Usuario no autenticado' } };
   }
   
-  return await apiRequest('GET', CONFIG.ENDPOINTS.CART.GET);
+  return apiRequest('GET', ENDPOINTS.CART.GET);
 }
+
+// Añadir un producto al carrito
+async function addToCartBackend(productId, quantity = 1) {
+  return apiRequest('POST', ENDPOINTS.CART.ADD, { productId, quantity });
+}
+
+// Actualizar un ítem del carrito
+async function updateCartItemBackend(itemId, quantity) {
+  return apiRequest('PUT', ENDPOINTS.CART.UPDATE(itemId), { quantity });
+}
+
+// Eliminar ítem del carrito
+async function removeFromCartBackend(itemId) {
+  return apiRequest('DELETE', ENDPOINTS.CART.DELETE(itemId));
+}
+
+// Vaciar carrito
+async function clearCartBackend() {
+  return apiRequest('DELETE', ENDPOINTS.CART.CLEAR);
+}
+
+// Total del carrito
+async function getCartTotalBackend() {
+  return apiRequest('GET', ENDPOINTS.CART.TOTAL);
+}
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ÓRDENES
@@ -583,6 +551,32 @@ async function getOrderById(orderId) {
   
   const endpoint = CONFIG.ENDPOINTS.ORDERS.BY_ID(orderId);
   return await apiRequest('GET', endpoint);
+}
+
+async function cancelOrder(orderId) {
+  return apiRequest('PUT', ENDPOINTS.ORDERS.CANCEL(orderId));
+}
+
+async function getOrderItems(orderId) {
+  return apiRequest('GET', ENDPOINTS.ORDERS.ITEMS(orderId));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONTACTO
+// ═══════════════════════════════════════════════════════════════════════════
+async function sendContactMessage(data) {
+  return apiRequest('POST', ENDPOINTS.CONTACT.SEND, data);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// REVIEWS
+// ═══════════════════════════════════════════════════════════════════════════
+async function getProductReviews(productId) {
+  return apiRequest('GET', ENDPOINTS.REVIEWS.FOR_PRODUCT(productId));
+}
+
+async function addReview(productId, reviewData) {
+  return apiRequest('POST', ENDPOINTS.REVIEWS.ADD(productId), reviewData);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

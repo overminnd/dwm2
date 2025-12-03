@@ -91,47 +91,50 @@ const COMPONENTS = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const ENDPOINTS = {
-  // Autenticación
   AUTH: {
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
-    LOGOUT: '/auth/logout',
-    PROFILE: '/auth/profile',
+    ME: '/auth/me'
   },
-  
-  // Productos
+
   PRODUCTS: {
     ALL: '/products',
-    BY_ID: (id) => `/products/${id}`,
-    BY_CATEGORY: (category) => `/products?category=${category}`,
-    FEATURED: '/products?featured=true',
-    SEARCH: (query) => `/products?search=${query}`,
+    BY_ID: (id) => `/products/${id}`
   },
-  
-  // Categorías
+
   CATEGORIES: {
-    ALL: '/categories',
-    ACTIVE: '/categories?active=true',
+    ALL: '/categories'
   },
-  
-  // Carrito
+
   CART: {
-    GET: '/cart',
-    ADD: '/cart',
-    UPDATE: (itemId) => `/cart/${itemId}`,
-    REMOVE: (itemId) => `/cart/${itemId}`,
-    CLEAR: '/cart/clear',
-    SYNC: '/cart/sync',
-  },
-  
-  // Órdenes
+    GET: '/cart',                                   // GET carrito completo
+    ADD: '/cart/items',                             // POST añadir producto
+    UPDATE: (itemId) => `/cart/items/${itemId}`,    // PUT actualizar item
+    DELETE: (itemId) => `/cart/items/${itemId}`,    // DELETE eliminar item
+    CLEAR: '/cart/clear',                           // DELETE vaciar carrito
+    TOTAL: '/cart/total'                            // GET total del carrito
+},
+
+
   ORDERS: {
     CREATE: '/orders',
-    GET_ALL: '/orders',
+    HISTORY: '/orders',
     BY_ID: (id) => `/orders/${id}`,
-    HISTORY: '/orders/history',
+    ITEMS: (id) => `/orders/${id}/items`,
+    CANCEL: (id) => `/orders/${id}/cancel`,
   },
+
+  CONTACT: {
+    SEND: '/contact'
+  },
+
+  REVIEWS: {
+    FOR_PRODUCT: (id) => `/reviews/product/${id}`,
+    ADD: (id) => `/reviews/${id}`
+  }
 };
+
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // LLAVES DE LOCALSTORAGE
@@ -282,6 +285,9 @@ window.CONFIG = {
   COMPONENTS,
   ENDPOINTS,
   
+    // Costo fijo de envío
+  SHIPPING_FLAT_FEE: 3500,
+
   // Storage
   STORAGE_KEYS,
   

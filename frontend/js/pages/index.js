@@ -112,6 +112,25 @@ const CATEGORY_SLUG_TO_ID = {
 };
 
 /**
+ * Normaliza slugs para evitar errores cuando una categoría es nueva,
+ * tiene caracteres especiales, acentos o espacios.
+ * Esto lo deja Admin-Ready.
+ */
+function normalizeSlug(slug) {
+  if (!slug || typeof slug !== "string") return "categoria";
+
+  return slug
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")                  // separar acentos
+    .replace(/[\u0300-\u036f]/g, "")   // remover acentos
+    .replace(/[^a-z0-9-]/g, "-")       // caracteres inválidos → guion
+    .replace(/--+/g, "-")              // colapsar múltiples guiones
+    .replace(/^-+|-+$/g, "");          // remover guiones extremos
+}
+
+
+/**
  * Carga y renderiza el catálogo completo con todas las categorías
  * 
  * Flujo:
@@ -125,56 +144,94 @@ const CATEGORY_SLUG_TO_ID = {
  */
 async function loadCatalog() {
   try {
-    console.log('📚 Cargando catálogo completo...');
-    
+    console.log('📚 Cargando catálogo completo…');
+
     const $container = $('#catalogo-sections-container');
-    
+
     if (!$container.length) {
       console.error('❌ Contenedor #catalogo-sections-container no encontrado');
       return;
     }
-    
-    // Mostrar loading
-    showLoadingSpinner('#catalogo-sections-container');
-    
-    // Limpiar contenedor
-    $container.empty();
-    
-    // PASO 1: Obtener categorías desde backend
-    console.log('🔍 Obteniendo categorías desde backend...');
+
+    // -------------------------------------------------------------------------------------------------------------------
+    // 1) Mostrar loader (pero SIN eliminar el contenedor)
+    // -------------------------------------------------------------------------------------------------------------------
+    // Limpia SOLO contenido dinámico, pero mantiene loader si ya existe
+    $container.children(':not(#catalogo-loader)').remove();
+
+    // Crear loader si no existe
+    if (!$('#catalogo-loader').length) {
+      $container.prepend(`
+        <div id="catalogo-loader" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2 text-muted">Cargando catálogo…</p>
+        </div>
+      `);
+    } else {
+      $('#catalogo-loader').show();
+    }
+
+    // -------------------------------------------------------------------------------------------------------------------
+    // 2) Obtener categorías desde backend
+    // -------------------------------------------------------------------------------------------------------------------
+    console.log('🔍 Obteniendo categorías desde backend…');
     const categoriesResult = await getCategories();
-    
-    if (!categoriesResult.success) {
-      console.error('❌ Error al obtener categorías:', categoriesResult.error);
+
+    if (!categoriesResult || !categoriesResult.success) {
+      console.error('❌ Error al obtener categorías:', categoriesResult?.error);
       showErrorMessage('#catalogo-sections-container', 'Error al cargar las categorías');
       return;
     }
-    
+
     const categories = categoriesResult.data;
-    
-    if (!categories || categories.length === 0) {
+
+    if (!Array.isArray(categories) || categories.length === 0) {
       console.warn('⚠️ No hay categorías disponibles');
       showEmptyMessage('#catalogo-sections-container', 'No hay categorías disponibles');
       return;
     }
-    
+
     console.log(`✅ ${categories.length} categorías obtenidas`, categories);
-    
-    // PASO 2: Para cada categoría, cargar sus productos
+
+    // -------------------------------------------------------------------------------------------------------------------
+    // 3) Limpiar resultados previos y preparar render dinámico
+    // -------------------------------------------------------------------------------------------------------------------
+    // Importante: aquí SÍ limpiamos, pero dejamos el loader arriba.
+    $container.children(':not(#catalogo-loader)').remove();
+
+    // -------------------------------------------------------------------------------------------------------------------
+    // 4) Cargar productos por categoría
+    // -------------------------------------------------------------------------------------------------------------------
     for (const category of categories) {
-      await loadCategorySection(category);
+      try {
+        await loadCategorySection(category);
+      } catch (errCat) {
+        console.warn(`⚠️ Error en categoría ${category.name}:`, errCat);
+      }
     }
-    
-    // Inicializar eventos de las cards del catálogo
-    initProductCardEvents();
-    
+
+    // -------------------------------------------------------------------------------------------------------------------
+    // 5) Inicializar eventos de productos
+    // -------------------------------------------------------------------------------------------------------------------
+    try {
+      initProductCardEvents();
+    } catch (errEvents) {
+      console.error("❌ Error inicializando eventos de cards:", errEvents);
+    }
+
+    // -------------------------------------------------------------------------------------------------------------------
+    // 6) Ocultar loader
+    // -------------------------------------------------------------------------------------------------------------------
+    $('#catalogo-loader').fadeOut(300);
+
     console.log('✅ Catálogo completo cargado');
-    
+
   } catch (error) {
     console.error('❌ Error cargando catálogo:', error);
     showErrorMessage('#catalogo-sections-container', 'Error al cargar el catálogo');
   }
 }
+
 
 /**
  * Carga y renderiza una sección de categoría específica
@@ -188,38 +245,119 @@ async function loadCatalog() {
  */
 async function loadCategorySection(category) {
   try {
-    console.log(`📦 Cargando categoría: ${category.name}...`);
-    
-    // Obtener productos de esta categoría usando su ObjectId
-    const result = await getProducts({ 
-      categoryId: category._id,
-      limit: 12 
-    });
-    
-    if (!result.success) {
-      console.warn(`⚠️ Error al cargar categoría ${category.name}:`, result.error);
-      // No renderizar la sección si hay error
+    const sectionId = CATEGORY_SLUG_TO_ID[category.slug] 
+                   || normalizeSlug(category.slug)
+                   || normalizeSlug(category.name);
+
+    if (!category || !category._id) {
+      renderCategoryErrorSection({ slug: sectionId, name: "Categoría inválida" }, "Datos incompletos en backend");
       return;
     }
-    
-    const products = result.data;
-    
+
+    // Obtener productos
+    const productsResult = await getProducts({ categoryId: category._id });
+
+    if (!productsResult || !productsResult.success) {
+      console.error(`❌ Error obteniendo productos de ${category.name}:`, productsResult?.error);
+
+      // Mostrar mensaje en vez de silenciar el error
+      renderCategoryErrorSection(category, "Error cargando los productos de esta categoría");
+      return;
+    }
+
+    const products = productsResult.data;
+
     if (!products || products.length === 0) {
-      console.warn(`⚠️ No hay productos en categoría: ${category.name}`);
-      // Renderizar sección vacía con mensaje
-      renderCategorySection(category, []);
+      console.warn(`⚠️ No hay productos en la categoría: ${category.name}`);
+      renderEmptyCategorySection(category);
       return;
     }
-    
-    console.log(`✅ ${products.length} productos en ${category.name}`);
-    
-    // Renderizar sección con productos
+
+    console.log(`✅ ${products.length} productos cargados para ${category.name}`);
+
+    // Renderizar sección normalmente
     renderCategorySection(category, products);
-    
+
   } catch (error) {
-    console.error(`❌ Error cargando categoría ${category.name}:`, error);
+    console.error(`❌ Excepción al cargar categoría ${category?.name}:`, error);
+
+    // Fallback visual
+    renderCategoryErrorSection(category, "Ocurrió un error inesperado");
   }
 }
+
+function renderEmptyCategorySection(category) {
+  let sectionId = CATEGORY_SLUG_TO_ID[category.slug] 
+             || normalizeSlug(category.slug)
+             || normalizeSlug(category.name);
+
+  $('#catalogo-sections-container').append(`
+    <section id="${sectionId}" class="catalogo-section mb-5">
+      <div class="container">
+
+        <!-- Header idéntico al de renderCategorySection -->
+        <h3 class="mb-4 text-uppercase fw-bold"
+            style="color: #003366; border-bottom: 3px solid #4db6ac; padding-bottom: 10px;">
+          ${escapeHtml(category.name)}
+        </h3>
+
+        <!-- Grid idéntico, pero mostrando mensaje vacío -->
+        <div class="row g-4" id="${sectionId}-grid">
+          <div class="col-12">
+            <p class="text-center text-muted fs-5 py-4">
+              No hay productos disponibles en esta categoría.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  `);
+}
+
+
+
+function renderCategoryErrorSection(category, message) {
+  // Normalizar ID de la sección para que sea compatible con el resto
+  let sectionId = CATEGORY_SLUG_TO_ID[category?.slug] 
+               || normalizeSlug(category?.slug)
+               || normalizeSlug(category?.name || 'categoria');
+
+  const $container = $('#catalogo-sections-container');
+  if (!$container.length) {
+    console.error('❌ Contenedor #catalogo-sections-container no encontrado en renderCategoryErrorSection');
+    return;
+  }
+
+  const safeName = escapeHtml(category?.name || 'Categoría');
+  const safeMessage = escapeHtml(message || 'Ocurrió un error al cargar esta categoría.');
+
+  $container.append(`
+    <section id="${sectionId}" class="catalogo-section mb-5">
+      <div class="container">
+        
+        <!-- Header similar, pero marcado como error -->
+        <h3 class="mb-4 text-uppercase fw-bold text-danger"
+            style="border-bottom: 3px solid #dc3545; padding-bottom: 10px;">
+          ${safeName}
+        </h3>
+
+        <div class="row g-4">
+          <div class="col-12">
+            <div class="alert alert-danger text-center" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              ${safeMessage}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  `);
+}
+
+
+
 
 /**
  * Renderiza una sección completa de categoría con sus productos
@@ -239,15 +377,20 @@ async function loadCategorySection(category) {
  * @param {Array} products - Array de productos de esta categoría
  */
 function renderCategorySection(category, products) {
-  const $container = $('#catalogo-sections-container');
-  
-  // Mapear slug de BD a ID de HTML
-  // Ejemplo: "mariscos-frescos" → "mariscos", "pescados" → "pescado"
-  let sectionId = CATEGORY_SLUG_TO_ID[category.slug] || category.slug;
+  let sectionId = CATEGORY_SLUG_TO_ID[category.slug] 
+             || normalizeSlug(category.slug)
+             || normalizeSlug(category.name);
   
   // Si el slug termina en 's', quitarla para el ID (pescados → pescado)
   if (!CATEGORY_SLUG_TO_ID[category.slug] && category.slug.endsWith('s')) {
     sectionId = category.slug.slice(0, -1);
+  }
+
+  // Contenedor principal del catálogo
+  const $container = $('#catalogo-sections-container');
+  if (!$container.length) {
+    console.error('❌ Contenedor #catalogo-sections-container no encontrado en renderCategorySection');
+    return;
   }
   
   // Crear sección
@@ -255,13 +398,13 @@ function renderCategorySection(category, products) {
     <section id="${sectionId}" class="catalogo-section mb-5">
       <div class="container">
         <!-- Header de la categoría -->
-        <h3 class="mb-4 text-uppercase fw-bold" style="color: #003366; border-bottom: 3px solid #4db6ac; padding-bottom: 10px;">
+        <h3 class="mb-4 text-uppercase fw-bold" 
+            style="color: #003366; border-bottom: 3px solid #4db6ac; padding-bottom: 10px;">
           ${escapeHtml(category.name)}
         </h3>
         
         <!-- Grid de productos -->
-        <div class="row g-4" id="${sectionId}-grid">
-        </div>
+        <div class="row g-4" id="${sectionId}-grid"></div>
       </div>
     </section>
   `);
@@ -272,8 +415,8 @@ function renderCategorySection(category, products) {
   // Renderizar productos en el grid
   const $grid = $section.find(`#${sectionId}-grid`);
   
-  if (products.length === 0) {
-    // Mostrar mensaje de categoría vacía
+  if (!products || products.length === 0) {
+    // Mostrar mensaje de categoría vacía (fallback)
     $grid.html(`
       <div class="col-12">
         <div class="alert alert-info text-center" role="alert">
@@ -283,13 +426,14 @@ function renderCategorySection(category, products) {
       </div>
     `);
   } else {
-    // Renderizar cada producto
     products.forEach(product => {
       const $card = createProductCard(product);
       $grid.append($card);
     });
   }
 }
+
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // FUNCIONES COMPARTIDAS: CARDS DE PRODUCTO
@@ -310,7 +454,6 @@ function renderCategorySection(category, products) {
  * @returns {jQuery} Elemento jQuery con la card
  */
 function createProductCard(product) {
-  // Extraer datos del producto
   const id = product._id || '';
   const nombre = product.name || 'Producto sin nombre';
   const precio = product.price || 0;
@@ -318,70 +461,54 @@ function createProductCard(product) {
   const fullDesc = product.description || shortDesc;
   const imagen = product.mainImage || CONFIG.DEFAULT_IMAGE;
   const stock = product.stock || 0;
-  
-  // Formatear precio (ej: 12990 → "$12.990")
+
   const precioFormateado = formatPrice(precio);
-  
-  // Crear card HTML (DISEÑO ORIGINAL PRESERVADO 100%)
-  const $card = $(`
+
+  return $(`
     <div class="col-md-4">
       <div class="card h-100 shadow-sm producto-card"
            role="button"
            tabindex="0"
-           data-product-id="${id}"
-           data-title="${escapeHtml(nombre)}"
-           data-short-desc="${escapeHtml(shortDesc)}"
-           data-full-desc="${escapeHtml(fullDesc)}"
-           data-price="${precio}"
-           data-stock="${stock}"
-           data-img="${imagen}">
-        
-        <!-- Layout: Imagen 40% | Contenido 60% -->
+           data-product-id="${id}">
+
         <div class="row g-0 h-100">
-          
-          <!-- Imagen (40%) -->
+
+          <!-- Imagen -->
           <div class="col-5">
             <img src="${imagen}"
-                 class="img-fluid h-100 rounded-start object-fit-cover" 
+                 class="img-fluid h-100 rounded-start object-fit-cover"
                  alt="${escapeHtml(nombre)}"
                  onerror="this.src='${CONFIG.DEFAULT_IMAGE}'">
           </div>
-          
-          <!-- Contenido (60%) -->
+
+          <!-- Contenido -->
           <div class="col-7 d-flex flex-column justify-content-between p-3">
             <div>
-              <!-- Título responsive -->
               <h5 class="fw-bold mb-1 producto-title">${escapeHtml(nombre)}</h5>
-              
-              <!-- Descripción corta -->
               <p class="mb-2 small producto-short-desc">${escapeHtml(shortDesc)}</p>
             </div>
-            
-            <!-- Precio y botón agregar -->
+
             <div class="d-flex justify-content-between align-items-center mt-auto">
-              <!-- Precio en verde -->
               <span class="fw-bold text-success producto-precio" data-price="${precio}">
                 ${precioFormateado}
               </span>
-              
-              <!-- Botón "+" circular -->
-              <button class="btn btn-light rounded-circle btn-sm add-to-cart-quick" 
+
+              <button class="btn btn-light rounded-circle btn-sm add-to-cart-quick"
                       aria-label="Agregar rápido al carrito"
                       ${stock === 0 ? 'disabled' : ''}>
                 +
               </button>
             </div>
-            
-            <!-- Indicador sin stock -->
+
             ${stock === 0 ? '<small class="text-danger">Sin stock</small>' : ''}
           </div>
+
         </div>
       </div>
     </div>
   `);
-  
-  return $card;
 }
+
 
 /**
  * Inicializa los eventos de las cards de productos
@@ -392,54 +519,60 @@ function createProductCard(product) {
  * - Click en botón "+" → Agregar 1 unidad al carrito (sin modal)
  */
 function initProductCardEvents() {
-  // Evento: Click en card (excepto en botón "+") → Abrir modal
+  
+  // Click en card: abrir modal (solo enviamos el ID al modal)
   $('.producto-card').off('click').on('click', function(e) {
-    // Si hicieron click en el botón de agregar, no abrir modal
-    if ($(e.target).hasClass('add-to-cart-quick') || 
+
+    // Evitar apertura si se hace click en "+"
+    if ($(e.target).hasClass('add-to-cart-quick') ||
         $(e.target).closest('.add-to-cart-quick').length) {
       return;
     }
-    
-    // Obtener datos del producto desde data-attributes
-    const productData = {
-      id: $(this).data('product-id'),
-      title: $(this).data('title'),
-      shortDesc: $(this).data('short-desc'),
-      fullDesc: $(this).data('full-desc'),
-      price: $(this).data('price'),
-      stock: $(this).data('stock'),
-      img: $(this).data('img')
-    };
-    
-    // Abrir modal de producto
-    openProductModal(productData);
+
+    const productId = $(this).data('product-id');
+    openProductModal(productId);  // <--- ahora enviamos SOLO el ID
   });
-  
-  // Evento: Click en botón "+" → Agregar 1 unidad rápidamente
-  $('.add-to-cart-quick').off('click').on('click', function(e) {
-    e.stopPropagation(); // Evitar que se abra el modal
-    
-    const $card = $(this).closest('.producto-card');
-    const productData = {
-      id: $card.data('product-id'),
-      title: $card.data('title'),
-      price: $card.data('price'),
-      img: $card.data('img')
+
+  // Botón "+": agregar rápido
+  $('.add-to-cart-quick').off('click').on('click', async function(e) {
+    e.stopPropagation();
+
+    const productId = $(this).closest('.producto-card').data('product-id');
+
+    // 1) Consultar datos reales al backend
+    const result = await getProductById(productId);
+
+    if (!result.success) {
+      console.error("❌ No se pudo obtener el producto rápido:", result.error);
+      return;
+    }
+
+    const p = result.data;
+
+    // 2) Formato que el carrito espera
+    const product = {
+      _id: p._id,
+      name: p.name,
+      price: p.price,
+      mainImage: p.mainImage,
+      stock: p.stock
     };
-    
-    // Agregar 1 unidad al carrito
-    addToCart(productData, 1);
-    
-    // Feedback visual temporal
+
+    // 3) Agregar al carrito
+    addToCart(product, 1);
+
+    // 4) Feedback visual
     const $btn = $(this);
     const originalText = $btn.html();
     $btn.html('✓').prop('disabled', true);
-    
+
     setTimeout(() => {
       $btn.html(originalText).prop('disabled', false);
-    }, 1000);
+    }, 800);
   });
+
 }
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 /**
@@ -449,37 +582,77 @@ function initProductCardEvents() {
  * 
  * @param {Object} productData - Datos del producto
  */
-function openProductModal(productData) {
+async function openProductModal(productId) {
+
   const modal = $('#productoModal');
-  
+
   if (!modal.length) {
     console.error('❌ Modal #productoModal no encontrado');
     return;
   }
-  
-  // Guardar datos en el modal PRIMERO (antes de rellenar)
-  modal.data('product', productData);
-  
-  // Rellenar datos en el modal
-  modal.find('#modalProductTitle').text(productData.title);
-  modal.find('#modalProductImage').attr('src', productData.img);
-  modal.find('#modalProductDescription').text(productData.fullDesc || productData.shortDesc);
-  modal.find('#modalProductPrice').text(formatPrice(productData.price));
-  modal.find('#modalProductStock').text(productData.stock);
-  
-  // Resetear cantidad a 1
-  modal.find('#modalQuantity').val(1);
-  
-  // Actualizar total
-  updateModalTotal();
-  
-  // Inicializar eventos del modal (cada vez que se abre)
-  initModalEvents();
-  
-  // Mostrar modal (Bootstrap 5)
+
+  // Mostrar modal inmediatamente con loader
   const modalInstance = new bootstrap.Modal(modal[0]);
   modalInstance.show();
+
+  // Loader temporal dentro del modal
+  modal.find('#modalProductTitle').text('Cargando...');
+  modal.find('#modalProductImage').attr(
+    'src',
+    'https://i.gifer.com/ZZ5H.gif'
+  );
+
+  modal.find('#modalProductDescription').text('');
+  modal.find('#modalProductPrice').text('');
+  modal.find('#modalProductStock').text('');
+  modal.find('#modalTotal').text('$0');
+
+  try {
+    console.log('🔍 Consultando backend…', productId);
+
+    const result = await getProductById(productId);
+
+    if (!result.success) {
+      console.error('❌ Error backend:', result.error);
+      modal.find('#modalProductTitle').text('Error al cargar producto');
+      modal.find('#modalProductDescription').text(result.error.message);
+      return;
+    }
+
+    const p = result.data;
+
+    // Guardar datos para cálculos posteriores
+    modal.data('product', {
+      id: p._id,
+      title: p.name,
+      fullDesc: p.description,
+      price: p.price,
+      stock: p.stock,
+      img: p.mainImage
+    });
+
+    // Rellenar modal
+    modal.find('#modalProductTitle').text(p.name);
+    modal.find('#modalProductImage').attr('src', p.mainImage);
+    modal.find('#modalProductDescription').text(p.description || '');
+    modal.find('#modalProductPrice').text(formatPrice(p.price));
+    modal.find('#modalProductStock').text(p.stock);
+
+    // Cantidad inicial
+    modal.find('#modalQuantity').val(1);
+    updateModalTotal();
+
+    // Activar eventos del modal
+    initModalEvents();
+
+  } catch (error) {
+    console.error('❌ Error inesperado:', error);
+
+    modal.find('#modalProductTitle').text('Error al cargar');
+    modal.find('#modalProductDescription').text('No se pudo cargar este producto.');
+  }
 }
+
 
 /**
  * Actualiza el total en el modal según la cantidad seleccionada
@@ -487,14 +660,13 @@ function openProductModal(productData) {
 function updateModalTotal() {
   const modal = $('#productoModal');
   const productData = modal.data('product');
-  
+
   if (!productData) return;
-  
+
   const quantity = parseInt(modal.find('#modalQuantity').val()) || 1;
-  const total = productData.price * quantity;
-  
-  modal.find('#modalTotal').text(formatPrice(total));
+  modal.find('#modalTotal').text(formatPrice(productData.price * quantity));
 }
+
 
 /**
  * Inicializa los eventos del modal de producto
@@ -757,40 +929,83 @@ window.scrollToElementById = scrollToElementById;
 
 /**
  * Wrapper para agregar productos al carrito
- * Convierte formato de productData a formato esperado por cart.js
+ * Asegura que cart.js reciba la estructura correcta
  */
+/**
+ * Wrapper para agregar productos al carrito
+ * Asegura que cart.js reciba la estructura correcta
+ */
+
 function addToCart(productData, quantity = 1) {
-  // Verificar que la función global addToCart existe
-  if (typeof window.CART === 'undefined' || typeof window.CART.addToCart !== 'function') {
-    console.error('❌ cart.js no está cargado - addToCart no disponible');
+  if (!window.CART || typeof window.CART.addToCart !== "function") {
+    console.error("❌ CART.addToCart no está disponible.");
     return;
   }
-  
-  // Convertir formato de productData al formato esperado por cart.js
+
+  // 1) Bloquear invitados desde aquí también (doble seguridad)
+  if (typeof isAuthenticated === "function" && !isAuthenticated()) {
+    if (typeof showAuthRequiredModal === "function") {
+      showAuthRequiredModal();
+    } else if (typeof showToast === "function") {
+      showToast("Debes iniciar sesión para agregar productos al carrito", "warning");
+    }
+    return;
+  }
+
+  // 2) Convertir formato a lo que cart.js espera
   const product = {
-    id: productData.id,
-    name: productData.title || productData.name || productData.nombre,
-    price: productData.price || productData.precio,
-    image: productData.img || productData.image || productData.imagen,
-    category: productData.category || productData.categoria
+    _id: productData.id || productData._id,
+    name: productData.title || productData.name,
+    price: productData.price,
+    mainImage: productData.img || productData.mainImage,
+    stock: productData.stock
   };
-  
-  // Llamar a la función global addToCart de cart.js
-  const result = window.CART.addToCart(product, quantity);
-  
-  if (result.success) {
-    console.log(`✅ ${product.name} x${quantity} agregado al carrito`);
-    
-    // Actualizar badge del carrito
+
+  // 3) Delegar en cart.js
+  window.CART.addToCart(product, quantity);
+}
+
+
+
+
+
+$(document).ready(function () {
+  UTILS.loadComponent("header-container", "components/header.html", function () {
+    if (typeof initHeader === "function") initHeader();
+    updateHeaderCartVisibility(); // MOSTRAR / OCULTAR botón del carrito
+  });
+
+
+    UTILS.loadComponent("carrito-container", "components/carrito.html", function () {
+    if (typeof initCartUI === 'function') {
+      initCartUI();
+    }
+    // Inicializar badge con lo que haya en localStorage
     if (typeof updateCartBadge === 'function') {
       updateCartBadge();
     }
-    
-    // Renderizar carrito si está abierto
-    if (typeof renderCartOffcanvas === 'function') {
-      renderCartOffcanvas();
+  });
+
+  UTILS.loadComponent("carrusel-container", "components/carrusel.html");
+
+  UTILS.loadComponent("categorias-container", "components/categorias.html", function() {
+    if (typeof initCategoryButtons === 'function') {
+      initCategoryButtons();
+    } else {
+      console.error("❌ initCategoryButtons no está definida.");
     }
-  } else {
-    console.error(`❌ Error al agregar al carrito: ${result.message}`);
-  }
-}
+  });
+
+
+  UTILS.loadComponent("productos-destacados-container", "components/ProductoDestacado.html", function() {
+    if (typeof loadFeaturedProducts === 'function') loadFeaturedProducts(4);
+  });
+
+  UTILS.loadComponent("catalogo-container", "components/catalogo.html", function() {
+    if (typeof loadCatalog === 'function') loadCatalog();
+  });
+
+  
+});
+
+

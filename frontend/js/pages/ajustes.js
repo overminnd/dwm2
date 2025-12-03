@@ -598,11 +598,88 @@ function goToPage(page) {
 /**
  * Ve el detalle de un pedido
  */
-function viewOrderDetail(orderId) {
-  console.log('🔍 Ver detalle del pedido:', orderId);
-  // TODO: Implementar modal con detalle del pedido
-  alert('Funcionalidad en desarrollo: Ver detalle del pedido #' + orderId);
+// =============================
+// VER DETALLE DE PEDIDO
+// =============================
+async function viewOrderDetail(orderId) {
+  try {
+    const token = getAuthToken();
+
+    const res = await fetch(`${CONFIG.API_URL}/orders/${orderId}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+    console.log("🟦 Respuesta detalle pedido:", data);
+
+    if (!data.success) {
+      showAlert("No se pudo cargar el detalle del pedido", "danger");
+      return;
+    }
+
+    const order = data.data.order;   // <--- AQUÍ ESTÁ LA ORDEN REAL
+    const items = data.data.items;   // <--- AQUÍ ESTÁN LOS ITEMS
+
+    renderOrderDetailModal(order, items);
+
+  } catch (err) {
+    console.error("❌ Error cargando detalle del pedido:", err);
+    showAlert("Error cargando detalle del pedido", "danger");
+  }
 }
+
+
+
+// =============================
+// RENDERIZAR MODAL
+// =============================
+function renderOrderDetailModal(order, items) {
+  const modalContent = document.getElementById("order-detail-content");
+
+  const orderNumber = order.orderNumber || "SIN-CÓDIGO";
+  const orderDate = order.createdAt ? formatDate(order.createdAt) : "-";
+  const orderStatus = order.status || "-";
+  const orderTotal = order.total ?? 0;
+
+  const itemsHTML = items
+    .map(item => `
+      <div class="d-flex align-items-start mb-3 border-bottom pb-3">
+        <img src="${item.productId?.mainImage || ""}" 
+             class="rounded me-3" width="80" height="80">
+
+        <div class="flex-grow-1">
+          <strong>${item.productName || item.productId?.name}</strong>
+          <p class="mb-1">Cantidad: ${item.quantity}</p>
+          <p class="text-muted small">Subtotal: ${formatPrice(item.subtotal)}</p>
+        </div>
+
+        <strong>${formatPrice(item.unitPrice)}</strong>
+      </div>
+    `)
+    .join("");
+
+  modalContent.innerHTML = `
+    <h5>Pedido #${orderNumber}</h5>
+    <p><strong>Fecha:</strong> ${orderDate}</p>
+    <p><strong>Estado:</strong> ${orderStatus}</p>
+
+    <h6 class="mt-4">Productos</h6>
+    ${itemsHTML}
+
+    <div class="text-end mt-4">
+      <h5>Total: ${formatPrice(orderTotal)}</h5>
+    </div>
+  `;
+
+  const modal = new bootstrap.Modal(document.getElementById("orderDetailModal"));
+  modal.show();
+}
+
+
+
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // UTILIDADES

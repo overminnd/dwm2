@@ -53,35 +53,47 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!-- FOOTER CON TOTAL Y BOTÓN -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <div id="cart-footer" class="border-top pt-3 mt-3" style="display: none;">
-      
-      <!-- Total -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">Total:</h5>
-        <h4 class="mb-0 text-primary" id="cart-total">$0</h4>
+  <div id="cart-footer" class="border-top pt-3 mt-3" style="display: none;">
+
+    <!-- 🔵 Botón Ingresar Dirección (NUEVO) -->
+    <div class="mb-3">
+      <button id="btn-edit-address-cart" class="btn btn-outline-primary w-100">
+        <i class="bi bi-geo-alt me-2"></i>
+        Ingresar dirección de entrega
+      </button>
+
+      <!-- Dirección seleccionada (se muestra si existe) -->
+      <div id="cart-address-selected" class="mt-2 small text-muted" style="display:none;">
+        <i class="bi bi-check-circle text-success me-1"></i>
+        <span id="cart-address-text"></span>
       </div>
-      
-      <!-- Botón Procesar Pedido -->
-      <button class="btn btn-primary w-100" 
-              id="btn-procesar-pedido"
-              type="button">
-        <i class="bi bi-credit-card me-2"></i>
-        Procesar Pedido
-      </button>
-      
-      <!-- Botón Vaciar Carrito -->
-      <button class="btn btn-outline-danger w-100 mt-2" 
-              id="btn-vaciar-carrito"
-              type="button">
-        <i class="bi bi-trash me-2"></i>
-        Vaciar Carrito
-      </button>
-      
+    </div>
+
+    <!-- Total -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">Total:</h5>
+      <h4 class="mb-0 text-primary" id="cart-total">$0</h4>
     </div>
     
+    <!-- Botón Procesar Pedido -->
+    <button class="btn btn-primary w-100" 
+            id="btn-procesar-pedido"
+            type="button">
+      <i class="bi bi-credit-card me-2"></i>
+      Procesar Pedido
+    </button>
+    
+    <!-- Botón Vaciar Carrito -->
+    <button class="btn btn-outline-danger w-100 mt-2" 
+            id="btn-vaciar-carrito"
+            type="button">
+      <i class="bi bi-trash me-2"></i>
+      Vaciar Carrito
+    </button>
   </div>
-  
+
 </div>
+
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      NOTAS:

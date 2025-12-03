@@ -344,6 +344,50 @@
     }
   }
 
+
+// =====================================================
+// DIRECCIÓN DE ENVÍO (Checkout + Carrito)
+// =====================================================
+
+// Guarda la dirección
+function saveShippingAddress(address) {
+  try {
+    localStorage.setItem("marazul-shipping-address", JSON.stringify(address));
+  } catch (e) {
+    console.error("❌ Error guardando dirección:", e);
+  }
+}
+
+// Obtiene la dirección
+function getShippingAddress() {
+  try {
+    const data = localStorage.getItem("marazul-shipping-address");
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.error("❌ Error leyendo dirección:", e);
+    return null;
+  }
+}
+
+// Alias para compatibilidad con código viejo
+function saveSelectedAddress(addr) {
+  saveShippingAddress(addr);
+}
+
+function getSelectedAddress() {
+  return getShippingAddress();
+}
+
+function showAuthRequiredModal() {
+  const modal = new bootstrap.Modal(document.getElementById('authRequiredModal'));
+  modal.show();
+}
+
+window.showAuthRequiredModal = showAuthRequiredModal;
+
+
+
+
   // ═══════════════════════════════════════════════════════════════════════
   // EXPORTAR FUNCIONES GLOBALES
   // ═══════════════════════════════════════════════════════════════════════
@@ -387,6 +431,16 @@
   window.clearStorage = clearStorage;
   window.formatPrice = formatPrice;
   window.loadComponent = loadComponent;
+
+// Hacerlas globales
+  window.saveShippingAddress = saveShippingAddress;
+  window.getShippingAddress = getShippingAddress;
+  window.saveSelectedAddress = saveSelectedAddress;
+  window.getSelectedAddress = getSelectedAddress;
+
+  window.showToast = showToast;
+
+
 
   console.log('✅ UTILS cargadas correctamente');
   console.log('   Funciones disponibles:', Object.keys(window.UTILS).length);

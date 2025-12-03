@@ -187,8 +187,19 @@ export const createOrder = async (req, res) => {
 
     // Vaciar carrito
     await CartItem.deleteMany({ cartId: cart._id });
-    cart.status = 'abandoned';
-    await cart.save();
+    await Cart.deleteOne({ _id: cart._id });
+
+    // Poblar orden con relaciones
+    await order.populate('addressId');
+
+    res.status(201).json({
+      success: true,
+      data: {
+        order,
+        items: orderItems
+      },
+      message: 'Orden creada correctamente'
+    });
 
     // Poblar orden con relaciones
     await order.populate('addressId');

@@ -426,69 +426,132 @@
   </div><!-- /account-container -->
 
   <!-- Modal: Agregar/Editar Dirección -->
-  <div class="modal fade" id="addressModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addressModalLabel">Agregar dirección</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="address-form">
-            <input type="hidden" id="address-id">
-            
-            <div class="form-group">
-              <label class="form-label" for="address-country">País</label>
-              <select class="form-control" id="address-country" required>
-                <option value="Chile" selected>Chile</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label" for="address-street">Calle y número</label>
-              <input type="text" class="form-control" id="address-street" placeholder="Avenida Marathon 2956" required>
-            </div>
-            
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label class="form-label" for="address-city">Ciudad</label>
-                  <input type="text" class="form-control" id="address-city" placeholder="Macul" required>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label class="form-label" for="address-region">Comuna/Región</label>
-                  <input type="text" class="form-control" id="address-region" placeholder="San Miguel" required>
-                </div>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label" for="address-postalCode">Código postal (opcional)</label>
-              <input type="text" class="form-control" id="address-postalCode" placeholder="8320000">
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label" for="address-reference">Referencia (opcional)</label>
-              <input type="text" class="form-control" id="address-reference" placeholder="Depto 101, edificio azul">
-            </div>
-            
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="address-default">
-              <label class="form-check-label" for="address-default">
-                Marcar como dirección predeterminada
-              </label>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" id="btn-save-address">Guardar dirección</button>
-        </div>
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL DIRECCIONES (ESTILO CARRITO, COMPATIBLE CON AJUSTES) -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<div class="modal fade" id="addressModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow border-0" style="border-radius: 12px;">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="addressModalLabel">Dirección de entrega</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
+      <div class="modal-body">
+        <form id="address-form">
+
+          <input type="hidden" id="address-id">
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="form-group mb-3">
+                <label class="form-label">Calle</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  id="address-street"
+                  placeholder="Ej: Avenida Marathon"
+                  required
+                  pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ .-]{3,50}">
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group mb-3">
+                <label class="form-label">Número</label>
+                <input 
+                  type="text"
+                  class="form-control"
+                  id="address-number"
+                  placeholder="Ej: 1234"
+                  required
+                  pattern="[0-9]{1,6}">
+              </div>
+            </div>
+          </div>
+
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Ciudad</label>
+                <input 
+                  type="text"
+                  class="form-control"
+                  id="address-city"
+                  value="Santiago"
+                  required>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Comuna</label>
+                <input 
+                  type="text"
+                  class="form-control"
+                  id="address-region"
+                  placeholder="Ej: San Miguel"
+                  required>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="form-group mb-3">
+            <label class="form-label">Referencia (opcional)</label>
+            <input 
+              type="text"
+              class="form-control"
+              id="address-reference"
+              placeholder="Depto 101, edificio azul">
+          </div>
+
+          <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" id="address-default">
+            <label class="form-check-label" for="address-default">
+              Marcar como dirección predeterminada
+            </label>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn-save-address">Guardar dirección</button>
+      </div>
+
     </div>
   </div>
+</div>
+
+  <!-- Modal Detalle de Pedido -->
+  
+  <div class="modal fade" id="orderDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow-lg border-0" style="border-radius: 12px;">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Detalle del Pedido</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body px-4" id="order-detail-content">
+        <!-- HTML dinámico -->
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary px-4" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

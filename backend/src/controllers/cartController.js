@@ -41,7 +41,7 @@ export const getCart = async (req, res) => {
         
         validItems.push({
           _id: item._id,
-          product: item.productId,
+          productId: item.productId,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           subtotal: itemSubtotal

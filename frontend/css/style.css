@@ -153,6 +153,30 @@ html {
   border-radius: 4px;
 }
 
+/* Evitar scroll horizontal en el offcanvas del carrito */
+#carritoOffcanvas {
+    overflow-x: hidden !important;
+}
+
+/* Evitar que el contenido interno cree ancho extra */
+#carritoOffcanvas .offcanvas-body {
+    overflow-x: hidden !important;
+}
+
+/* Asegurar que las filas no se salgan de la pantalla */
+#carritoOffcanvas .row {
+    flex-wrap: nowrap;
+    width: 100% !important;
+}
+
+/* Evitar que los botones o imágenes generen overflow */
+#carritoOffcanvas img,
+#carritoOffcanvas button,
+#carritoOffcanvas .btn-group {
+    max-width: 100% !important;
+}
+
+
 /* ═══════════════════════════════════════════════════════════════════════════
    UTILIDADES
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -233,3 +257,123 @@ html {
   transform: scale(1.1);
   transition: transform 0.2s ease;
 }
+
+.custom-toast {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #003366;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all .3s ease;
+    z-index: 9999;
+}
+
+.custom-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.custom-toast-warning {
+    background: #f0ad4e;
+}
+
+.custom-toast-danger {
+    background: #d9534f;
+}
+
+.custom-toast-success {
+    background: #5cb85c;
+}
+
+/* Botón principal del modal (Iniciar sesión) */
+.btn-login-primary {
+    background-color: #003366;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-login-primary:hover {
+    background-color: #002244;
+    color: #ffffff;
+}
+
+/* Botón secundario (Registrarse) */
+.btn-login-secondary {
+    border: 2px solid #003366;
+    color: #003366;
+    background-color: #ffffff;
+}
+
+.btn-login-secondary:hover {
+    background-color: #003366;
+    color: #ffffff;
+}
+
+/* Centrar dropdown respecto al botón */
+.user-dropdown-wrapper .dropdown-menu {
+  transform: translateX(calc(-50% + 50px)) !important;
+  left: 50% !important;
+}
+
+/* Ajustar botón estilo carrito */
+.user-btn {
+  border: 2px solid #ffffff !important;
+  color: #ffffff !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+}
+
+.user-btn:hover {
+  background-color: rgba(255,255,255,0.15) !important;
+}
+
+/* Texto nombre apellido */
+.user-btn-name {
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+/* Hover azul institucional para items */
+.dropdown-item:hover {
+  background-color: #e8f1ff !important;
+  color: #003366 !important;
+}
+
+/* Botón de usuario: que NO cambie al hacer clic */
+/* MISMO HOVER QUE EL CARRITO PARA EL BOTÓN DE USUARIO */
+#userDropdown {
+    border: 1px solid #fff !important;
+    color: #fff !important;
+    background-color: transparent !important;
+}
+
+/* Hover idéntico al carrito */
+#userDropdown:hover {
+    background-color: #fff !important;   /* igual que el carrito */
+    color: #003366 !important;           /* igual que el carrito */
+    border-color: #fff !important;       /* igual que el carrito */
+}
+
+/* Ícono y texto en hover también cambian igual */
+#userDropdown:hover i,
+#userDropdown:hover span {
+    color: #003366 !important;
+}
+
+.user-dropdown-wrapper {
+  position: relative;
+}
+
+/* CENTRAR Y BAJAR EL DROPDOWN EXACTAMENTE BAJO EL BOTÓN */
+.user-dropdown-wrapper .dropdown-menu {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: calc(100% + 10px) !important;   /* bajamos el dropdown */
+}
+
+
+

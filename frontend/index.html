@@ -27,8 +27,10 @@
 <div id="carrito-container"></div>
 <div id="carrusel-container"></div>
 <div id="productos-container"></div>
+<div id="productos-destacados-container"></div>
 <div id="categorias-container"></div>
 <div id="catalogo-container"></div>
+
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <!-- MODAL UNIFICADO PARA PRODUCTOS -->
@@ -120,6 +122,142 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL DIRECCIONES -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<div class="modal fade" id="addressModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addressModalLabel">Dirección de entrega</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="cart-address-form">
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="form-group mb-3">
+                <label class="form-label">Calle</label>
+                <input type="text" 
+                      class="form-control" 
+                      id="cart-address-street" 
+                      placeholder="Ej: Avenida Marathon" 
+                      required 
+                      pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ .-]{3,50}">
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group mb-3">
+                <label class="form-label">Número</label>
+                <input type="text" 
+                      class="form-control" 
+                      id="cart-address-number" 
+                      placeholder="Ej: 1234" 
+                      required 
+                      pattern="[0-9]{1,6}">
+              </div>
+            </div>
+          </div>
+
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Ciudad</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="cart-address-city" 
+                  value="Santiago" 
+                  readonly
+                >
+
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Comuna</label>
+                <input type="text" class="form-control" id="cart-address-region" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Referencia (opcional)</label>
+            <input type="text" class="form-control" id="cart-address-ref">
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn-save-cart-address">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Debes iniciar sesión -->
+<div class="modal fade" id="authRequiredModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+
+      <!-- HEADER -->
+      <div class="modal-header" style="background-color:#003366;">
+        <h5 class="modal-title text-white">
+          <i class="bi bi-person-lock me-2"></i>
+          Necesitas una cuenta
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body text-center py-4">
+        <p class="fs-5 text-muted">
+          Para continuar con tu compra debes iniciar sesión o crear una cuenta.
+        </p>
+      </div>
+
+      <!-- FOOTER (BOTONES UNO AL LADO DEL OTRO) -->
+      <div class="modal-footer d-flex justify-content-center gap-3">
+
+        <!-- BOTÓN INICIAR SESIÓN -->
+        <a href="components/login.html" 
+           class="btn"
+           style="
+             background-color:#003366;
+             color:#fff;
+             width:160px;
+           ">
+          Iniciar sesión
+        </a>
+
+        <!-- BOTÓN REGISTRARSE -->
+        <a href="components/registro.html" 
+           class="btn"
+           style="
+             border:2px solid #003366;
+             color:#003366;
+             width:160px;
+           "
+           onmouseover="this.style.backgroundColor='#003366'; this.style.color='#fff';"
+           onmouseout="this.style.backgroundColor='#fff'; this.style.color='#003366';">
+          Registrarse
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
 <!-- SCRIPTS -->
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 
@@ -138,63 +276,6 @@
 
 <!-- Página específica -->
 <script src="js/pages/index.js"></script>
-
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- INICIALIZACIÓN -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<script>
-$(document).ready(function() {
-  console.log('🚀 Inicializando index.html (COMPONENTE 10.1)...');
-  console.log('📦 Usando UTILS.loadComponent() desde utils.js');
-  
-  // Verificar que UTILS existe
-  if (typeof UTILS === 'undefined' || typeof UTILS.loadComponent !== 'function') {
-    console.error('❌ CRÍTICO: UTILS.loadComponent no está disponible');
-    console.error('   Verifica que js/utils.js esté cargado correctamente');
-    return;
-  }
-  
-  // Cargar componentes usando UTILS.loadComponent
-  UTILS.loadComponent("header-container", "components/header.html", function() {
-    // Inicializar header después de cargarlo
-    if (typeof initHeader === 'function') {
-      initHeader();
-    }
-  });
-  
-  UTILS.loadComponent("carrito-container", "components/carrito.html");
-  UTILS.loadComponent("carrusel-container", "components/carrusel.html");
-  
-  // PRODUCTOS DESTACADOS - Llamar a loadFeaturedProducts() después de cargar el componente
-  UTILS.loadComponent("productos-container", "components/ProductoDestacado.html", function() {
-    console.log('✅ ProductoDestacado.html cargado, ejecutando loadFeaturedProducts()...');
-    if (typeof loadFeaturedProducts === 'function') {
-      loadFeaturedProducts(4);
-    } else {
-      console.error('❌ loadFeaturedProducts no está definida');
-    }
-  });
-  
-  UTILS.loadComponent("categorias-container", "components/categorias.html", function() {
-    console.log('✅ categorias.html cargado, ejecutando initCategoryButtons()...');
-    if (typeof initCategoryButtons === 'function') {
-      initCategoryButtons();
-    }
-  });
-  
-  // CATÁLOGO - Llamar a loadCatalog() después de cargar el componente
-  UTILS.loadComponent("catalogo-container", "components/catalogo.html", function() {
-    console.log('✅ catalogo.html cargado, ejecutando loadCatalog()...');
-    if (typeof loadCatalog === 'function') {
-      loadCatalog();
-    } else {
-      console.error('❌ loadCatalog no está definida');
-    }
-  });
-  
-  console.log('✅ Todos los componentes se están cargando...');
-});
-</script>
 
 </body>
 </html>

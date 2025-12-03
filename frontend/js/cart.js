@@ -67,97 +67,142 @@ function saveCartItems(items) {
  *   showToast(result.message, 'success');
  * }
  */
-function addToCart(product, quantity = 1) {
-  try {
-    // Validar producto
-    if (!product || !product.id) {
-      return {
-        success: false,
-        message: 'Producto inválido',
-        cartItem: null
-      };
+
+async function addToCart(product, quantity = 1) {
+  // 0) Si NO está autenticado → mostramos modal y salimos
+  if (typeof isAuthenticated === "function" && !isAuthenticated()) {
+    if (typeof showAuthRequiredModal === "function") {
+      showAuthRequiredModal();
+    } else if (typeof showToast === "function") {
+      showToast("Debes iniciar sesión para agregar productos al carrito", "warning");
     }
-    
-    // Validar cantidad
-    if (quantity < 1) {
-      return {
-        success: false,
-        message: 'Cantidad debe ser mayor a 0',
-        cartItem: null
-      };
-    }
-    
-    const items = getCartItems();
-    
-    // Verificar límite de items
-    if (items.length >= CONFIG.UI_CONFIG.MAX_CART_ITEMS) {
-      return {
-        success: false,
-        message: `Máximo ${CONFIG.UI_CONFIG.MAX_CART_ITEMS} items en el carrito`,
-        cartItem: null
-      };
-    }
-    
-    // Buscar si el producto ya existe
-    const existingIndex = items.findIndex(item => item.id === product.id);
-    
-    if (existingIndex !== -1) {
-      // Producto existe: incrementar cantidad
-      items[existingIndex].quantity += quantity;
-      items[existingIndex].updatedAt = new Date().toISOString();
-      
-      saveCartItems(items);
-      
-      // Emitir evento
-      $(document).trigger('cart:updated');
-      $(document).trigger('cart:item-updated', [items[existingIndex]]);
-      
-      console.log('✅ Cantidad actualizada en carrito:', items[existingIndex]);
-      
-      return {
-        success: true,
-        message: `${product.name} actualizado en el carrito`,
-        cartItem: items[existingIndex]
-      };
-      
-    } else {
-      // Producto nuevo: agregar
-      const cartItem = {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image || null,
-        category: product.category || null,
-        quantity: quantity,
-        addedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      
-      items.push(cartItem);
-      saveCartItems(items);
-      
-      // Emitir evento
-      $(document).trigger('cart:updated');
-      $(document).trigger('cart:item-added', [cartItem]);
-      
-      console.log('✅ Producto agregado al carrito:', cartItem);
-      
-      return {
-        success: true,
-        message: CONFIG.MESSAGES.SUCCESS.CART_ADD,
-        cartItem: cartItem
-      };
-    }
-    
-  } catch (error) {
-    console.error('❌ Error agregando al carrito:', error);
     return {
       success: false,
-      message: CONFIG.MESSAGES.ERROR.GENERIC,
-      cartItem: null
+      message: "Usuario no autenticado"
     };
   }
+
+  // 1) Usuario autenticado → usar backend SIEMPRE
+  const response = await addToCartBackend(product._id, quantity);
+
+  if (response.success) {
+    // Sincronizar carrito local con backend
+    await refreshLocalCartFromBackend();
+    renderCartOffcanvas();
+    updateCartBadge();
+
+    return {
+      success: true,
+      message: "Producto agregado al carrito"
+    };
+  }
+
+  return {
+    success: false,
+    message: response.error?.message || "Error en backend al agregar al carrito"
+  };
 }
+
+
+
+
+function addToCartLocal(product, quantity) {
+  const cart = getCartItems();
+  let cartItem;
+
+  // buscamos por productId (que usamos como id lógico)
+  const existing = cart.find(item => item.productId === product._id);
+
+  if (existing) {
+    existing.quantity += quantity;
+    cartItem = existing;
+  } else {
+    cartItem = {
+      id: product._id,          // <-- ID que usa el offcanvas
+      cartItemId: null,
+      productId: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.mainImage,
+      quantity,
+      addedAt: new Date().toISOString(),
+    };
+    cart.push(cartItem);
+  }
+
+  saveCartItems(cart);
+  $(document).trigger('cart:updated');   // 🔔 avisar cambio
+
+  return cartItem;
+}
+
+
+function removeLocalItem(itemId) {
+  const cart = getCartItems().filter(item => {
+    // puede llegar id lógico (id/productId) o cartItemId
+    return item.id !== itemId && item.productId !== itemId && item.cartItemId !== itemId;
+  });
+
+  saveCartItems(cart);
+  $(document).trigger('cart:updated');   // 🔔 avisar cambio
+}
+
+function updateLocalQuantity(itemId, newQuantity) {
+  const cart = getCartItems();
+  const item = cart.find(i =>
+    i.id === itemId ||
+    i.productId === itemId ||
+    i.cartItemId === itemId
+  );
+
+  if (!item) return;
+
+  if (newQuantity <= 0) {
+    // si llega 0 o menos, eliminamos el item
+    const index = cart.indexOf(item);
+    if (index !== -1) cart.splice(index, 1);
+  } else {
+    item.quantity = newQuantity;
+  }
+
+  saveCartItems(cart);
+  $(document).trigger('cart:updated');   // 🔔 avisar cambio
+}
+
+
+async function refreshLocalCartFromBackend() {
+  const response = await getCartFromBackend();
+
+  if (!response.success) {
+    console.error("❌ No se pudo leer carrito del backend");
+    return;
+  }
+
+  const backendItems = response.data.items || response.data;
+
+  const normalized = backendItems.map(item => {
+    const product = item.productId;
+
+    // 🔥 productId puede venir como String o como objeto
+    const productId = typeof product === "string" ? product : product?._id;
+
+    return {
+      id: item._id,                    // id del cartItem real
+      cartItemId: item._id,
+      productId: productId,           // id correcto
+      name: product?.name || "Producto sin nombre",
+      price: item.unitPrice,
+      image: product?.mainImage || CONFIG.DEFAULT_IMAGE,
+      quantity: item.quantity,
+    };
+  });
+
+  saveCartItems(normalized);
+  $(document).trigger('cart:updated');
+}
+
+
+
 
 /**
  * Elimina un item del carrito por su ID
@@ -171,42 +216,24 @@ function addToCart(product, quantity = 1) {
  *   showToast(result.message, 'success');
  * }
  */
-function removeFromCart(itemId) {
-  try {
-    const items = getCartItems();
-    const initialLength = items.length;
-    
-    // Filtrar el item a eliminar
-    const newItems = items.filter(item => item.id !== itemId);
-    
-    if (newItems.length === initialLength) {
-      return {
-        success: false,
-        message: 'Producto no encontrado en el carrito'
-      };
+async function removeFromCart(itemId) {
+
+  if (isAuthenticated()) {
+    const response = await removeFromCartBackend(itemId);
+
+    if (response.success) {
+      await refreshLocalCartFromBackend();
+      renderCartOffcanvas();
+      updateCartBadge();
     }
-    
-    saveCartItems(newItems);
-    
-    // Emitir evento
-    $(document).trigger('cart:updated');
-    $(document).trigger('cart:item-removed', [itemId]);
-    
-    console.log('✅ Producto eliminado del carrito:', itemId);
-    
-    return {
-      success: true,
-      message: CONFIG.MESSAGES.SUCCESS.CART_REMOVE
-    };
-    
-  } catch (error) {
-    console.error('❌ Error eliminando del carrito:', error);
-    return {
-      success: false,
-      message: CONFIG.MESSAGES.ERROR.GENERIC
-    };
+    return;
   }
+
+  removeLocalItem(itemId);
+  renderCartOffcanvas();
+  updateCartBadge();
 }
+
 
 /**
  * Actualiza la cantidad de un item en el carrito
@@ -221,59 +248,44 @@ function removeFromCart(itemId) {
  *   showToast(result.message, 'success');
  * }
  */
-function updateQuantity(itemId, newQuantity) {
-  try {
-    // Si cantidad es 0, eliminar item
-    if (newQuantity === 0) {
-      return removeFromCart(itemId);
+async function updateQuantity(itemId, newQuantity) {
+
+  if (isAuthenticated()) {
+    const response = await updateCartItemBackend(itemId, newQuantity);
+
+    if (response.success) {
+      await refreshLocalCartFromBackend();
+      renderCartOffcanvas();
+      updateCartBadge();
     }
-    
-    // Validar cantidad
-    if (newQuantity < 0) {
-      return {
-        success: false,
-        message: 'Cantidad no puede ser negativa',
-        cartItem: null
-      };
-    }
-    
-    const items = getCartItems();
-    const itemIndex = items.findIndex(item => item.id === itemId);
-    
-    if (itemIndex === -1) {
-      return {
-        success: false,
-        message: 'Producto no encontrado en el carrito',
-        cartItem: null
-      };
-    }
-    
-    // Actualizar cantidad
-    items[itemIndex].quantity = newQuantity;
-    items[itemIndex].updatedAt = new Date().toISOString();
-    
-    saveCartItems(items);
-    
-    // Emitir evento
-    $(document).trigger('cart:updated');
-    $(document).trigger('cart:item-updated', [items[itemIndex]]);
-    
-    console.log('✅ Cantidad actualizada:', items[itemIndex]);
-    
-    return {
-      success: true,
-      message: 'Cantidad actualizada',
-      cartItem: items[itemIndex]
-    };
-    
-  } catch (error) {
-    console.error('❌ Error actualizando cantidad:', error);
-    return {
-      success: false,
-      message: CONFIG.MESSAGES.ERROR.GENERIC,
-      cartItem: null
-    };
+    return;
   }
+
+  updateLocalQuantity(itemId, newQuantity);
+  renderCartOffcanvas();
+  updateCartBadge();
+}
+
+/**
+ * Actualiza la cantidad de un item en localStorage
+ */
+function updateLocalQuantity(itemId, newQuantity) {
+  const cart = getCartItems();
+
+  cart.forEach(item => {
+    if (item.id === itemId || item.productId === itemId) {
+      item.quantity = newQuantity;
+
+      // Si la cantidad queda en 0, se elimina
+      if (item.quantity <= 0) {
+        const index = cart.indexOf(item);
+        cart.splice(index, 1);
+      }
+    }
+  });
+
+  saveCartItems(cart);
+  $(document).trigger("cart:updated");
 }
 
 /**
@@ -286,29 +298,62 @@ function updateQuantity(itemId, newQuantity) {
  *   const result = clearCart();
  * }
  */
-function clearCart() {
+// Reemplaza toda la función clearCart por esta
+async function clearCart() {
   try {
-    saveCartItems([]);
-    
-    // Emitir evento
+    // Caso 1: Usuario autenticado → vaciar backend + sync local
+    if (typeof isAuthenticated === 'function' && isAuthenticated()) {
+      const token = (typeof getAuthToken === 'function') ? getAuthToken() : null;
+
+      const response = await fetch(`${CONFIG.API_URL}/cart/clear`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        console.error('❌ Error vaciando carrito en backend:', data.message || data);
+      }
+
+      // Refrescar desde backend (debería venir vacío)
+      if (typeof refreshLocalCartFromBackend === 'function') {
+        await refreshLocalCartFromBackend();
+      } else {
+        saveCartItems([]);
+      }
+
+    } else {
+      // Caso 2: Invitado → solo localStorage
+      saveCartItems([]);
+    }
+
+    // Actualizar UI en ambos casos
+    renderCartOffcanvas();
+    updateCartBadge();
+
+    // Emitir eventos globales
     $(document).trigger('cart:updated');
     $(document).trigger('cart:cleared');
-    
-    console.log('✅ Carrito vaciado');
-    
+
+    console.log('✅ Carrito vaciado correctamente (backend + local)');
     return {
       success: true,
       message: 'Carrito vaciado correctamente'
     };
-    
+
   } catch (error) {
     console.error('❌ Error vaciando carrito:', error);
     return {
       success: false,
-      message: CONFIG.MESSAGES.ERROR.GENERIC
+      message: 'Error al vaciar el carrito'
     };
   }
 }
+
 
 /**
  * Busca un item específico en el carrito por su ID
@@ -448,6 +493,22 @@ function getCartSummary() {
   };
 }
 
+function updateCartBadge() {
+  const cart = getCartItems();
+  const count = cart.length; // 🔥 productos distintos
+
+  $(".cart-count").text(count);
+  $("#cart-badge").text(count);
+
+  if (count > 0) {
+    $("#cart-badge").show();
+  } else {
+    $("#cart-badge").hide();
+  }
+}
+
+
+
 // ═══════════════════════════════════════════════════════════════════════════
 // RENDERIZADO DEL CARRITO (OFFCANVAS)
 // ═══════════════════════════════════════════════════════════════════════════
@@ -475,12 +536,20 @@ function renderCartOffcanvas() {
   const summary = getCartSummary();
   
   if (summary.isEmpty) {
-    // Carrito vacío
-    if ($cartEmpty.length) $cartEmpty.show();
+  // Carrito vacío → pintamos el mensaje vacío de cero
+    $cartItems.html(`
+      <div id="empty-cart-message" class="text-center py-5">
+        <i class="bi bi-cart-x display-1 text-muted"></i>
+        <p class="text-muted mt-3">Tu carrito está vacío</p>
+        <button class="btn btn-primary btn-sm" data-bs-dismiss="offcanvas">
+          Ir a comprar
+        </button>
+      </div>
+    `);
+
     if ($cartContent.length) $cartContent.hide();
-    
-    console.log('🛒 Carrito vacío renderizado');
-    
+
+      console.log('🛒 Carrito vacío renderizado');
   } else {
     // Carrito con items
     if ($cartEmpty.length) $cartEmpty.hide();
@@ -632,6 +701,10 @@ async function syncCartWithBackend() {
   return Promise.resolve();
 }
 
+// Compatibilidad con código antiguo que llama a syncCart()
+window.syncCart = syncCartWithBackend;
+
+
 // ═══════════════════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════════════════
@@ -671,6 +744,211 @@ $(document).on('cart:updated', function() {
   }
 });
 
+function updateCartAddressUI() {
+  const addr = getShippingAddress();
+
+  const $section = $("#cart-address-selected");
+  const $text = $("#cart-address-text");
+  const $btnProcesar = $("#btn-procesar-pedido");
+
+  if (!addr) {
+    $section.hide();
+    $btnProcesar.prop("disabled", true);   // 🔥 IMPORTANTE
+    return;
+  }
+
+  $text.text(`${addr.street} ${addr.number || ""}, ${addr.city}, ${addr.region}`);
+
+  $section.show();
+
+  // Si hay dirección → habilitar botón
+  $btnProcesar.prop("disabled", false);
+}
+
+
+// Guardar dirección desde el modal del carrito (solo localStorage)
+$(document).on("click", "#btn-save-cart-address", async function () {
+
+    const street = $("#cart-address-street").val().trim();
+    const number = $("#cart-address-number").val().trim();
+    const city = "Santiago";
+    const region = $("#cart-address-region").val().trim();
+    const reference = $("#cart-address-ref").val().trim();
+
+    if (!street || !number || !region) {
+        showToast("Completa calle, número y comuna", "warning");
+        return;
+    }
+
+    // 🔵 Si NO está logueado, guardar solo local
+    if (!isAuthenticated()) {
+        saveShippingAddress({ street, number, city, region, reference });
+        updateCartAddressUI();
+        bootstrap.Modal.getInstance(document.getElementById("addressModal")).hide();
+        return;
+    }
+
+    // 🔵 SI está logueado → CREAR dirección en backend
+    try {
+        const result = await apiRequest("POST", "/addresses", {
+            street,
+            number,
+            city,
+            region,
+            reference,
+            isDefault: true
+        });
+
+        if (!result.success) {
+            showToast(result.error?.message || "Error guardando dirección", "danger");
+            return;
+        }
+
+        const addr = result.data;
+
+        // Guardar dirección con addressId real
+        saveShippingAddress({
+            id: addr._id,
+            street: addr.street,
+            number: addr.number,
+            city: addr.city,
+            region: addr.region,
+            reference: addr.reference
+        });
+
+        updateCartAddressUI();
+        bootstrap.Modal.getInstance(document.getElementById("addressModal")).hide();
+
+        showToast("Dirección guardada", "success");
+
+    } catch (err) {
+        console.error("❌ Error backend dirección:", err);
+        showToast("No se pudo guardar la dirección", "danger");
+    }
+});
+
+
+
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INICIALIZAR UI DEL CARRITO (Offcanvas + botones)
+// ═══════════════════════════════════════════════════════════════════════════
+
+function initCartUI() {
+
+  const $offcanvas = $('#carritoOffcanvas');
+
+  if ($offcanvas.length) {
+    // Al abrir el offcanvas, verificamos si está logueado
+    $offcanvas.off('show.bs.offcanvas').on('show.bs.offcanvas', function (e) {
+
+      // 🚫 Invitado → no dejar abrir el carrito
+      if (!isAuthenticated || typeof isAuthenticated !== "function" || !isAuthenticated()) {
+        e.preventDefault(); // Cancela la apertura del offcanvas
+
+        if (typeof showToast === "function") {
+          showToast("Debes iniciar sesión o registrarte para ver el carrito.", "warning");
+        } else {
+          alert("Debes iniciar sesión o registrarte para ver el carrito.");
+        }
+        return;
+      }
+
+      // ✅ Usuario logueado → renderizamos normal
+      console.log('🛒 Offcanvas abierto, renderizando carrito...');
+      renderCartOffcanvas();
+    });
+  }
+
+  $('#btn-edit-address-cart').off('click').on('click', function () {
+    const modal = new bootstrap.Modal(document.getElementById('addressModal'));
+    modal.show();
+  });
+
+
+  // Botón "Vaciar carrito"
+$('#btn-vaciar-carrito').off('click').on('click', async function () {
+
+  if (!confirm("¿Vaciar el carrito?")) return;
+
+  // Caso 1: usuario invitado → solo localStorage
+  if (!isAuthenticated()) {
+    saveCartItems([]);           // limpiar carrito local
+    renderCartOffcanvas();
+    updateCartBadge();
+    console.log("🧹 Carrito vaciado (usuario invitado)");
+    return;
+  }
+
+  // Caso 2: usuario logueado → limpiar backend y sincronizar
+  try {
+    const response = await fetch(`${CONFIG.API_URL}/cart/clear`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${getAuthToken()}`,  // ← ESTA ES LA LÍNEA CORRECTA
+        "Content-Type": "application/json"
+      }
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      console.log("🧹 Carrito vaciado en backend");
+
+      // Sincronizar backend → local
+      await refreshLocalCartFromBackend();
+
+      renderCartOffcanvas();
+      updateCartBadge();
+
+      console.log("🧹 Carrito vaciado correctamente (backend + local)");
+
+    } else {
+      console.error("❌ Error del backend al vaciar carrito:", data.message);
+    }
+
+  } catch (err) {
+    console.error("❌ Error inesperado al vaciar carrito:", err);
+  }
+});
+
+
+
+// Botón "Procesar pedido"
+$('#btn-procesar-pedido').off('click').on('click', function () {
+
+    // 1) Bloquear invitados
+    if (typeof isAuthenticated === "function" && !isAuthenticated()) {
+        if (typeof showAuthRequiredModal === "function") {
+            showAuthRequiredModal();
+        } else if (typeof showToast === "function") {
+            showToast("Debes iniciar sesión para continuar con la compra", "warning");
+        }
+        return;
+    }
+
+    // 2) Validar dirección
+    const addr = getShippingAddress();
+
+    if (!addr) {
+        showToast("Debes ingresar una dirección antes de continuar", "warning");
+        return;
+    }
+
+    // 3) Redirigir al checkout
+    window.location.href = `${CONFIG.BASE_PATH}/components/checkout.html`;
+});
+
+
+
+
+    }
+
+
+
+
+
 // ═══════════════════════════════════════════════════════════════════════════
 // EXPORTAR FUNCIONES
 // ═══════════════════════════════════════════════════════════════════════════
@@ -698,6 +976,9 @@ window.CART = {
   
   // Sincronización
   syncCartWithBackend,
+
+  // UI
+  initCartUI,
 };
 
 // Hacer funciones disponibles globalmente para fácil acceso
@@ -711,3 +992,12 @@ if (!CONFIG.isProduction) {
   const summary = getCartSummary();
   console.log('🛒 Estado actual del carrito:', summary.uniqueItems, 'items distintos,', summary.itemCount, 'items totales');
 }
+
+$("#clear-cart").on("click", function () {
+    clearCart();
+    renderCartOffcanvas();
+    updateCartBadge();
+});
+
+
+

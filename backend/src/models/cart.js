@@ -11,20 +11,22 @@ const cartSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'abandoned'],
+    enum: ['active', 'abandoned', 'closed'],
     default: 'active'
   }
+
 }, {
   timestamps: true
 });
 
 // Solo aplica unicidad a carritos activos
 cartSchema.index(
-  { userId: 1 }, 
+  { userId: 1, status: 1 },
   { 
-    unique: true, 
-    partialFilterExpression: { status: 'active' } 
+    unique: true,
+    partialFilterExpression: { status: 'active' }
   }
 );
+
 
 export default mongoose.model('Cart', cartSchema);
