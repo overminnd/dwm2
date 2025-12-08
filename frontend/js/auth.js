@@ -250,6 +250,18 @@ function logout(redirect = true) {
       navigateTo(CONFIG.ROUTES.HOME);
     }, 100);
   }
+
+  if (showMessage) {
+    alert("Sesión cerrada correctamente");
+  }
+
+  // Limpia datos
+  localStorage.removeItem(CONFIG.STORAGE_KEYS.TOKEN);
+  localStorage.removeItem(CONFIG.STORAGE_KEYS.USER);
+
+  // Redirige SIEMPRE
+  window.location.href = CONFIG.ROUTES.HOME;
+
 }
 
 /**
@@ -349,6 +361,57 @@ function renderUserDropdown(user) {
   const userEmail = user.email || 'Usuario';
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || userEmail;
 
+  // ======================================================
+  // NUEVO: OPCIONES DE MENÚ SEGÚN ROLE
+  // ======================================================
+  let menuOptions = "";
+
+  if (user.role === "admin") {
+    // 🔴 MODO ADMIN
+    menuOptions = `
+      <li>
+        <a class="dropdown-item py-2 px-3" 
+          href="/MARAZUL/MARAZUL/frontend/components/dashboard.html"
+          style="background-color: #e6f3ff; border-radius: 4px; font-weight: 600;">
+          <i class="bi bi-tools me-2"></i>
+          Administrador
+        </a>
+      </li>
+
+      <li>
+        <a class="dropdown-item py-2 px-3" href="/MARAZUL/MARAZUL/frontend/components/mensajes.html">
+          <i class="bi bi-receipt-cutoff me-2"></i>
+          Mensajes
+        </a>
+      </li>
+
+
+      <li>
+        <a class="dropdown-item py-2 px-3" href="/MARAZUL/MARAZUL/frontend/components/ordenes.html">
+          <i class="bi bi-receipt-cutoff me-2"></i>
+          Órdenes
+        </a>
+      </li>
+
+      <li><hr class="dropdown-divider my-1"></li>
+    `;
+  } else {
+    // 🟢 CUSTOMER NORMAL → mantener tal cual
+    menuOptions = `
+      <li>
+        <a class="dropdown-item py-2 px-3" href="${CONFIG.ROUTES.AJUSTES}">
+          <i class="bi bi-gear me-2" style="color: #003366;"></i>
+          Mi cuenta
+        </a>
+      </li>
+
+      <li><hr class="dropdown-divider my-1"></li>
+    `;
+  }
+
+  // ======================================================
+  // HTML ORIGINAL, SIN CAMBIAR, SOLO INSERTANDO menuOptions
+  // ======================================================
   const dropdownHTML = `
     <div class="dropdown user-dropdown-wrapper">
 
@@ -384,14 +447,7 @@ function renderUserDropdown(user) {
           </div>
         </li>
 
-        <li>
-          <a class="dropdown-item py-2 px-3" href="${CONFIG.ROUTES.AJUSTES}">
-            <i class="bi bi-gear me-2" style="color: #003366;"></i>
-            Mi cuenta
-          </a>
-        </li>
-
-        <li><hr class="dropdown-divider my-1"></li>
+        ${menuOptions}
 
         <li>
           <a class="dropdown-item py-2 px-3 text-danger" href="#" id="logout-btn">
@@ -411,7 +467,7 @@ function renderUserDropdown(user) {
     logout();
   });
 
-  console.log("✅ Botón de usuario renderizado con estilo igual al carrito");
+  console.log("✅ Dropdown renderizado correctamente para rol:", user.role || "Customer");
 }
 
 
@@ -658,12 +714,17 @@ $(document).ready(function() {
 
 function updateHeaderCartVisibility() {
     const wrapper = document.getElementById("header-cart-wrapper");
+    const user = getCurrentUser();
 
     if (!wrapper) return;
 
-    if (isAuthenticated()) {
-        wrapper.style.display = "block";  // mostrar carrito
-    } else {
-        wrapper.style.display = "none";   // ocultar carrito
+    // ① Usuario NO autenticado → ocultar (ya funciona)
+    if (!isAuthenticated()) {
+        wrapper.style.display = "none";
+        return;
     }
+
+    // ③ Usuario normal → mostrar carrito
+    wrapper.style.display = "block";
 }
+

@@ -383,3 +383,45 @@ export const calculateOrderTotal = async (req, res) => {
     });
   }
 };
+
+// @desc    Obtener todas las órdenes (ADMIN)
+// @route   GET /api/orders/admin
+// @access  Private/Admin
+export const getAllOrdersAdmin = async (req, res) => {
+  try {
+    const { status, page = 1, limit = 20 } = req.query;
+
+    const query = {};
+    if (status) {
+      query.status = status;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const orders = await Order.find(query)
+      .populate('userId', 'email firstName lastName')
+      .populate('addressId')
+      .sort('-createdAt')
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Order.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: orders,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

@@ -122,7 +122,10 @@ const ENDPOINTS = {
     BY_ID: (id) => `/orders/${id}`,
     ITEMS: (id) => `/orders/${id}/items`,
     CANCEL: (id) => `/orders/${id}/cancel`,
-  },
+    TOTAL: (id) => `/orders/${id}/total`,
+    ADMIN_ALL: '/orders/admin/all',
+},
+
 
   CONTACT: {
     SEND: '/contact'

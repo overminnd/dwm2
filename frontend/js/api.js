@@ -530,6 +530,24 @@ async function getOrderHistory() {
   return await apiRequest('GET', CONFIG.ENDPOINTS.ORDERS.HISTORY);
 }
 
+async function getAdminOrders(status = "paid") {
+  return await apiRequest(
+    "GET",
+    `/orders/admin?status=${status}`
+  );
+}
+
+
+async function updateOrderStatus(orderId, newStatus) {
+  return await apiRequest(
+    "PUT",
+    `/orders/${orderId}/status`,
+    { status: newStatus }
+  );
+}
+
+
+
 /**
  * Obtiene una orden por su ID
  * Requiere autenticación
@@ -562,10 +580,135 @@ async function getOrderItems(orderId) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// ADMIN - PRODUCTOS Y CATEGORÍAS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * ADMIN: Obtener todos los productos (incluyendo no publicados)
+ * 
+ * Asume que el backend acepta GET /products?admin=true
+ * Si en tu backend es diferente, cambia el endpoint/params.
+ */
+async function adminGetProducts() {
+  const endpoint = `${ENDPOINTS.PRODUCTS.ALL}?admin=true`;
+  return await apiRequest('GET', endpoint);
+}
+
+/**
+ * ADMIN: Crear producto
+ * 
+ * @param {Object} productData - { name, price, stock, categoryId, status, ... }
+ */
+async function adminCreateProduct(productData) {
+  return await apiRequest('POST', ENDPOINTS.PRODUCTS.ALL, productData);
+}
+
+/**
+ * ADMIN: Actualizar producto (incluye stock, nombre, precio, status, etc.)
+ * 
+ * @param {string} productId 
+ * @param {Object} data - campos a actualizar
+ */
+async function adminUpdateProduct(productId, data) {
+  const endpoint = ENDPOINTS.PRODUCTS.BY_ID(productId);
+  return await apiRequest('PUT', endpoint, data);
+}
+
+/**
+ * ADMIN: Eliminar producto
+ */
+async function adminDeleteProduct(productId) {
+  const endpoint = ENDPOINTS.PRODUCTS.BY_ID(productId);
+  return await apiRequest('DELETE', endpoint);
+}
+
+/**
+ * ADMIN: Cambiar estado de producto (ej: 'published' / 'draft' / 'disabled')
+ * 
+ * Si en tu backend NO tienes /products/:id/status, 
+ * puedes reutilizar adminUpdateProduct(productId, { status: newStatus })
+ */
+async function adminUpdateProductStatus(productId, newStatus) {
+  // 👉 si tienes un endpoint dedicado:
+  // const endpoint = `/products/${productId}/status`;
+  // return await apiRequest('PUT', endpoint, { status: newStatus });
+
+  // 👉 versión genérica usando PUT /products/:id
+  return await adminUpdateProduct(productId, { status: newStatus });
+}
+
+/* =========================
+   CATEGORÍAS
+========================= */
+
+/**
+ * ADMIN: Obtener todas las categorías (activas y no activas, si el backend lo permite)
+ * Por ahora reutilizamos GET /categories.
+ */
+async function adminGetCategories() {
+  return await apiRequest('GET', ENDPOINTS.CATEGORIES.ALL + '?admin=true');
+}
+
+/**
+ * ADMIN: Crear categoría
+ * @param {Object} data - { name, description, ... }
+ */
+async function adminCreateCategory(data) {
+  return await apiRequest('POST', ENDPOINTS.CATEGORIES.ALL, data);
+}
+
+/**
+ * ADMIN: Actualizar categoría
+ */
+async function adminUpdateCategory(categoryId, data) {
+  const endpoint = `/categories/${categoryId}`;
+  return await apiRequest('PUT', endpoint, data);
+}
+
+/**
+ * ADMIN: Eliminar categoría
+ */
+async function adminDeleteCategory(categoryId) {
+  const endpoint = `/categories/${categoryId}`;
+  return await apiRequest('DELETE', endpoint);
+}
+
+/**
+ * ADMIN: Cambiar estado de categoría (ej: active true/false)
+ * Si tu schema usa otra cosa (status), ajusta acá.
+ */
+async function adminToggleCategoryActive(categoryId, isActive) {
+  return await adminUpdateCategory(categoryId, { active: isActive });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // CONTACTO
 // ═══════════════════════════════════════════════════════════════════════════
+// Mensajes de contacto - Admin
+async function getAllMessagesAdmin() {
+  return apiRequest("GET", "/contact/messages");
+}
+
+async function getMessageById(id) {
+  return apiRequest("GET", `/contact/messages/${id}`);
+}
+
+async function markMessageAsRead(id) {
+  return apiRequest("PUT", `/contact/messages/${id}/mark-read`);
+}
+
+async function deleteMessage(id) {
+  return apiRequest("DELETE", `/contact/messages/${id}`);
+}
+
+/**
+ * Envía un mensaje desde el formulario de contacto
+ * 
+ * @param {Object} data - { name, email, phone, message }
+ * @returns {Promise} { success, message }
+ */
 async function sendContactMessage(data) {
-  return apiRequest('POST', ENDPOINTS.CONTACT.SEND, data);
+  return apiRequest("POST", "/contact", data);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -654,9 +797,36 @@ window.API = {
   createOrder,
   getOrderHistory,
   getOrderById,
+  getAdminOrders,
+  updateOrderStatus,
+
+  // ADMIN PRODUCTS
+  adminGetProducts,
+  adminCreateProduct,
+  adminUpdateProduct,
+  adminDeleteProduct,
+  adminUpdateProductStatus,
+
+  //  ADMIN CATEGORIES
+  adminGetCategories,
+  adminCreateCategory,
+  adminUpdateCategory,
+  adminDeleteCategory,
+  adminToggleCategoryActive,
+
   
   // Utils
   getApiStats,
+
+  // Contact messages (Admin)
+  getAllMessagesAdmin,
+  getMessageById,
+  markMessageAsRead,
+  deleteMessage,
+
+  // Contact
+  sendContactMessage,
+
 };
 
 // Hacer funciones disponibles globalmente para fácil acceso

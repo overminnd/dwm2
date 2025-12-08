@@ -76,14 +76,17 @@ html {
    CARRUSEL
    ═══════════════════════════════════════════════════════════════════════════ */
 #carouselOfertas .carousel-item {
-  height: 320px; /* Altura base */
+  height: auto !important;
 }
 
+
 #carouselOfertas img {
-  height: 100%;
-  object-fit: cover; /* Recorta sin deformar */
-  border-radius: 12px;
+  width: 100%;
+  height: auto !important;
+  object-fit: contain !important;
 }
+
+
 
 /* Responsividad carrusel */
 @media (max-width: 768px) {

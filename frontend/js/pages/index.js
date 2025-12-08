@@ -129,6 +129,27 @@ function normalizeSlug(slug) {
     .replace(/^-+|-+$/g, "");          // remover guiones extremos
 }
 
+function getSectionIdFromCategory(category) {
+  if (!category) return 'categoria';
+
+  const rawSlug = (category.slug || normalizeSlug(category.name) || '').toLowerCase();
+  
+  // 1) Intentar usar el mapeo manual si existe (pescados -> pescado, mariscos-frescos -> mariscos, etc.)
+  let sectionId = CATEGORY_SLUG_TO_ID[rawSlug];
+
+  // 2) Si no hay mapeo, normalizar el slug
+  if (!sectionId) {
+    sectionId = normalizeSlug(rawSlug || category.name || 'categoria');
+  }
+
+  // 3) Mismo truco que en renderCategorySection: quitar "s" final si no hay mapeo
+  if (!CATEGORY_SLUG_TO_ID[rawSlug] && rawSlug.endsWith('s')) {
+    sectionId = rawSlug.slice(0, -1);
+  }
+
+  return sectionId || 'categoria';
+}
+
 
 /**
  * Carga y renderiza el catálogo completo con todas las categorías
@@ -142,6 +163,62 @@ function normalizeSlug(slug) {
  * @async
  * @returns {Promise<void>}
  */
+async function loadCategoryButtons() {
+  try {
+    console.log('📁 Cargando categorías para el grid de botones…');
+
+    const result = await getCategories();
+
+    if (!result || !result.success || !Array.isArray(result.data)) {
+      console.error('❌ Error al obtener categorías para el grid:', result?.error);
+      return;
+    }
+
+    const categories = result.data;
+    const $grid = $('#categorias-grid');
+
+    if (!$grid.length) {
+      console.error('❌ No se encontró #categorias-grid en categorias.html');
+      return;
+    }
+
+    // Limpiar por si acaso
+    $grid.empty();
+
+    categories.forEach(cat => {
+      const sectionId = getSectionIdFromCategory(cat); // Debe coincidir con el ID de la sección del catálogo
+      const href = `#${sectionId}`;
+
+      const safeName = escapeHtml(cat.name || 'Categoría');
+      const safeDesc = escapeHtml(cat.description || 'Productos disponibles');
+
+      const cardHtml = `
+        <div class="col-12 col-sm-6 col-md-4">
+
+          <a href="${href}" data-cat="${sectionId}" class="text-decoration-none category-link">
+            <div class="categoria-card text-white text-center p-4 rounded shadow-sm h-100"
+                 style="background-color: #003366; transition: transform 0.3s;">
+              
+              <i class="bi bi-grid-3x3-gap fs-1 mb-2"></i>
+              
+              <h3 class="fw-bold mb-2">${safeName.toUpperCase()}</h3>
+              <p class="mb-0 small">${safeDesc}</p>
+            </div>
+          </a>
+        </div>
+      `;
+
+      $grid.append(cardHtml);
+    });
+
+    console.log(`✅ Categorías renderizadas en grid: ${categories.length}`);
+
+  } catch (error) {
+    console.error('❌ Error inesperado en loadCategoryButtons:', error);
+  }
+}
+
+
 async function loadCatalog() {
   try {
     console.log('📚 Cargando catálogo completo…');
@@ -989,12 +1066,20 @@ $(document).ready(function () {
   UTILS.loadComponent("carrusel-container", "components/carrusel.html");
 
   UTILS.loadComponent("categorias-container", "components/categorias.html", function() {
+
+  // 1) Primero pinto las categorías desde el backend
+    if (typeof loadCategoryButtons === 'function') {
+      loadCategoryButtons();
+    }
+
+    // 2) Después engancho el scroll suave de las categorías → catálogo
     if (typeof initCategoryButtons === 'function') {
       initCategoryButtons();
     } else {
       console.error("❌ initCategoryButtons no está definida.");
     }
   });
+
 
 
   UTILS.loadComponent("productos-destacados-container", "components/ProductoDestacado.html", function() {

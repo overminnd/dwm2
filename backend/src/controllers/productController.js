@@ -247,7 +247,7 @@ export const createProduct = async (req, res) => {
       featured: featured || false,
       images: images || [],
       mainImage: mainImage || (images && images[0] ? images[0].url : null),
-      status: 'draft'
+      status: 'published'
     });
 
     await product.populate('categoryId', 'name slug');
@@ -279,7 +279,7 @@ export const updateProduct = async (req, res) => {
       });
     }
 
-    // Si se cambia la categoría, validar que existe
+    // Validar categoría
     if (req.body.categoryId) {
       const categoryExists = await Category.findById(req.body.categoryId);
       if (!categoryExists) {
@@ -290,10 +290,15 @@ export const updateProduct = async (req, res) => {
       }
     }
 
-    // Actualizar campos
+    // Actualizar todos los campos enviados
     Object.keys(req.body).forEach(key => {
       product[key] = req.body[key];
     });
+
+    // SI viende active, forzamos boolean
+    if (req.body.active !== undefined) {
+      product.active = req.body.active === true || req.body.active === "true";
+    }
 
     await product.save();
     await product.populate('categoryId', 'name slug');
@@ -310,6 +315,7 @@ export const updateProduct = async (req, res) => {
     });
   }
 };
+
 
 // @desc    Eliminar un producto
 // @route   DELETE /api/products/:id
